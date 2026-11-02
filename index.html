@@ -66,6 +66,7 @@ h1,h2,h3,h4{font-family:var(--f-display);margin:0;text-wrap:balance}
 .fld>span{font-size:13px;color:var(--muted);font-weight:500}
 input,textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:16px}
 textarea{resize:vertical;line-height:1.6}
+input[type=search]{background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%230F6B50' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat right 12px center;padding-right:42px;font-size:16px;border-width:1.5px}
 :focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .hprow{display:flex;gap:8px;align-items:center}
 .hp{display:flex;gap:6px;flex:1 1 auto;min-width:0}
@@ -703,7 +704,7 @@ function setYear(y){
 /* --- الطلاب --- */
 function hintDt(){const e=$('#dth');if(e&&S.date)e.textContent=fmt(S.date)+'، الموافق '+fmtG(S.date)}
 function mountStudents(){
-  $('#page').innerHTML='<div class="ctl"><div class="fld"><span>تاريخ تسجيل الغياب (التقويم الهجري، أم القرى)</span><div class="hprow">'+hpHtml('dt',S.date)+'<button class="btn ghost sm" data-act="hptoday" data-id="dt">اليوم</button></div><span class="hint" id="dth"></span></div><div class="ctl-row"><input id="q" type="search" placeholder="اكتب اسم الطالب أو فصله" autocomplete="off"><button class="btn" data-act="add">إضافة طلاب</button></div><div class="chips" id="chips"></div></div><div class="listhead"><span id="cnt"></span><div class="seg" id="seg"><button data-act="sort" data-s="name">الاسم</button><button data-act="sort" data-s="abs">الأكثر غيابًا</button></div></div><div id="list" class="reg"></div>';
+  $('#page').innerHTML='<div class="ctl"><div class="fld"><span>تاريخ تسجيل الغياب (التقويم الهجري، أم القرى)</span><div class="hprow">'+hpHtml('dt',S.date)+'<button class="btn ghost sm" data-act="hptoday" data-id="dt">اليوم</button></div><span class="hint" id="dth"></span></div><div class="ctl-row"><input id="q" type="search" placeholder="ابحث عن طالب بالاسم أو الفصل" autocomplete="off"><button class="btn" data-act="add">إضافة طلاب</button></div><div class="chips" id="chips"></div></div><div class="listhead"><span id="cnt"></span><div class="seg" id="seg"><button data-act="sort" data-s="name">الاسم</button><button data-act="sort" data-s="abs">الأكثر غيابًا</button></div></div><div id="list" class="reg"></div>';
   hintDt();
   const q=$('#q');q.value=S.q;q.addEventListener('input',()=>{S.q=q.value;paintStudents()});
 }
