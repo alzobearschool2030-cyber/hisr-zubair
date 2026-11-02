@@ -537,7 +537,7 @@ function derive(){
   const o={};
   for(const id in S.students)o[id]={u:[],e:[],l:[]};
   for(const a of S.abs){const x=o[a.sid];if(x&&(a.t==='u'||a.t==='e'))x[a.t].push(a.d)}
-  const L=[...S.late].sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
+  const L=[...S.late].sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:(a.k<b.k?-1:a.k>b.k?1:0));
   for(const l of L){const x=o[l.sid];if(x)x.l.push(l)}
   for(const id in o){o[id].u.sort();o[id].e.sort()}
   return o;
@@ -776,7 +776,7 @@ function actText(l){if(!l.act)return '';const it=lateList().find(z=>z.key===l.ac
 function actCell(l){return l.act?'☑ '+esc(actText(l)):l.done?'☑ نُفِّذ الإجراء المقرر':'☐ لم يُتخذ إجراء بعد'}
 function actSel(l,k){
   const L=lateList();
-  return '<label class="fld actf"><span>الإجراء المتخذ</span><select class="actsel" data-sid="'+esc(l.sid)+'" data-d="'+esc(l.d)+'"><option value="">— لم يُتخذ إجراء بعد —</option>'+L.map((it,i)=>'<option value="'+it.key+'"'+(l.act===it.key?' selected':'')+'>'+esc((i+1)+'. '+it.text)+(i===Math.min(k,L.length)-1?' (المقرر)':'')+'</option>').join('')+(l.act&&!L.some(z=>z.key===l.act)?'<option value="'+esc(l.act)+'" selected>إجراء محذوف من القائمة</option>':'')+'</select></label>';
+  return '<label class="fld actf"><span>الإجراء المتخذ</span><select class="actsel" data-sid="'+esc(l.sid)+'" data-d="'+esc(l.k)+'"><option value="">— لم يُتخذ إجراء بعد —</option>'+L.map((it,i)=>'<option value="'+it.key+'"'+(l.act===it.key?' selected':'')+'>'+esc((i+1)+'. '+it.text)+(i===Math.min(k,L.length)-1?' (المقرر)':'')+'</option>').join('')+(l.act&&!L.some(z=>z.key===l.act)?'<option value="'+esc(l.act)+'" selected>إجراء محذوف من القائمة</option>':'')+'</select></label>';
 }
 function edLateHtml(){return '<div class="edrow"><span class="sm muted">تعديل تاريخ التأخر</span>'+hpHtml('ed1',S.ed.v)+'<div class="btns"><button class="btn sm" data-act="edsave">حفظ التعديل</button><button class="btn ghost sm" data-act="edcancel">إلغاء</button></div></div>'}
 const isEd=(k,sid,d)=>S.ed&&S.ed.k===k&&S.ed.sid===sid&&S.ed.d===d;
@@ -787,7 +787,7 @@ function paintLate(){
   let res='';
   if(nq){
     const m=sIds().filter(id=>matchQ(id,nq)).sort(byName).slice(0,8);
-    res=m.map(id=>{const s=S.students[id],has=todayIds.has(id);return '<button data-act="addlate" data-id="'+esc(id)+'"'+(has?' disabled':'')+'><span>'+esc(s.name)+' <span class="cl">'+esc(s.cls||'')+'</span></span><span class="pill l">'+(has?'مسجّل':'+ تأخر')+'</span></button>'}).join('');
+    res=m.map(id=>{const s=S.students[id],has=todayIds.has(id);return '<button data-act="addlate" data-id="'+esc(id)+'"><span>'+esc(s.name)+' <span class="cl">'+esc(s.cls||'')+'</span></span><span class="pill l">'+(has?'+ تأخر مرة أخرى':'+ تأخر')+'</span></button>'}).join('');
     if(raw.length>=3&&!m.some(id=>norm(S.students[id].name)===nq))res+='<div class="newst"><span class="sm muted">'+(m.length?'ليس من هؤلاء؟':'لا يوجد طالب بهذا الاسم.')+' أضفه طالبًا جديدًا وسجّل تأخره:</span><div class="addabs">'+clsSel('lnc',S.lnc||'')+'<button class="btn l sm" data-act="latenew">إضافة «'+esc(raw)+'»</button></div></div>';
     else if(!m.length)res='<p class="muted sm">لا يوجد طالب بهذا الاسم.</p>';
   }
@@ -800,8 +800,8 @@ function paintLate(){
   if(!rows.length){$('#llist').innerHTML='<div class="empty"><p>لم يُسجَّل متأخرون في هذا اليوم. اكتب اسم الطالب في الخانة أعلاه لتسجيل تأخره، ويمكنك إضافة عدد غير محدود من الطلاب واحدًا بعد الآخر.</p></div>';return}
   $('#llist').innerHTML=rows.map(l=>{
     const s=S.students[l.sid],n=D[l.sid].l.findIndex(z=>z.id===l.id)+1,k=Math.min(n,LN());
-    const at='data-sid="'+esc(l.sid)+'" data-d="'+esc(l.d)+'"';
-    return '<div class="rw" role="button" tabindex="0" data-act="open" data-id="'+esc(l.sid)+'"><div class="rw-top"><div><div class="nm">'+esc(s.name)+'</div><div class="cl">'+esc(s.cls||'بدون فصل')+'</div></div><div class="pills"><span class="pill l">المرة '+n+'</span></div></div><div class="act l"><b>الإجراء المقرر</b><span>'+esc(LTX(k))+'</span></div>'+(isEd('late',l.sid,l.d)?edLateHtml():actSel(l,k)+'<div class="quick"><button class="qb n" data-act="edlate" '+at+'>تعديل</button><button class="qb u" data-act="rmlate" '+at+'>حذف</button></div>')+'</div>';
+    const at='data-sid="'+esc(l.sid)+'" data-d="'+esc(l.k)+'"';
+    return '<div class="rw" role="button" tabindex="0" data-act="open" data-id="'+esc(l.sid)+'"><div class="rw-top"><div><div class="nm">'+esc(s.name)+'</div><div class="cl">'+esc(s.cls||'بدون فصل')+'</div></div><div class="pills"><span class="pill l">المرة '+n+'</span></div></div><div class="act l"><b>الإجراء المقرر</b><span>'+esc(LTX(k))+'</span></div>'+(isEd('late',l.sid,l.k)?edLateHtml():actSel(l,k)+'<div class="quick"><button class="qb n" data-act="edlate" '+at+'>تعديل</button><button class="qb u" data-act="rmlate" '+at+'>حذف</button></div>')+'</div>';
   }).join('');
 }
 function lateDone(sid,name,n){
@@ -817,15 +817,16 @@ async function newLate(name,cls){
   const id=rid();
   try{await putStu(id,newDoc(name,cls,{late:{[d]:false}}));lateDone(id,name,1);toast('أُضيف '+name+' وسُجّل تأخره');return true}catch(e){fail(e);return false}
 }
+function freeKey(sid,d){let k=d,n=2;while(S.late.some(z=>z.sid===sid&&z.k===k))k=d+'_'+(n++);return k}
 async function addLate(sid){
   if(!S.ldate){toast('اختر التاريخ أولًا');return}
   const d=S.ldate;
-  if(S.late.find(l=>l.sid===sid&&l.d===d)){toast('مسجّل مسبقًا في هذا اليوم');return}
   const name=S.students[sid].name,n=D[sid].l.length+1;
   try{
-    await patch(sid,{late:{[d]:false}});
+    const key=freeKey(sid,d);
+    await patch(sid,{late:{[key]:false}});
     lateDone(sid,name,n);
-    toast('سُجّل تأخر '+name,()=>patch(sid,{late:{[d]:null}}).catch(fail));
+    toast('سُجّل تأخر '+name+' (المرة '+n+')',()=>patch(sid,{late:{[key]:null}}).catch(fail));
   }catch(e){fail(e)}
 }
 document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#lnc'))S.lnc=clsVal('lnc');if(e.target.closest&&e.target.closest('#lnc2'))S.lnc2=clsVal('lnc2')});
@@ -1021,7 +1022,7 @@ function updateSheet(){
   $('#sh-abed').innerHTML=E&&E.k==='abs'&&E.sid===id?'<div class="edrow"><span class="sm muted">تعديل غياب '+esc(fmt(E.d))+'</span>'+hpHtml('ed1',E.v)+'<div class="btns"><button class="btn sm '+(E.t==='u'?'u':'ghost')+'" data-act="edt" data-t="u">بدون عذر</button><button class="btn sm '+(E.t==='e'?'e':'ghost')+'" data-act="edt" data-t="e">بعذر</button></div><div class="btns"><button class="btn sm" data-act="edsave">حفظ التعديل</button><button class="btn ghost sm" data-act="edcancel">إلغاء</button><button class="btn danger sm" data-act="delabs" data-sid="'+esc(E.sid)+'" data-d="'+esc(E.d)+'">حذف</button></div></div>':'';
   $('#sh-proc').innerHTML=procHtml(id);
   const L=x.l;
-  $('#sh-late').innerHTML=L.length?L.map((l,i)=>{const n=i+1,k=Math.min(n,LN()),at='data-sid="'+esc(l.sid)+'" data-d="'+esc(l.d)+'"';if(isEd('late',l.sid,l.d))return '<div class="lrow"><div><b>المرة '+n+'</b> · '+esc(fmtS(l.d))+'</div>'+edLateHtml()+'</div>';return '<div class="lrow"><div><b>المرة '+n+'</b> · '+esc(fmtS(l.d))+'</div><span></span><button class="qb n" data-act="edlate" '+at+'>تعديل</button><button class="qb u" data-act="rmlate" '+at+'>حذف</button><div class="sub">'+actSel(l,k)+'</div></div>'}).join(''):'<p class="muted sm" style="margin:0">لا يوجد تأخر مسجّل.</p>';
+  $('#sh-late').innerHTML=L.length?L.map((l,i)=>{const n=i+1,k=Math.min(n,LN()),at='data-sid="'+esc(l.sid)+'" data-d="'+esc(l.k)+'"';if(isEd('late',l.sid,l.k))return '<div class="lrow"><div><b>المرة '+n+'</b> · '+esc(fmtS(l.d))+'</div>'+edLateHtml()+'</div>';return '<div class="lrow"><div><b>المرة '+n+'</b> · '+esc(fmtS(l.d))+'</div><span></span><button class="qb n" data-act="edlate" '+at+'>تعديل</button><button class="qb u" data-act="rmlate" '+at+'>حذف</button><div class="sub">'+actSel(l,k)+'</div></div>'}).join(''):'<p class="muted sm" style="margin:0">لا يوجد تأخر مسجّل.</p>';
 }
 
 /* ---------- إضافة طلاب ---------- */
@@ -1188,10 +1189,10 @@ const DATE_RX=/^\d{4}-\d\d-\d\d$/,ID_RX=/^[A-Za-z0-9_\-.~:@+]{1,200}$/;
 function cleanIn(x){
   if(!x||typeof x!=='object')return null;
   const o={name:String(x.name||'').slice(0,200),cls:String(x.cls||'').slice(0,100),abs:{},late:{},lact:{},marks:{}};
-  for(const k in (x.lact||{}))if(DATE_RX.test(k)&&/^l_\w+$/.test(String(x.lact[k])))o.lact[k]=x.lact[k];
+  for(const k in (x.lact||{}))if(/^\d{4}-\d\d-\d\d(_\d+)?$/.test(k)&&/^l_\w+$/.test(String(x.lact[k])))o.lact[k]=x.lact[k];
   if(!o.name)return null;
   for(const k in (x.abs||{}))if(DATE_RX.test(k)&&(x.abs[k]==='u'||x.abs[k]==='e'))o.abs[k]=x.abs[k];
-  for(const k in (x.late||{}))if(DATE_RX.test(k)&&typeof x.late[k]==='boolean')o.late[k]=x.late[k];
+  for(const k in (x.late||{}))if(/^\d{4}-\d\d-\d\d(_\d+)?$/.test(k)&&typeof x.late[k]==='boolean')o.late[k]=x.late[k];
   for(const k in (x.marks||{}))if(/^[ue]_\d+_(\d+|c\w+)$/.test(k)&&DATE_RX.test(String(x.marks[k])))o.marks[k]=x.marks[k];
   if(x.demo)o.demo=true;
   return o;
@@ -1542,7 +1543,7 @@ const A={
     if(await newLate(nm.trim(),clsVal('lnc2')||S.lnc2||'')){S.lnn='';S.lnew=true;paintLate();const e=$('#lnn');if(e)e.focus()}
   },
   lagain(){S.lok=null;paintLate();const q=$('#lq');if(q){q.focus();q.scrollIntoView({block:'center'})}},
-  edlate(el){S.ed={k:'late',sid:el.dataset.sid,d:el.dataset.d,v:el.dataset.d};paint();updateSheet()},
+  edlate(el){S.ed={k:'late',sid:el.dataset.sid,d:el.dataset.d,v:el.dataset.d.slice(0,10)};paint();updateSheet()},
   edabs(el){const a=S.abs.find(z=>z.sid===el.dataset.sid&&z.d===el.dataset.d);if(!a)return;S.ed={k:'abs',sid:a.sid,d:a.d,v:a.d,t:a.t};updateSheet()},
   edt(el){if(S.ed){S.ed.t=el.dataset.t;updateSheet()}},
   edcancel(){S.ed=null;paint();updateSheet()},
@@ -1550,10 +1551,10 @@ const A={
     const E=S.ed;if(!E)return;const nd=hpVal('ed1')||E.v;
     try{
       if(E.k==='late'){
-        const l=S.late.find(z=>z.sid===E.sid&&z.d===E.d);
-        if(l&&nd!==E.d){
-          if(S.late.find(z=>z.sid===E.sid&&z.d===nd)){toast('للطالب تأخر مسجّل في هذا التاريخ');return}
-          await patch(E.sid,{late:{[E.d]:null,[nd]:l.done},lact:{[E.d]:null,[nd]:l.act||null}});
+        const l=S.late.find(z=>z.sid===E.sid&&z.k===E.d);
+        if(l&&nd!==l.d){
+          const nk=freeKey(E.sid,nd);
+          await patch(E.sid,{late:{[E.d]:null,[nk]:l.done},lact:{[E.d]:null,[nk]:l.act||null}});
         }
       }else{
         const a=S.abs.find(z=>z.sid===E.sid&&z.d===E.d);
@@ -1569,9 +1570,9 @@ const A={
     if(!el.dataset.sure){el.dataset.sure='1';el.textContent='تأكيد الحذف؟';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='حذف'}},4000);return}
     const id=el.dataset.id;w(()=>col(P()).doc(id).delete()).then(()=>toast('حُذف الطالب وسجلاته')).catch(fail);
   },
-  shlate(){const d=hpVal('sh-ldt');if(!d){toast('اختر التاريخ');return}const sid=S.sheet;if(S.late.find(l=>l.sid===sid&&l.d===d)){toast('مسجّل مسبقًا في هذا اليوم');return}patch(sid,{late:{[d]:false}}).then(()=>toast('سُجّل التأخر',()=>patch(sid,{late:{[d]:null}}).catch(fail))).catch(fail)},
-  dolate(el){const sid=el.dataset.sid,d=el.dataset.d,l=S.late.find(z=>z.sid===sid&&z.d===d);if(l)patch(sid,{late:{[d]:!l.done}}).catch(fail)},
-  rmlate(el){const sid=el.dataset.sid,d=el.dataset.d,l=S.late.find(z=>z.sid===sid&&z.d===d);if(!l)return;const v=!!l.done,ac=l.act||null;S.ed=null;patch(sid,{late:{[d]:null},lact:{[d]:null}}).then(()=>toast('حُذف التأخر',()=>patch(sid,{late:{[d]:v},lact:{[d]:ac}}).catch(fail))).catch(fail)},
+  shlate(){const d=hpVal('sh-ldt');if(!d){toast('اختر التاريخ');return}const sid=S.sheet,key=freeKey(sid,d);patch(sid,{late:{[key]:false}}).then(()=>toast('سُجّل التأخر',()=>patch(sid,{late:{[key]:null}}).catch(fail))).catch(fail)},
+  dolate(el){const sid=el.dataset.sid,d=el.dataset.d,l=S.late.find(z=>z.sid===sid&&z.k===d);if(l)patch(sid,{late:{[d]:!l.done}}).catch(fail)},
+  rmlate(el){const sid=el.dataset.sid,d=el.dataset.d,l=S.late.find(z=>z.sid===sid&&z.k===d);if(!l)return;const v=!!l.done,ac=l.act||null;S.ed=null;patch(sid,{late:{[d]:null},lact:{[d]:null}}).then(()=>toast('حُذف التأخر',()=>patch(sid,{late:{[d]:v},lact:{[d]:ac}}).catch(fail))).catch(fail)},
   saveStu(){const n=$('#sh-en').value.trim(),c=clsVal('sh-ec')||(S.students[S.sheet]||{}).cls||'';if(!n){toast('اكتب اسم الطالب');return}patch(S.sheet,{name:n,cls:c}).then(()=>toast('تم الحفظ')).catch(fail)},
   delStu(el){
     if(!el.dataset.sure){el.dataset.sure='1';el.textContent='اضغط مرة أخرى لتأكيد الحذف النهائي';return}
@@ -1626,7 +1627,7 @@ function openYear(){
       const x=d.data();
       st[d.id]={name:x.name||'',cls:x.cls||'',demo:!!x.demo};
       const a=x.abs||{};for(const k in a)if(a[k]==='u'||a[k]==='e')ab.push({id:d.id+'_'+k,sid:d.id,d:k,t:a[k]});
-      const l=x.late||{};for(const k in l)if(typeof l[k]==='boolean')lt.push({id:d.id+'_'+k,sid:d.id,d:k,done:l[k],act:((x.lact||{})[k])||''});
+      const l=x.late||{};for(const k in l)if(typeof l[k]==='boolean')lt.push({id:d.id+'_'+k,sid:d.id,d:k.slice(0,10),k:k,done:l[k],act:((x.lact||{})[k])||''});
       const m=x.marks||{};for(const k in m)if(m[k])dn[d.id+'__'+k]={sid:d.id,key:k,at:m[k]};
     });
     S.students=st;S.abs=ab;S.late=lt;S.done=dn;okSnap(s);changed();
