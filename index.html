@@ -69,10 +69,10 @@ textarea{resize:vertical;line-height:1.6}
 :focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .hprow{display:flex;gap:8px;align-items:center}
 .hp{display:flex;gap:6px;flex:1 1 auto;min-width:0}
-.hp select,.hp input{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 8px;font-size:15px;min-width:0}
-.hp select[data-p=d]{flex:0 0 62px}
-.hp select[data-p=m]{flex:1 1 110px}
-.hp select[data-p=y]{flex:0 0 80px}
+.hp select,.hp input{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 4px;font-size:14.5px;min-width:0}
+.hp select[data-p=d]{flex:0 0 104px}
+.hp select[data-p=m]{flex:1 1 80px}
+.hp select[data-p=y]{flex:0 0 70px}
 
 .btn{min-height:44px;padding:0 16px;border:1px solid var(--green);background:var(--green);color:var(--green-ink);border-radius:10px;font-weight:600}
 .btn.sm{min-height:40px;padding:0 12px;font-size:14px}
@@ -594,11 +594,17 @@ async function saveFile(name,data,okMsg){
 const pillsAll=x=>'<span class="pill u">بدون عذر '+x.u.length+'</span><span class="pill e">بعذر '+x.e.length+'</span><span class="pill l">تأخر '+x.l.length+'</span>';
 
 /* ---------- منتقي التاريخ الهجري (أم القرى) ---------- */
+function dayOpts(y,m,sel){
+  let o='';
+  for(let i=1;i<=30;i++){const g=h2g(y,m,i);if(!g&&i>28)continue;o+='<option value="'+i+'"'+(i===sel?' selected':'')+'>'+(g?wdL(g)+' '+i:i)+'</option>'}
+  return o;
+}
+function hpDays(hp,y,m,d){const sd=hp.querySelector('[data-p=d]');if(sd){sd.innerHTML=dayOpts(y,m,d);sd.value=d}}
 function hpHtml(id,val){
   const h=g2h(val)||g2h(today());
   if(!h)return '<div class="hp" id="'+id+'" data-v="'+esc(val)+'"><input type="date" class="hpfb" value="'+esc(val)+'" aria-label="التاريخ"></div>';
   let d='',m='',y='';
-  for(let i=1;i<=30;i++)d+='<option value="'+i+'"'+(i===h[2]?' selected':'')+'>'+i+'</option>';
+  d=dayOpts(h[0],h[1],h[2]);
   MN.forEach((n,i)=>{m+='<option value="'+(i+1)+'"'+(i+1===h[1]?' selected':'')+'>'+n+'</option>'});
   for(let k=1447;k<=1459;k++)y+='<option value="'+k+'"'+(k===h[0]?' selected':'')+'>'+k+'</option>';
   return '<div class="hp" id="'+id+'" data-v="'+esc(val)+'"><select data-p="d" aria-label="اليوم">'+d+'</select><select data-p="m" aria-label="الشهر الهجري">'+m+'</select><select data-p="y" aria-label="السنة الهجرية">'+y+'</select></div>';
@@ -608,7 +614,7 @@ function hpSet(id,v){
   const e=$('#'+id);if(!e)return;e.dataset.v=v;
   const fb=e.querySelector('.hpfb');if(fb){fb.value=v;return}
   const h=g2h(v);if(!h)return;
-  e.querySelector('[data-p=d]').value=h[2];e.querySelector('[data-p=m]').value=h[1];e.querySelector('[data-p=y]').value=h[0];
+  hpDays(e,h[0],h[1],h[2]);e.querySelector('[data-p=m]').value=h[1];e.querySelector('[data-p=y]').value=h[0];
 }
 function onHp(id,v){
   if(id==='dt'){S.date=v;hintDt()}
@@ -631,7 +637,7 @@ document.addEventListener('change',e=>{
   const y=q('y'),m=q('m');let d=q('d'),v=h2g(y,m,d);
   while(!v&&d>28){d--;v=h2g(y,m,d)}
   if(!v)return;
-  hp.querySelector('[data-p=d]').value=d;hp.dataset.v=v;onHp(hp.id,v);
+  hpDays(hp,y,m,d);hp.dataset.v=v;onHp(hp.id,v);
 });
 
 /* ---------- الدخول (اسم مستخدم ورمز دخول موحّدان) ---------- */
