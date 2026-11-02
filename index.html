@@ -381,8 +381,9 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s||'').replace(/[ً-ٟـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').toLowerCase().trim();
 const today=()=>iso(new Date());
-const wdL=s=>{try{return parseD(s).toLocaleDateString('ar-SA',{weekday:'long'})}catch(e){return ''}};
-const wdS=s=>{try{return parseD(s).toLocaleDateString('ar-SA',{weekday:'short'})}catch(e){return ''}};
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const wdL=s=>{try{return DAYS[parseD(s).getDay()]}catch(e){return ''}};
+const wdS=wdL;
 function fmt(s){const h=g2h(s);return h?wdL(s)+' '+h[2]+' '+MN[h[1]-1]+' '+h[0]+'هـ':s}
 function fmtS(s){const h=g2h(s);return h?wdS(s)+' '+h[2]+'/'+h[1]:s}
 function hs(s){const h=g2h(s);return h?h[0]+'/'+pad(h[1])+'/'+pad(h[2]):s}
