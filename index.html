@@ -866,7 +866,7 @@ function paintCensus(){
       right='<span class="pill '+c.tr+'">'+n+' أيام</span>';
       sub='<span class="act '+c.tr+'"><b>'+esc(DEF[c.tr].tiers[c.k].title)+'</b><span class="meter"><i style="width:'+pc+'%"></i></span><span class="pr">منفّذ '+p.dn+' من '+p.tot+'</span></span>';
     }
-    return '<div class="rw cn" role="button" tabindex="0" data-act="open" data-id="'+esc(id)+'"><span class="no">'+(i+1)+'</span><div><div class="nm">'+esc(s.name)+'</div><div class="cl">'+esc(s.cls||'بدون فصل')+'</div></div>'+right+'<div class="sub">'+sub+'</div></div>';
+    return '<div class="rw cn" role="button" tabindex="0" data-act="open" data-id="'+esc(id)+'"><span class="no">'+(i+1)+'</span><div><div class="nm">'+esc(s.name)+'</div><div class="cl">'+esc(s.cls||'بدون فصل')+'</div></div>'+right+'<div class="sub">'+sub+'<div class="quick" style="margin-top:6px"><button class="qb u" data-act="delrec" data-id="'+esc(id)+'" data-c="'+c.id+'">حذف</button></div></div></div>';
   }).join('');
 }
 function periodOf(kind,d){
@@ -1566,6 +1566,14 @@ const A={
       }
       S.ed=null;paint();updateSheet();toast('تم حفظ التعديل');
     }catch(e){fail(e)}
+  },
+  delrec(el){
+    if(!el.dataset.sure){el.dataset.sure='1';el.textContent=el.dataset.c==='l'?'تأكيد حذف كل تأخره؟':el.dataset.c==='sum'?'تأكيد حذف كل سجلاته؟':'تأكيد حذف غيابه؟';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='حذف'}},4000);return}
+    const sid=el.dataset.id,c=CATS.find(z=>z.id===el.dataset.c),o={};
+    const tr=c.id==='sum'?['u','e']:c.tr?[c.tr]:[];
+    if(tr.length){o.abs={};S.abs.filter(a=>a.sid===sid&&tr.includes(a.t)).forEach(a=>o.abs[a.d]=null);o.marks={};Object.values(S.done).filter(m=>m.sid===sid&&tr.includes(m.key[0])).forEach(m=>o.marks[m.key]=null)}
+    if(c.id==='l'||c.id==='sum'){o.late={};o.lact={};S.late.filter(l=>l.sid===sid).forEach(l=>{o.late[l.k]=null;o.lact[l.k]=null})}
+    patch(sid,o).then(()=>toast('حُذفت سجلات '+(S.students[sid]||{}).name)).catch(fail);
   },
   delrow(el){
     if(!el.dataset.sure){el.dataset.sure='1';el.textContent='تأكيد الحذف؟';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='حذف'}},4000);return}
