@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0F6B50">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>حصر المواظبة</title>
+<title>راصد</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700&display=swap">
 <style>
 /* Layout: a school register on a phone. Green masthead with the school year selector, one ledger card per page, fixed bottom tabs; tapping a student opens a bottom sheet with absence dates, regulation steps and assembly lateness. Dates are Umm al-Qura Hijri. */
@@ -223,7 +223,7 @@ body{margin:0}
   <div id="auth" hidden></div>
   <div id="shell" hidden>
     <header class="mast"><div class="in mast-in">
-      <div class="mt"><div class="school">مدرسة الزبير بن العوام الابتدائية</div><h1 id="ptitle">الطلاب</h1></div>
+      <div class="mt"><div class="school">راصد · مدرسة الزبير بن العوام الابتدائية</div><h1 id="ptitle">الطلاب</h1></div>
       <div class="mc"><select id="ysel" class="gsel" aria-label="العام الدراسي"></select><button class="gbtn" data-act="settings">الإعدادات</button></div>
     </div></header>
     <div id="warn" class="warn" hidden><div class="in">تعذّر الوصول إلى البيانات حاليًا، وقد تكون المعروضة غير محدّثة.</div></div>
@@ -645,7 +645,7 @@ function showAuth(mode){
   $('#shell').hidden=true;closeSheet();
   const a=$('#auth');a.hidden=false;
   if(mode==='nodb'){a.innerHTML='<form class="acard" id="f-cfg"><h1>'+SCHOOL+'</h1><p>إعداد الربط بقاعدة البيانات (مرة واحدة). الصق من Supabase: Project URL ومفتاح anon public.</p><label class="fld"><span>Project URL</span><input id="cu" dir="ltr" required placeholder="https://xxxx.supabase.co"></label><label class="fld"><span>anon public key</span><input id="ck" dir="ltr" required></label><button class="btn" type="submit">حفظ</button></form>';return}
-  a.innerHTML='<form class="acard" id="f-login"><h1>'+SCHOOL+'</h1><p>حصر المواظبة والانضباط · المدينة المنورة</p><label class="fld"><span>اسم المستخدم</span><input id="lu" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required readonly value="Alzobearbenalawamschool" dir="ltr" style="background:var(--green-soft);color:var(--green);font-weight:600"></label><label class="fld"><span>رمز الدخول</span><input id="ln" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required></label><label class="rem"><input type="checkbox" id="lr" checked><span>تذكّر الدخول على هذا الجهاز</span></label><p class="err" id="aerr"></p><button class="btn" type="submit">دخول</button></form>';
+  a.innerHTML='<form class="acard" id="f-login"><h1 style="font-size:30px;color:var(--green);margin:0">راصد</h1><p>'+SCHOOL+'<br>حصر المواظبة والانضباط · المدينة المنورة</p><label class="fld"><span>اسم المستخدم</span><input id="lu" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required readonly value="Alzobearbenalawamschool" dir="ltr" style="background:var(--green-soft);color:var(--green);font-weight:600"></label><label class="fld"><span>رمز الدخول</span><input id="ln" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required></label><label class="rem"><input type="checkbox" id="lr" checked><span>تذكّر الدخول على هذا الجهاز</span></label><p class="err" id="aerr"></p><button class="btn" type="submit">دخول</button></form>';
   $('#ln').focus();
 }
 function route(){
@@ -1125,7 +1125,7 @@ async function doBackup(){
     const years={};let n=0;
     snaps.forEach((s,i)=>{if(s.size){const o={};s.docs.forEach(d=>{o[d.id]=cleanOut(d.data());n++});years[YEARS[i]]=o}});
     const data=JSON.stringify({app:'hisr-zubair',v:2,school:SCHOOL,at:new Date().toISOString(),procs:S.procs||{},years});
-    const ok=await saveFile('hisr-zubair-backup-'+today()+'.json',data,'تم حفظ النسخة الاحتياطية ('+n+' طالبًا)');
+    const ok=await saveFile('rased-backup-'+today()+'.json',data,'تم حفظ النسخة الاحتياطية ('+n+' طالبًا)');
     if(ok){const at=new Date().toISOString();await setSet('backup',{at}).catch(()=>{})}
     if(msg)msg.textContent=ok?'تم تنزيل النسخة.':'';
   }catch(e){if(msg)msg.textContent='';fail(e)}
@@ -1170,7 +1170,7 @@ function doCsv(){
     rows.push([s.name,s.cls||'',x.u.length,x.e.length,x.l.length,x.u.map(hs).join(' | '),x.e.map(hs).join(' | '),x.l.map(l=>hs(l.d)).join(' | ')]);
   });
   const blob=makeXlsx('سجل '+S.year,[rows[0].map(v=>({v,s:1})),...rows.slice(1)],[26,12,10,10,10,40,40,40]);
-  saveFile('hisr-zubair-'+S.year+'-'+today()+'.xlsx',blob,'تم حفظ ملف Excel باتجاه من اليمين إلى اليسار');
+  saveFile('rased-'+S.year+'-'+today()+'.xlsx',blob,'تم حفظ ملف Excel باتجاه من اليمين إلى اليسار');
 }
 const DATE_RX=/^\d{4}-\d\d-\d\d$/,ID_RX=/^[A-Za-z0-9_\-.~:@+]{1,200}$/;
 function cleanIn(x){
