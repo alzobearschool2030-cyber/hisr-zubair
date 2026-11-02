@@ -223,7 +223,7 @@ body{margin:0}
   <div id="auth" hidden></div>
   <div id="shell" hidden>
     <header class="mast"><div class="in mast-in">
-      <div class="mt"><div class="school">راصد · مدرسة الزبير بن العوام الابتدائية</div><h1 id="ptitle">الطلاب</h1></div>
+      <div class="mt"><div class="school">مدرسة الزبير بن العوام الابتدائية</div><h1>راصد</h1></div>
       <div class="mc"><select id="ysel" class="gsel" aria-label="العام الدراسي"></select><button class="gbtn" data-act="settings">الإعدادات</button></div>
     </div></header>
     <div id="warn" class="warn" hidden><div class="in">تعذّر الوصول إلى البيانات حاليًا، وقد تكون المعروضة غير محدّثة.</div></div>
@@ -679,7 +679,6 @@ document.addEventListener('submit',async e=>{
 /* ---------- الصفحات ---------- */
 function go(p){
   S.page=p;S.edit=null;S.ed=null;
-  $('#ptitle').textContent=TITLES[p];
   $$('.nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.p===p?'page':'false'));
   D=derive();
   ({students:mountStudents,late:mountLate,census:mountCensus,rules:mountRules,print:mountPrint})[p]();
