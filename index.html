@@ -86,6 +86,7 @@ input[type=search]{background:var(--surface) url("data:image/svg+xml,%3Csvg xmln
 .btns{display:flex;gap:8px;flex-wrap:wrap}
 
 .chips{display:flex;gap:8px;overflow-x:auto;padding-block:2px;scrollbar-width:none}
+#chips{display:block}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;min-height:38px;padding:0 14px;border:1px solid var(--line);background:var(--surface);border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
 .chip[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--green-ink)}
@@ -628,6 +629,7 @@ document.addEventListener('change',e=>{
   const t=e.target;
   if(t.matches&&t.matches('.hpfb')){const hp=t.closest('.hp');if(t.value){hp.dataset.v=t.value;onHp(hp.id,t.value)}return}
   if(t.id==='ysel'){setYear(parseInt(t.value,10));return}
+  if(t.id==='clssel'){S.cls=t.value;paintStudents();return}
   if(t.id==='rf'){readRestore(t);return}
   if(t.id==='imf'){importFile(t);return}
   if(t.id==='lgf'){setLogo(t);return}
@@ -712,7 +714,9 @@ function paintStudents(){
   const ids=sIds();
   const classes=[...new Set(ids.map(i=>S.students[i].cls).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
   if(S.cls&&!classes.includes(S.cls))S.cls='';
-  $('#chips').innerHTML=classes.length?['',...classes].map(c=>'<button class="chip" data-act="cls" data-c="'+esc(c)+'" aria-pressed="'+(S.cls===c)+'">'+(c?esc(c):'كل الفصول')+'</button>').join(''):'';
+  const GO=['الأول','الثاني','الثالث','الرابع','الخامس','السادس'],gk=c=>{const i=GO.findIndex(g=>c.indexOf(g)===0);return (i<0?9:i)*100+(parseInt((c.match(/\d+/)||[0])[0],10)||0)};
+  classes.sort((a,b)=>gk(a)-gk(b)||a.localeCompare(b,'ar'));
+  $('#chips').innerHTML=classes.length?'<select id="clssel" class="rsel" aria-label="الفصل"><option value="">اختر الفصل لعرض طلابه…</option>'+classes.map(c=>'<option value="'+esc(c)+'"'+(S.cls===c?' selected':'')+'>'+esc(c)+'</option>').join('')+'</select>':'';
   $$('#seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===S.sort));
   const nq=norm(S.q);
   let list=ids.filter(id=>(!S.cls||S.students[id].cls===S.cls)&&matchQ(id,nq));
@@ -723,8 +727,9 @@ function paintStudents(){
     $('#list').innerHTML='<div class="empty"><h3>لا يوجد طلاب في العام '+S.year+'هـ</h3><p>استورد كشف الطلاب من ملف Excel أو PDF، أو الصق الأسماء، أو أضفهم واحدًا واحدًا'+(S.year>YEARS[0]?'، أو انقل طلاب العام السابق بعد ترقية فصولهم':'')+'.</p><button class="btn" data-act="add">استيراد أو إضافة طلاب</button>'+(S.year>YEARS[0]?'<button class="btn ghost" data-act="promote">نقل طلاب العام السابق وترقيتهم</button>':'')+'<button class="btn ghost" data-act="demo">تجربة التطبيق ببيانات تجريبية</button></div>';
     return;
   }
+  if(!S.q.trim()&&!S.cls){$('#cnt').textContent=ids.length+' طالبًا · العام الدراسي '+S.year+'هـ';$('#list').innerHTML='<div class="empty"><h3>ابحث عن الطالب</h3><p>اكتب جزءًا من اسم الطالب في خانة البحث، أو اختر الفصل من القائمة، فيظهر الطالب لتسجيل غيابه.</p></div>';return}
   if(!list.length){$('#list').innerHTML='<div class="empty"><p>لا توجد نتائج مطابقة.</p></div>';return}
-  $('#list').innerHTML=list.map(id=>rowStudent(id)).join('');
+  $('#list').innerHTML=list.slice(0,60).map(id=>rowStudent(id)).join('')+(list.length>60?'<div class="empty"><p>تظهر أول 60 نتيجة؛ اكتب جزءًا أطول من الاسم لتضييق البحث.</p></div>':'');
 }
 function rowStudent(id){
   const s=S.students[id],x=D[id],un=x.u.length,ex=x.e.length,lt=x.l.length;
