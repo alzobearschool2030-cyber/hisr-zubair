@@ -722,7 +722,7 @@ function paintStudents(){
   if(S.cls&&!classes.includes(S.cls))S.cls='';
   const GO=['الأول','الثاني','الثالث','الرابع','الخامس','السادس'],gk=c=>{const i=GO.findIndex(g=>c.indexOf(g)===0);return (i<0?9:i)*100+(parseInt((c.match(/\d+/)||[0])[0],10)||0)};
   classes.sort((a,b)=>gk(a)-gk(b)||a.localeCompare(b,'ar'));
-  const grp={};classes.forEach(c=>{const g=GO.find(x=>c.indexOf(x)===0)||'أخرى';(grp[g]=grp[g]||[]).push(c)});
+  const grp={};classes.forEach(c=>{const g=GO.find(x=>c.indexOf(x)===0);if(g)(grp[g]=grp[g]||[]).push(c)});
   $('#chips').innerHTML=classes.length?'<div class="cgrid">'+Object.keys(grp).map(g=>'<div class="crow"><span class="cg">'+esc(g)+'</span><div class="cbx">'+grp[g].map(c=>'<button class="cb" data-act="cls" data-c="'+esc(c)+'" aria-pressed="'+(S.cls===c)+'">'+esc(c.replace(g,'').trim()||c)+'</button>').join('')+'</div></div>').join('')+(S.cls?'<button class="btn ghost sm" data-act="cls" data-c="">إلغاء اختيار الفصل</button>':'')+'</div>':'';
   $$('#seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===S.sort));
   const nq=norm(S.q);
