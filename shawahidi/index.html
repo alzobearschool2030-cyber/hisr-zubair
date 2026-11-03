@@ -272,7 +272,7 @@ label input,label select,label textarea{margin-top:4px;font-weight:400}
 <script>
 (function () {
 'use strict';
-const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', PRINCIPAL: 'عبدالله خضير المخلفي', YEAR: 1448, ACCESS_PASSWORD_HASH: '', SCHOOL_EMAIL_DOMAINS: [] }, window.SHAWAHIDI_CONFIG || {});
+const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', PRINCIPAL: 'عبدالله خضير المخلفي', YEAR: 1448, ACCESS_PASSWORD_HASH: '', ACCESS_EMAIL: '', SCHOOL_EMAIL_DOMAINS: [] }, window.SHAWAHIDI_CONFIG || {});
 const PLAN = window.PLAN;
 const SETUP_SQL = `create table if not exists public.sh_programs (id text primary key, data jsonb not null, updated_at timestamptz not null default now());
 create table if not exists public.sh_state (program_id text primary key, data jsonb not null, updated_at timestamptz not null default now());
@@ -893,7 +893,7 @@ function gateHTML(err) {
     <p class="sub">${esc(CFG.SCHOOL)}<br>ادخل ببريد المدرسة والرقم السري</p>
     ${err ? `<div class="banner err" role="alert">${esc(err)}</div>` : ''}
     <label>البريد الإلكتروني
-      <input id="g-mail" type="email" dir="ltr" inputmode="email" autocomplete="username" placeholder="name@school.edu.sa" required>
+      <input id="g-mail" type="email" dir="ltr" inputmode="email" autocomplete="username" placeholder="name@school.edu.sa" value="${esc(CFG.ACCESS_EMAIL || '')}" ${CFG.ACCESS_EMAIL ? 'readonly' : ''} required>
     </label>
     <label>الرقم السري
       <input id="g-pw" type="password" dir="ltr" autocomplete="current-password" required>
@@ -909,6 +909,7 @@ document.addEventListener('submit', async e => {
   e.preventDefault();
   const mail = $('#g-mail').value.trim().toLowerCase(), pw = $('#g-pw').value;
   const dom = (mail.split('@')[1] || '');
+  if (CFG.ACCESS_EMAIL && mail !== String(CFG.ACCESS_EMAIL).trim().toLowerCase()) return gateErr('اسم المستخدم غير صحيح');
   if (CFG.SCHOOL_EMAIL_DOMAINS.length && !CFG.SCHOOL_EMAIL_DOMAINS.includes(dom)) return gateErr('هذا البريد غير مسموح به');
   let h = ''; try { h = await sha256Hex(pw); } catch (x) { return gateErr('المتصفح لا يدعم التحقق من الرقم السري، افتح الرابط عبر https'); }
   if (h !== CFG.ACCESS_PASSWORD_HASH) return gateErr('الرقم السري غير صحيح');
