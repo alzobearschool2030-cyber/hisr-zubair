@@ -569,10 +569,7 @@ function viewHome() {
   const gap = now.filter(p => !evOf(p.id).length).sort((a, b) => hkey(parseH(a.to)) - hkey(parseH(b.to))).slice(0, 8);
   const rec = S.evidence.slice(0, 6);
   const sem = n => { const l = all.filter(p => p.sem === n); return l.length ? l.reduce((a, p) => a + ach(p), 0) / l.length : 0; };
-  return `<section class="dgrid">${PLAN.domains.map(domCard).join('')}</section>
-
-  <div class="two"><section class="card"><h3>برامج جارية الآن وبلا شواهد</h3>${gap.length ? gap.map(p => liProg(p, 'ev')).join('') : '<p class="empty">لا توجد برامج جارية بلا شواهد.</p>'}</section>
-  <section class="card"><h3>آخر الشواهد المضافة</h3>${rec.length ? rec.map(e => { const p = S.programs.find(x => x.id === e.program_id); return p ? `<div class="li" data-open="${p.id}" data-tab="ev" style="--dc:${domOf(p).color}"><span class="dot"></span><div><b>${esc(e.title)}</b><small>${esc(p.name)} · ${esc(e.added_by || '')}</small></div></div>` : ''; }).join('') : '<p class="empty">لم تُضف شواهد بعد.</p>'}</section></div>`;
+  return `<section class="dgrid">${PLAN.domains.map(domCard).join('')}</section>`;
 }
 
 function viewDash() {
@@ -584,7 +581,8 @@ function viewDash() {
   const rec = S.evidence.slice(0, 6);
   const sem = n => { const l = all.filter(p => p.sem === n); return l.length ? l.reduce((a, p) => a + ach(p), 0) / l.length : 0; };
   return `<section class="hero card" style="--dc:#0d6b5f">${ring(avg, 104)}<div class="t"><h2>نسبة الإنجاز العامة للخطة</h2><p>الفصل الأول ${p0(sem(1))} · الفصل الثاني ${p0(sem(2))}</p>
-  <div class="kpis"><div class="kpi"><b>${ar(all.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(S.evidence.length)}</b><small>شاهد وتقرير</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div><div class="kpi"><b>${ar(now.length)}</b><small>جارٍ الآن</small></div></div></div></section>`;
+  <div class="kpis"><div class="kpi"><b>${ar(all.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(S.evidence.length)}</b><small>شاهد وتقرير</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div><div class="kpi"><b>${ar(now.length)}</b><small>جارٍ الآن</small></div></div></div></section>  <div class="two"><section class="card"><h3>برامج جارية الآن وبلا شواهد</h3>${gap.length ? gap.map(p => liProg(p, 'ev')).join('') : '<p class="empty">لا توجد برامج جارية بلا شواهد.</p>'}</section>
+  <section class="card"><h3>آخر الشواهد المضافة</h3>${rec.length ? rec.map(e => { const p = S.programs.find(x => x.id === e.program_id); return p ? `<div class="li" data-open="${p.id}" data-tab="ev" style="--dc:${domOf(p).color}"><span class="dot"></span><div><b>${esc(e.title)}</b><small>${esc(p.name)} · ${esc(e.added_by || '')}</small></div></div>` : ''; }).join('') : '<p class="empty">لم تُضف شواهد بعد.</p>'}</section></div>`;
 }
 
 /* ============ صفحة المجال ============ */
