@@ -214,9 +214,24 @@ label input,label select,label textarea{margin-top:4px;font-weight:400}
   .cd{min-height:84px;padding:6px}
 }
 @media(min-width:1000px){.dgrid{grid-template-columns:repeat(4,1fr)}}
+.rp{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;max-width:900px;margin:0 auto;font-size:14.5px}
+.rp-head img{width:100%;height:auto;display:block;border-radius:8px;margin-bottom:12px}
+.rp-school{text-align:center;font-weight:800;font-size:16px;margin:4px 0 2px}
+.rp-title{text-align:center;font-size:20px;font-weight:800;color:var(--dc,#0d6b5f);margin:4px 0 14px}
+.rp table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.rp th,.rp td{border:1px solid #c9d8d4;padding:7px 9px;vertical-align:top;text-align:right}
+.rp th{background:#eef5f3;font-weight:700;width:24%}
+.rp h4{margin:16px 0 6px;color:var(--dc,#0d6b5f)}
+.rp textarea{min-height:70px}
+.rp-sign{display:flex;justify-content:space-between;gap:20px;margin-top:24px;text-align:center;font-size:14px}
+.rp-sign div{flex:1}
+@media print{.rp{border:0;padding:0;max-width:none}.rp textarea{border:1px solid #bbb;resize:none}}
 @media print{
   body{background:#fff}
-  #app,#modalRoot,#dlgRoot,#toast,#busy{display:none!important}
+  #modalRoot,#dlgRoot,#toast,#busy,.no-print{display:none!important}
+  #app{display:none!important}
+  body.is-report #app{display:block!important}
+  body.is-report #printSheet{display:none!important}
   #printSheet{display:block!important;font-size:11px;color:#000}
   #printSheet h2{margin:0 0 4px;font-size:16px}
   #printSheet p{margin:0 0 10px;color:#444}
@@ -243,7 +258,7 @@ label input,label select,label textarea{margin-top:4px;font-weight:400}
 <script>
 (function () {
 'use strict';
-const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', YEAR: 1448 }, window.SHAWAHIDI_CONFIG || {});
+const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', PRINCIPAL: 'عبدالله خضير المخلفي', YEAR: 1448 }, window.SHAWAHIDI_CONFIG || {});
 const PLAN = window.PLAN;
 const SETUP_SQL = `create table if not exists public.sh_programs (id text primary key, data jsonb not null, updated_at timestamptz not null default now());
 create table if not exists public.sh_state (program_id text primary key, data jsonb not null, updated_at timestamptz not null default now());
@@ -510,6 +525,8 @@ function banner() {
 function render() {
   const app = $('#app');
   if (S.loading) { app.innerHTML = headerHTML() + '<div class="wrap"><p class="empty"><span class="spin"></span> جاري تحميل شواهدي…</p></div>'; return; }
+  document.body.classList.toggle('is-report', S.route === 'r');
+  if (S.route === 'r') { app.innerHTML = '<main class="wrap">' + viewReport() + '</main>'; renderModal(); renderDlg(); return; }
   let body = '';
   if (S.route === 'home') body = viewHome();
   else if (/^d[1-4]$/.test(S.route)) body = viewDomain(+S.route.slice(1));
@@ -552,7 +569,7 @@ function pcard(p) {
   <div class="meta">${esc(p.lead)}</div>
   <div class="bar"><i style="width:${a}%"></i></div>
   <div class="nums"><span>الحالية ${p1(cur)}</span><span>المستهدف ${p1(p.tgt)}</span><b>الإنجاز ${p0(a)}</b></div>
-  <div class="tags"><span class="tg ${n ? 'ok' : ''}">${ico('clip', 13)} ${ar(n)} شاهد</span><span class="tg ${pre ? 'ok' : ''}">قياس قبلي ${pre ? '✓' : '—'}</span><span class="tg ${post ? 'ok' : ''}">قياس بعدي ${post ? '✓' : '—'}</span></div></article>`;
+  <div class="tags"><span class="tg ${n ? 'ok' : ''}">${ico('clip', 13)} ${ar(n)} شاهد</span><span class="tg ${pre ? 'ok' : ''}">قياس قبلي ${pre ? '✓' : '—'}</span><span class="tg ${post ? 'ok' : ''}">قياس بعدي ${post ? '✓' : '—'}</span></div><div class="acts" style="margin:10px 0 0"><button class="btn sm" data-act="report" data-id="${esc(p.id)}">${ico('file', 15)} تقرير البرنامج</button></div></article>`;
 }
 function passes(p) {
   const f = S.f;
@@ -660,6 +677,7 @@ function paneInfo(p) {
   <p class="hint">${p.low ? 'في هذا البرنامج كلما انخفضت النسبة كان ذلك أفضل، فتُحسب نسبة الإنجاز بمقدار الانخفاض عن خط الأساس (' + p1(p.base) + ') نحو المستهدف.' : 'نسبة الإنجاز = النسبة الحالية ÷ المستهدف.'}</p>
   <label>ملاحظات المتابعة<textarea id="i-note">${esc(s.note || '')}</textarea></label>
   <button class="btn pri" data-act="save-info" data-id="${esc(p.id)}">حفظ الإنجاز</button>${s.at ? `<p class="hint">آخر تحديث بواسطة ${esc(s.by || '—')} · ${fmtHW(hstr(uq(Date.parse(s.at) - Date.parse(s.at) % 864e5) || TODAY))}</p>` : ''}</div>
+  <div class="acts"><button class="btn pri" data-act="report" data-id="${esc(p.id)}">${ico('file', 16)} فتح تقرير البرنامج</button></div>
   <div class="acts"><button class="btn" data-act="edit-prog" data-id="${esc(p.id)}">${S.admin ? ico('pen', 16) : ico('lock', 16)} تعديل بيانات البرنامج</button><button class="btn danger" data-act="del-prog" data-id="${esc(p.id)}">${ico('trash', 16)} حذف البرنامج</button></div>`;
 }
 function msrBox(kind, title, m) {
@@ -739,6 +757,52 @@ function editForm(id, dom) {
   <div class="row2"><label>النسبة الحالية في الخطة ٪<input id="pf-base" type="number" step="0.01" value="${v.base}"></label><label>المستهدف ٪<input id="pf-tgt" type="number" step="0.01" value="${v.tgt}"></label></div>
   <label style="display:flex;gap:8px;align-items:center"><input id="pf-low" type="checkbox" style="width:auto"${v.low ? ' checked' : ''}> كلما انخفضت النسبة كان أفضل</label>
   <div class="row"><button class="btn pri" data-act="save-prog" data-id="${p ? esc(p.id) : ''}">حفظ</button><button class="btn" data-act="close-dlg">إلغاء</button></div>`;
+}
+
+/* ============ تقرير البرنامج ============ */
+function viewReport() {
+  const p = S.programs.find(x => x.id === S.rid);
+  if (!p) return '<div class="card empty">البرنامج غير موجود. <a href="#/">العودة للرئيسية</a></div>';
+  const s = st(p.id), r = s.report || {}, d = domOf(p), a = ach(p), evs = evOf(p.id), pre = s.pre, post = s.post;
+  const fmtV = m => (m && m.v != null && m.v !== '') ? p1(m.v) : '—';
+  let gain = '';
+  if (pre && post && pre.v != null && post.v != null && pre.v !== '' && post.v !== '') {
+    const g = p.low ? (+pre.v - +post.v) : (+post.v - +pre.v);
+    gain = g > 0 ? 'تحسّن بمقدار ' + ar(+g.toFixed(2)) + ' نقطة' : g < 0 ? 'تراجع بمقدار ' + ar(+Math.abs(g).toFixed(2)) + ' نقطة' : 'لا فرق';
+  }
+  const evRows = evs.length ? evs.map((e, i) => `<tr><td>${ar(i + 1)}</td><td>${esc(e.title)}</td><td>${esc(e.kind || '')}</td><td>${e.event_date ? fmtHW(e.event_date) : ''}</td></tr>`).join('') : '<tr><td colspan="4">لا توجد شواهد مرفقة</td></tr>';
+  const g = greg(hstr(TODAY)), rg = rangeG(p);
+  return `<article class="rp" style="--dc:${d.color}">
+  <div class="rp-head"><img src="assets/ministry-header.png" alt="وزارة التعليم - الإدارة العامة للتعليم بمنطقة المدينة المنورة"></div>
+  <div class="rp-school">${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ</div>
+  <div class="rp-title">تقرير تنفيذ برنامج</div>
+  <table>
+   <tr><th>اسم البرنامج</th><td colspan="3">${esc(p.name)}</td></tr>
+   <tr><th>المجال</th><td>${esc(d.title)}</td><th>المعيار</th><td>${esc(p.std)} <bdi dir="ltr">${esc(p.code || '')}</bdi></td></tr>
+   <tr><th>تاريخ التنفيذ حسب الخطة</th><td colspan="3">${rangeH(p)}${rg ? '<br><small>' + rg + '</small>' : ''}</td></tr>
+   <tr><th>الجهة الرئيسة</th><td>${esc(p.lead)}</td><th>الجهة المساندة</th><td>${esc(p.sup)}</td></tr>
+   <tr><th>المستهدفون</th><td colspan="3">${tx(p.who)}</td></tr>
+   <tr><th>مؤشر الإنجاز</th><td colspan="3">${tx(p.ind)}</td></tr>
+   <tr><th>نسبة الإنجاز</th><td>${p1(curOf(p))} من المستهدف ${p1(p.tgt)}</td><th>نسبة الإنجاز من المستهدف</th><td>${p0(a)}</td></tr>
+   <tr><th>القياس القبلي</th><td>${fmtV(pre)}</td><th>القياس البعدي</th><td>${fmtV(post)}${gain ? ' <small>(' + gain + ')</small>' : ''}</td></tr>
+  </table>
+  <h4>الشواهد المرفقة</h4>
+  <table><thead><tr><th style="width:8%">م</th><th>العنوان</th><th style="width:20%">النوع</th><th style="width:26%">التاريخ</th></tr></thead><tbody>${evRows}</tbody></table>
+  <h4>تفاصيل التقرير</h4>
+  <table>
+   <tr><th>الأهداف المتحققة</th><td><textarea id="rp-goals">${esc(r.goals || '')}</textarea></td></tr>
+   <tr><th>ما تم تنفيذه</th><td><textarea id="rp-done">${esc(r.done || '')}</textarea></td></tr>
+   <tr><th>الصعوبات</th><td><textarea id="rp-obst">${esc(r.obst || '')}</textarea></td></tr>
+   <tr><th>التوصيات</th><td><textarea id="rp-rec">${esc(r.rec || '')}</textarea></td></tr>
+  </table>
+  <div class="rp-sign"><div>إعداد: ${esc(S.user || '......................')}<br><small>${fmtHW(hstr(TODAY))} · ${g}</small></div><div>مدير المدرسة<br>${esc(CFG.PRINCIPAL)}<br>......................</div></div>
+  <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة / PDF</button></div>
+  </article>`;
+}
+function saveReport(id) {
+  needName(() => saveState(id, { report: {
+    goals: $('#rp-goals').value.trim(), done: $('#rp-done').value.trim(), obst: $('#rp-obst').value.trim(), rec: $('#rp-rec').value.trim()
+  } }, 'تم حفظ التقرير'));
 }
 
 /* ============ الإجراءات ============ */
@@ -898,6 +962,9 @@ document.addEventListener('click', async e => {
     case 'save-prog': saveProg(id); break;
     case 'del-prog': needAdmin(() => delProg(id)); break;
     case 'restore': needAdmin(restorePlan); break;
+    case 'report': location.hash = '#/r/' + encodeURIComponent(id); break;
+    case 'save-report': saveReport(id); break;
+    case 'print-report': window.print(); break;
     case 'print': printDomain(+el.dataset.d); break;
     case 'csv-d': csvPrograms(S.programs.filter(p => p.domain === +el.dataset.d), 'شواهدي-' + PLAN.domains[+el.dataset.d - 1].title + '.csv'); break;
     case 'csv-all': csvPrograms(S.programs, 'شواهدي-كل-البرامج.csv'); break;
@@ -932,7 +999,10 @@ window.addEventListener('focus', () => { if (REMOTE && !S.open && !S.dlg && Date
 
 function routeNow() {
   const h = location.hash.replace(/^#\/?/, '');
-  S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal') ? h : 'home'; S.f.std = '';
+  const rm = h.match(/^r\/(.+)$/);
+  if (rm) { S.route = 'r'; S.rid = decodeURIComponent(rm[1]); }
+  else S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal') ? h : 'home';
+  S.f.std = '';
   if (S.route === 'cal' && !S.cal.sel) S.cal = { y: TODAY.y, m: TODAY.m, sel: S.cal.sel };
   render(); window.scrollTo(0, 0);
 }
