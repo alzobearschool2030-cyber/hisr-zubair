@@ -59,3 +59,9 @@ create policy shawahidi_insert on storage.objects for insert to anon, authentica
 
 drop policy if exists shawahidi_delete on storage.objects;
 create policy shawahidi_delete on storage.objects for delete to anon, authenticated using (bucket_id = 'shawahidi');
+
+-- التحديث التلقائي: إرسال التغييرات لجميع المستخدمين فور حفظها
+do $$ begin
+  alter publication supabase_realtime add table public.sh_programs, public.sh_state, public.sh_evidence;
+exception when duplicate_object then null;
+end $$;
