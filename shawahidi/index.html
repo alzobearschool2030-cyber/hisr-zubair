@@ -573,6 +573,15 @@ function viewHome() {
   return `<section class="dgrid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">${PLAN.domains.map(d => `<a class="card" href="#/d${d.n}" style="--dc:${d.color};border-top:4px solid var(--dc);display:block;padding:22px;font-weight:800;font-size:17px;color:var(--dc)">${d.title}</a>`).join('')}</section>`;
 }
 
+function domCols() {
+  return PLAN.domains.map(d => { const a = domainStats(d.n).avg; return `<div style="flex:1;min-width:0;text-align:center;--dc:${d.color}">
+    <div style="height:170px;display:flex;align-items:flex-end;justify-content:center;gap:8px">
+      <div title="الإنجاز" style="width:34%;height:${Math.max(3, a * 1.6)}px;background:var(--dc);border-radius:8px 8px 0 0"></div>
+      <div title="المستهدف" style="width:34%;height:${Math.max(3, d.tgt * 1.6)}px;background:#cfd8d6;border-radius:8px 8px 0 0"></div>
+    </div>
+    <b style="display:block;font-size:13px;margin-top:8px">${d.title}</b>
+    <small>${p0(a)} من ${p0(d.tgt)}</small></div>`; }).join('');
+}
 function viewDash() {
 
   const all = S.programs; const avg = all.length ? all.reduce((a, p) => a + ach(p), 0) / all.length : 0;
@@ -581,7 +590,8 @@ function viewDash() {
   const gap = now.filter(p => !evOf(p.id).length).sort((a, b) => hkey(parseH(a.to)) - hkey(parseH(b.to))).slice(0, 8);
   const rec = S.evidence.slice(0, 6);
   const sem = n => { const l = all.filter(p => p.sem === n); return l.length ? l.reduce((a, p) => a + ach(p), 0) / l.length : 0; };
-  return `<h2 style="margin:4px 0 12px">بطاقة المجالات الأربعة</h2><section class="dgrid">${PLAN.domains.map(domCard).join('')}</section>
+  return `<h2 style="margin:4px 0 12px">بطاقة المجالات الأربعة</h2><section class="card" style="margin-bottom:12px"><h3>مقارنة المجالات: الإنجاز مقابل المستهدف</h3><div style="display:flex;gap:10px;align-items:flex-end">${domCols()}</div><p class="hint">العمود الملون هو الإنجاز الحالي، والرمادي هو المستهدف.</p></section>
+  <section class="dgrid">${PLAN.domains.map(domCard).join('')}</section>
   <section class="hero card" style="--dc:#0d6b5f">${ring(avg, 104)}<div class="t"><h2>نسبة الإنجاز العامة للخطة</h2><p>الفصل الأول ${p0(sem(1))} · الفصل الثاني ${p0(sem(2))}</p>
   <div class="kpis"><div class="kpi"><b>${ar(all.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(S.evidence.length)}</b><small>شاهد وتقرير</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div><div class="kpi"><b>${ar(now.length)}</b><small>جارٍ الآن</small></div></div></div></section>  <div class="two"><section class="card"><h3>برامج جارية الآن وبلا شواهد</h3>${gap.length ? gap.map(p => liProg(p, 'ev')).join('') : '<p class="empty">لا توجد برامج جارية بلا شواهد.</p>'}</section>
   <section class="card"><h3>آخر الشواهد المضافة</h3>${rec.length ? rec.map(e => { const p = S.programs.find(x => x.id === e.program_id); return p ? `<div class="li" data-open="${p.id}" data-tab="ev" style="--dc:${domOf(p).color}"><span class="dot"></span><div><b>${esc(e.title)}</b><small>${esc(p.name)} · ${esc(e.added_by || '')}</small></div></div>` : ''; }).join('') : '<p class="empty">لم تُضف شواهد بعد.</p>'}</section></div>`;
