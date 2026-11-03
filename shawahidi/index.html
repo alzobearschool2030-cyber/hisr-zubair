@@ -214,6 +214,7 @@ label input,label select,label textarea{margin-top:4px;font-weight:400}
   .cd{min-height:84px;padding:6px}
 }
 @media(min-width:1000px){.dgrid{grid-template-columns:repeat(4,1fr)}}
+.wdn{display:block;font-size:10.5px;color:var(--g2);font-style:normal;font-weight:700;line-height:1.2}
 .rp{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;max-width:900px;margin:0 auto;font-size:14.5px}
 .rp-head img{width:100%;height:auto;display:block;border-radius:8px;margin-bottom:12px}
 .rp-school{text-align:center;font-weight:800;font-size:16px;margin:4px 0 2px}
@@ -258,7 +259,7 @@ label input,label select,label textarea{margin-top:4px;font-weight:400}
 <script>
 (function () {
 'use strict';
-const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', PRINCIPAL: 'عبدالله خضير المخلفي', YEAR: 1448 }, window.SHAWAHIDI_CONFIG || {});
+const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', PRINCIPAL: 'عبدالله خضير المخلفي', YEAR: 1448, ACCESS_PASSWORD_HASH: '', SCHOOL_EMAIL_DOMAINS: [] }, window.SHAWAHIDI_CONFIG || {});
 const PLAN = window.PLAN;
 const SETUP_SQL = `create table if not exists public.sh_programs (id text primary key, data jsonb not null, updated_at timestamptz not null default now());
 create table if not exists public.sh_state (program_id text primary key, data jsonb not null, updated_at timestamptz not null default now());
@@ -525,6 +526,7 @@ function banner() {
 }
 function render() {
   const app = $('#app');
+  if (gateOn() && !authed()) { app.innerHTML = gateHTML(S.gateErr); S.gateErr = ''; return; }
   if (S.loading) { app.innerHTML = headerHTML() + '<div class="wrap"><p class="empty"><span class="spin"></span> جاري تحميل شواهدي…</p></div>'; return; }
   document.body.classList.toggle('is-report', S.route === 'r');
   if (S.route === 'r') { app.innerHTML = '<main class="wrap">' + viewReport() + '</main>'; renderModal(); renderDlg(); return; }
@@ -626,7 +628,7 @@ function viewCal() {
     const act = S.programs.filter(p => hkey(parseH(p.from)) <= k && hkey(parseH(p.to)) >= k);
     const starts = act.filter(p => hkey(parseH(p.from)) === k), ends = act.filter(p => hkey(parseH(p.to)) === k);
     const g = H2G[y + '/' + m + '/' + d]; const gd = g != null ? new Date(g) : null;
-    cells += `<div class="cd ${wd >= 5 ? 'we' : ''} ${act.length ? 'act' : ''} ${k === TK ? 'today' : ''} ${S.cal.sel === d ? 'sel' : ''}" data-day="${d}"><b>${ar(d)}</b><small>${gd ? ar(gd.getUTCDate()) + ' ' + GM[gd.getUTCMonth()] : ''}</small>${act.length ? `<span class="cnt">${ar(act.length)}</span>` : ''}<div class="dots">${starts.slice(0, 5).map(p => `<i style="--dc:${domOf(p).color}"></i>`).join('')}${starts.length > 5 ? '<em>+' + ar(starts.length - 5) + '</em>' : ''}${ends.length ? `<em>تنتهي ${ar(ends.length)}</em>` : ''}</div></div>`;
+    cells += `<div class="cd ${wd >= 5 ? 'we' : ''} ${act.length ? 'act' : ''} ${k === TK ? 'today' : ''} ${S.cal.sel === d ? 'sel' : ''}" data-day="${d}"><b>${ar(d)}</b><em class="wdn">${WD[wd]}</em><small>${gd ? ar(gd.getUTCDate()) + ' ' + GM[gd.getUTCMonth()] : ''}</small>${act.length ? `<span class="cnt">${ar(act.length)}</span>` : ''}<div class="dots">${starts.slice(0, 5).map(p => `<i style="--dc:${domOf(p).color}"></i>`).join('')}${starts.length > 5 ? '<em>+' + ar(starts.length - 5) + '</em>' : ''}${ends.length ? `<em>تنتهي ${ar(ends.length)}</em>` : ''}</div></div>`;
   }
   let list = '';
   if (S.cal.sel) {
@@ -737,7 +739,7 @@ function renderDlg() {
     <label>اسمك<input id="nm" value="${esc(S.user)}"></label><button class="btn sm" data-act="save-name">حفظ الاسم</button>
     <div class="box" style="margin-top:14px"><h4>المشرف</h4><p class="hint">${S.admin ? 'أنت مسجّل كمشرف في هذه الجلسة.' : 'سجّل الدخول لتعديل البرامج وحذف أي شاهد.'}</p>${S.admin ? '<button class="btn" data-act="admin-out">خروج المشرف</button>' : '<button class="btn" data-act="admin-in">' + ico('lock', 16) + ' دخول المشرف</button>'}</div>
     <div class="box"><h4>البيانات</h4><p class="hint">${REMOTE ? 'متصل بقاعدة البيانات المشتركة.' : 'وضع التجربة: البيانات على هذا الجهاز فقط.'}</p><div class="acts"><button class="btn sm" data-act="csv-all">تصدير كل البرامج (Excel)</button><button class="btn sm" data-act="csv-ev">تصدير فهرس الشواهد</button><button class="btn sm" data-act="restore">استعادة برامج الخطة المحذوفة</button></div></div>
-    <div class="row"><button class="btn" data-act="close-dlg">إغلاق</button></div>`;
+    <div class="box"><h4>الحساب</h4><button class="btn sm" data-act="logout">تسجيل الخروج</button></div><div class="row"><button class="btn" data-act="close-dlg">إغلاق</button></div>`;
   else if (d.t === 'edit') inner = editForm(d.id, d.domain);
   root.innerHTML = `<div class="ov top" id="dlgOv"><div class="dlg" ${d.t === 'img' ? 'style="background:none;padding:0;max-width:none"' : ''}>${inner}</div></div>`;
   lockScroll();
@@ -835,7 +837,7 @@ function viewReport() {
    <tr><th>التوصيات</th><td><textarea id="rp-rec">${esc(r.rec || '')}</textarea></td></tr>
   </table>
   <div class="rp-sign"><div>إعداد: ${esc(S.user || '......................')}<br><small>${fmtHW(hstr(TODAY))} · ${g}</small></div><div>مدير المدرسة<br>${esc(CFG.PRINCIPAL)}<br>......................</div></div>
-  <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة / PDF</button></div>
+  <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة / حفظ PDF</button><button class="btn" data-act="rp-word" data-id="${esc(p.id)}">تحميل Word</button><button class="btn" data-act="rp-excel" data-id="${esc(p.id)}">تحميل Excel</button></div>
   </article>`;
 }
 function saveReport(id) {
@@ -865,6 +867,69 @@ async function uploadReportFiles(id) {
     const box = $('#rp-att'); if (box) box.innerHTML = rpAttachHTML(id);
     if (ok) toast('تم رفع ' + ar(ok) + ' شاهد للتقرير');
   });
+}
+
+/* ============ الدخول الموحد ============ */
+const AUTH_KEY = 'sh_auth';
+const authed = () => { try { return !!localStorage.getItem(AUTH_KEY); } catch (e) { return true; } };
+const gateOn = () => !!CFG.ACCESS_PASSWORD_HASH;
+async function sha256Hex(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+function gateHTML(err) {
+  return `<header class="hd"><div class="hd-in"><div class="brand"><div class="logo">${LOGO}</div><div><h1>شواهدي</h1><p>${esc(CFG.SCHOOL)}</p></div></div></header>
+  <main class="wrap" style="max-width:460px"><form class="card" id="gateForm" style="margin-top:20px">
+  <h3>تسجيل الدخول</h3><p class="hint">ادخل ببريد المدرسة والرقم السري الموحد.</p>
+  ${err ? `<div class="banner err">${esc(err)}</div>` : ''}
+  <label>البريد الإلكتروني<input id="g-mail" type="email" dir="ltr" required autocomplete="username"></label>
+  <label>الرقم السري<input id="g-pw" type="password" required autocomplete="current-password"></label>
+  <div class="acts"><button class="btn pri" type="submit">دخول</button></div></form></main>`;
+}
+function gateErr(m) { S.gateErr = m; render(); }
+document.addEventListener('submit', async e => {
+  if (e.target.id !== 'gateForm') return;
+  e.preventDefault();
+  const mail = $('#g-mail').value.trim().toLowerCase(), pw = $('#g-pw').value;
+  const dom = (mail.split('@')[1] || '');
+  if (CFG.SCHOOL_EMAIL_DOMAINS.length && !CFG.SCHOOL_EMAIL_DOMAINS.includes(dom)) return gateErr('هذا البريد غير مسموح به');
+  let h = ''; try { h = await sha256Hex(pw); } catch (x) { return gateErr('المتصفح لا يدعم التحقق من الرقم السري، افتح الرابط عبر https'); }
+  if (h !== CFG.ACCESS_PASSWORD_HASH) return gateErr('الرقم السري غير صحيح');
+  try { localStorage.setItem(AUTH_KEY, mail); } catch (x) {}
+  if (!S.user) { S.user = mail; localStorage.setItem('sh_user', mail); }
+  S.gateErr = ''; S.loading = true; render();
+  loadAll().then(() => { routeNow(); startLive(); });
+});
+let liveOn = false;
+function startLive() {
+  if (!REMOTE || liveOn) return; liveOn = true;
+  let t = null;
+  const busyNow = () => S.open || S.dlg || (document.activeElement && /^(TEXTAREA|INPUT|SELECT)$/.test(document.activeElement.tagName));
+  const refresh = () => {
+    clearTimeout(t);
+    t = setTimeout(async () => {
+      if (busyNow()) { t = setTimeout(refresh, 4000); return; }
+      await loadAll(); render();
+    }, 700);
+  };
+  try {
+    sb.channel('shawahidi-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sh_programs' }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sh_state' }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sh_evidence' }, refresh)
+      .subscribe();
+  } catch (e) { }
+}
+
+/* ============ تصدير التقرير ============ */
+function dlBlob(name, blob) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+function exportReportWord(id) {
+  const el = document.querySelector('.rp'); if (!el) return;
+  const p = S.programs.find(x => x.id === id);
+  const c = el.cloneNode(true);
+  const liveTa = [...el.querySelectorAll('textarea')], cloneTa = [...c.querySelectorAll('textarea')];
+  cloneTa.forEach((t, i) => { const d = document.createElement('div'); d.textContent = liveTa[i] ? liveTa[i].value : ''; d.style.cssText = 'white-space:pre-wrap;border:1px solid #888;padding:6px;min-height:30px'; t.replaceWith(d); });
+  c.querySelectorAll('.no-print, input, label').forEach(x => x.remove());
+  c.querySelectorAll('img').forEach(i => i.setAttribute('src', new URL(i.getAttribute('src'), location.href).href));
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;direction:rtl} table{width:100%;border-collapse:collapse;margin-bottom:10px} th,td{border:1px solid #888;padding:5px;text-align:right;vertical-align:top} th{background:#eef5f3} h4{color:#0d6b5f}</style></head><body dir="rtl">' + c.outerHTML + '</body></html>';
+  dlBlob('تقرير-' + (p ? p.name.slice(0, 60) : id) + '.doc', new Blob(['﻿' + html], { type: 'application/msword' }));
 }
 
 /* ============ الإجراءات ============ */
@@ -1031,6 +1096,9 @@ document.addEventListener('click', async e => {
     case 'rp-camera': $('#rp-cam').click(); break;
     case 'rp-upload': uploadReportFiles(id); break;
     case 'print-report': window.print(); break;
+    case 'rp-word': exportReportWord(id); break;
+    case 'rp-excel': { const p = S.programs.find(x => x.id === id); if (p) csvPrograms([p], 'تقرير-' + p.name.slice(0, 60) + '.csv'); break; }
+    case 'logout': try { localStorage.removeItem(AUTH_KEY); } catch (x) {} location.reload(); break;
     case 'print': printDomain(+el.dataset.d); break;
     case 'csv-d': csvPrograms(S.programs.filter(p => p.domain === +el.dataset.d), 'شواهدي-' + PLAN.domains[+el.dataset.d - 1].title + '.csv'); break;
     case 'csv-all': csvPrograms(S.programs, 'شواهدي-كل-البرامج.csv'); break;
@@ -1085,7 +1153,7 @@ async function loadAll() {
 }
 window.__SH = { S, buildPlan, validH, H2G };
 render();
-loadAll().then(routeNow);
+if (!(gateOn() && !authed())) loadAll().then(() => { routeNow(); startLive(); });
 })();
 </script>
 </body>
