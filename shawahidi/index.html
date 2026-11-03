@@ -816,6 +816,7 @@ function viewReport() {
    <tr><th>تاريخ التنفيذ حسب الخطة</th><td colspan="3">${rangeH(p)}${rg ? '<br><small>' + rg + '</small>' : ''}</td></tr>
    <tr><th>الجهة الرئيسة</th><td>${esc(p.lead)}</td><th>الجهة المساندة</th><td>${esc(p.sup)}</td></tr>
    <tr><th>المستهدفون</th><td colspan="3">${tx(p.who)}</td></tr>
+   <tr><th>مؤشر الإنجاز كما في الخطة</th><td colspan="3">${tx(p.ind)}</td></tr>
    <tr><th>نسبة الإنجاز</th><td>${p1(curOf(p))} من المستهدف ${p1(p.tgt)}</td><th>نسبة الإنجاز من المستهدف</th><td>${p0(a)}</td></tr>
   </table>
   <h4>توصيف البرنامج ${aiBtn('rp-ai-desc')}</h4>
@@ -942,6 +943,7 @@ function viewReports() {
     <div class="pc-top"><span class="pid">${pid(p)}</span><span class="chip ${has ? 'green' : 'gray'}">${has ? 'تقرير مكتوب' : 'لم يُكتب التقرير'}</span><span class="chip">${ar(evs.length)} شاهد</span></div>
     <h4>${esc(p.name)}</h4>
     <div class="meta">${esc(d.title)} · ${esc(p.std)} · ${rangeH(p)}</div>
+    <h4 style="font-size:14px;margin-top:10px">مؤشر الإنجاز كما في الخطة</h4><p style="margin:4px 0">${tx(p.ind)}</p>
     <h4 style="font-size:14px;margin-top:10px">التوصيف</h4><p style="margin:4px 0;white-space:pre-line">${esc(r.desc != null ? r.desc : autoDesc(p))}</p>
     <h4 style="font-size:14px;margin-top:10px">الأهداف</h4><p style="margin:4px 0;white-space:pre-line">${esc(r.goals != null ? r.goals : autoGoals(p))}</p>
     <h4 style="font-size:14px;margin-top:10px">الشواهد</h4>
