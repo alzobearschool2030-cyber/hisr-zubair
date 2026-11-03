@@ -118,7 +118,7 @@ input[type=search]{background:var(--surface) url("data:image/svg+xml,%3Csvg xmln
 .act .pr{color:var(--muted)}
 .quick{display:flex;gap:8px;flex-wrap:wrap}
 .qb{min-height:40px;padding:0 12px;border:0;border-radius:9px;font-size:13.5px;font-weight:600}
-.qb.u{background:var(--u-soft);color:var(--u)} .qb.e{background:var(--e-soft);color:var(--e)}
+.qb.u{background:var(--u-soft);color:var(--u)} .qb.e{background:var(--e-soft);color:var(--e)} .qb.l{background:var(--l-soft);color:var(--l)}
 .meter{display:inline-block;width:64px;height:6px;border-radius:99px;background:var(--line);overflow:hidden;vertical-align:middle}
 .meter i{display:block;height:100%;background:var(--ok)}
 
@@ -717,14 +717,21 @@ function mountStudents(){
   hintDt();
   const q=$('#q');q.value=S.q;q.addEventListener('input',()=>{S.q=q.value;paintStudents()});
 }
+const GO=['الأول','الثاني','الثالث','الرابع','الخامس','السادس'];
+function allClasses(){
+  const gk=c=>{const i=GO.findIndex(g=>c.indexOf(g)===0);return (i<0?9:i)*100+(parseInt((c.match(/\d+/)||[0])[0],10)||0)};
+  return [...new Set(sIds().map(i=>S.students[i].cls).filter(Boolean))].sort((a,b)=>gk(a)-gk(b)||a.localeCompare(b,'ar'));
+}
+function clsGrid(classes,sel,act){
+  const grp={};classes.forEach(c=>{const g=GO.find(x=>c.indexOf(x)===0);if(g)(grp[g]=grp[g]||[]).push(c)});
+  if(!Object.keys(grp).length)return '';
+  return '<div class="cgrid">'+Object.keys(grp).map(g=>'<div class="crow"><span class="cg">'+esc(g)+'</span><div class="cbx">'+grp[g].map(c=>'<button class="cb" data-act="'+act+'" data-c="'+esc(c)+'" aria-pressed="'+(sel===c)+'">'+esc(c.replace(g,'').trim()||c)+'</button>').join('')+'</div></div>').join('')+(sel?'<button class="btn ghost sm" data-act="'+act+'" data-c="">إلغاء اختيار الفصل</button>':'')+'</div>';
+}
 function paintStudents(){
   const ids=sIds();
-  const classes=[...new Set(ids.map(i=>S.students[i].cls).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
+  const classes=allClasses();
   if(S.cls&&!classes.includes(S.cls))S.cls='';
-  const GO=['الأول','الثاني','الثالث','الرابع','الخامس','السادس'],gk=c=>{const i=GO.findIndex(g=>c.indexOf(g)===0);return (i<0?9:i)*100+(parseInt((c.match(/\d+/)||[0])[0],10)||0)};
-  classes.sort((a,b)=>gk(a)-gk(b)||a.localeCompare(b,'ar'));
-  const grp={};classes.forEach(c=>{const g=GO.find(x=>c.indexOf(x)===0);if(g)(grp[g]=grp[g]||[]).push(c)});
-  $('#chips').innerHTML=classes.length?'<div class="cgrid">'+Object.keys(grp).map(g=>'<div class="crow"><span class="cg">'+esc(g)+'</span><div class="cbx">'+grp[g].map(c=>'<button class="cb" data-act="cls" data-c="'+esc(c)+'" aria-pressed="'+(S.cls===c)+'">'+esc(c.replace(g,'').trim()||c)+'</button>').join('')+'</div></div>').join('')+(S.cls?'<button class="btn ghost sm" data-act="cls" data-c="">إلغاء اختيار الفصل</button>':'')+'</div>':'';
+  $('#chips').innerHTML=clsGrid(classes,S.cls,'cls');
   $$('#seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===S.sort));
   const nq=norm(S.q);
   let list=ids.filter(id=>(!S.cls||S.students[id].cls===S.cls)&&matchQ(id,nq));
@@ -768,7 +775,7 @@ async function addAbs(sid,t,d){
 
 /* --- الطابور --- */
 function mountLate(){
-  $('#page').innerHTML='<div class="ctl"><div class="fld"><span>تاريخ الطابور (التقويم الهجري، أم القرى)</span><div class="hprow">'+hpHtml('ldt',S.ldate)+'<button class="btn ghost sm" data-act="hptoday" data-id="ldt">اليوم</button></div><span class="hint" id="ldh"></span></div><div class="lbox"><label class="fld"><span>تسجيل طالب متأخر</span><input id="lq" type="search" placeholder="اكتب اسم الطالب ثم اختره من القائمة" autocomplete="off" enterkeyhint="done"></label><div id="lres" class="lres"></div><div id="lok"></div><button class="btn ghost sm" data-act="lnewopen" id="lnewb">+ إضافة طالب جديد غير مسجّل وتسجيل تأخره</button><div id="lnew"></div></div></div><h2 class="hdr3" id="lh"></h2><div id="llist" class="reg"></div><div class="btns"><button class="btn" data-act="replate">طباعة تقرير هذا اليوم</button></div>';
+  $('#page').innerHTML='<div class="ctl"><div class="fld"><span>تاريخ الطابور (التقويم الهجري، أم القرى)</span><div class="hprow">'+hpHtml('ldt',S.ldate)+'<button class="btn ghost sm" data-act="hptoday" data-id="ldt">اليوم</button></div><span class="hint" id="ldh"></span></div><div class="lbox"><label class="fld"><span>تسجيل طالب متأخر</span><input id="lq" type="search" placeholder="اكتب اسم الطالب ثم اختره من القائمة" autocomplete="off" enterkeyhint="done"></label><div id="lres" class="lres"></div><div id="lok"></div><button class="btn ghost sm" data-act="lnewopen" id="lnewb">+ إضافة طالب جديد غير مسجّل وتسجيل تأخره</button><div id="lnew"></div></div></div><div class="chips" id="lchips" style="display:block"></div><div id="lclist" class="lres"></div><h2 class="hdr3" id="lh"></h2><div id="llist" class="reg"></div><div class="btns"><button class="btn" data-act="replate">طباعة تقرير هذا اليوم</button></div>';
   const q=$('#lq');q.value=S.lq;
   q.addEventListener('input',()=>{S.lq=q.value;if(S.lq)S.lok=null;paintLate()});
   q.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const b2=$('#lres button[data-act=addlate]:not([disabled])');if(b2)addLate(b2.dataset.id)}});
@@ -793,6 +800,9 @@ function paintLate(){
     else if(!m.length)res='<p class="muted sm">لا يوجد طالب بهذا الاسم.</p>';
   }
   $('#lres').innerHTML=res;
+  const cl=allClasses();if(S.lcls&&!cl.includes(S.lcls))S.lcls='';
+  $('#lchips').innerHTML=clsGrid(cl,S.lcls,'lcls');
+  $('#lclist').innerHTML=S.lcls?'<p class="hint" style="margin:0">طلاب '+esc(S.lcls)+': اضغط على الطالب لتسجيل تأخره.</p>'+sIds().filter(id=>S.students[id].cls===S.lcls).sort(byName).map(id=>{const n=todayIds.has(id);return '<button data-act="addlate" data-id="'+esc(id)+'"><span>'+esc(S.students[id].name)+'</span><span class="pill l">'+(n?'+ تأخر مرة أخرى':'+ تأخر')+'</span></button>'}).join(''):'';
   $('#lok').innerHTML=S.lok?'<div class="okline"><span>✓ سُجّل تأخر <b>'+esc(S.lok.name)+'</b> (المرة '+S.lok.n+')</span><button class="btn sm" data-act="lagain">+ إضافة طالب آخر</button></div>':'';
   $('#lnewb').hidden=!!S.lnew;
   $('#lnew').innerHTML=S.lnew?'<div class="newst edrow"><span class="sm"><b>طالب جديد</b>، يُسجَّل تأخره في '+esc(fmtS(S.ldate))+'</span><input id="lnn" placeholder="اسم الطالب الرباعي" autocomplete="off" value="'+esc(S.lnn||'')+'">'+clsSel('lnc2',S.lnc2||'')+'<div class="btns"><button class="btn l sm" data-act="latenew2">حفظ وتسجيل التأخر</button><button class="btn ghost sm" data-act="lnewclose">إغلاق</button></div></div>':'';
@@ -807,7 +817,7 @@ function paintLate(){
 }
 function lateDone(sid,name,n){
   S.lok={sid,name,n};S.lq='';S.lnc='';
-  const q=$('#lq');if(q){q.value='';q.focus()}
+  const q=$('#lq');if(q){q.value='';if(!S.lcls)q.focus()}
   if(S.page==='late')paintLate();
 }
 async function newLate(name,cls){
@@ -1520,6 +1530,7 @@ const A={
   undo(){const f=S.undo;S.undo=null;$('#toast').hidden=true;if(f)f()},
   hptoday(el){const id=el.dataset.id,v=today();hpSet(id,v);onHp(id,v)},
   cls(el){S.cls=S.cls===el.dataset.c?'':el.dataset.c;paintStudents()},
+  lcls(el){S.lcls=S.lcls===el.dataset.c?'':el.dataset.c;paintLate()},
   sort(el){S.sort=el.dataset.s;paintStudents()},
   cat(el){S.cat=el.dataset.c;paintCensus()},
   copy(){copyText(censusText())},
@@ -1537,7 +1548,7 @@ const A={
   rpk(el){S.rp=el.dataset.k;paintRp()}, repper(){repPeriod()},
   prcat(){S.cat=$('#pcat').value;repCat()}, prstu(el){repStu(el.dataset.id)},
   async latenew(){await newLate(S.lq.trim(),clsVal('lnc')||S.lnc||'')},
-  lnewopen(){S.lnew=true;paintLate();const e=$('#lnn');if(e)e.focus()},
+  lnewopen(){S.lnew=!S.lnew;paintLate();const e=$('#lnn');if(e)e.focus()},
   lnewclose(){S.lnew=false;S.lnn='';paintLate()},
   async latenew2(){
     const nm=($('#lnn')||{}).value||'';
