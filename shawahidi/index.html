@@ -517,8 +517,8 @@ function headerHTML() {
   <div class="hd-r"><span class="today">${fmtHW(hstr(TODAY))} · ${greg(hstr(TODAY))}</span><button class="chipbtn" data-act="name" ${gateOn() ? 'disabled title="الاسم هو بريد المدرسة ولا يتغير"' : ''}>${S.user ? esc(S.user) : 'تعريف الاسم'}</button><button class="icbtn" data-act="settings" aria-label="الإعدادات">${ico('gear', 20)}</button></div></div></header>`;
 }
 function navHTML() {
-  const items = [['home', 'الرئيسية', '#/']].concat(PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n])).concat([['rep', 'التقارير', '#/rep'], ['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
-  return `<nav class="nv"><div class="nv-in">${items.map(([k, t, h]) => `<a href="${h}" class="${S.route === k ? 'on' : ''}">${t}</a>`).join('')}</div></nav>`;
+  const items = PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n]).concat([['home', 'لوحة المؤشرات', '#/'], ['rep', 'التقارير', '#/rep'], ['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
+  return `<div style="display:flex;gap:8px;justify-content:space-between;padding:8px 16px 0;max-width:1200px;margin:0 auto"><button class="btn sm" data-act="nav-back" aria-label="رجوع">&rarr; رجوع</button><button class="btn sm" data-act="nav-fwd" aria-label="التالي">التالي &larr;</button></div><nav class="nv"><div class="nv-in">${items.map(([k, t, h]) => `<a href="${h}" class="${S.route === k ? 'on' : ''}">${t}</a>`).join('')}</div></nav>`;
 }
 function sbRef() { try { return new URL(CFG.SUPABASE_URL).hostname.split('.')[0]; } catch (e) { return ''; } }
 function setupCard() {
@@ -1177,6 +1177,8 @@ document.addEventListener('click', async e => {
     case 'rp-ai-desc': { const el = $('#rp-desc'), p = S.programs.find(x => x.id === S.rid); if (el && p) { el.value = autoDesc(p); toast('تم توليد التوصيف، راجعه ثم احفظ التقرير'); } break; }
     case 'rp-camera': $('#rp-cam').click(); break;
     case 'rp-clear': RPICK = []; rpShowPicked(); break;
+    case 'nav-back': history.back(); break;
+    case 'nav-fwd': history.forward(); break;
     case 'rp-rm': RPICK.splice(+el.dataset.i, 1); rpShowPicked(); break;
     case 'rp-upload': uploadReportFiles(id); break;
     case 'print-report': window.print(); break;
