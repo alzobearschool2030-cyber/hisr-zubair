@@ -853,7 +853,7 @@ function viewReport() {
   <h4>شواهد التقرير (اختيارية)</h4>
   <div id="rp-att">${rpAttachHTML(p.id)}</div>
   <div class="rp-sign"><div>إعداد: ${esc(S.user || '......................')}<br><small>${fmtHW(hstr(TODAY))} · ${g}</small></div><div>مدير المدرسة<br>${esc(CFG.PRINCIPAL)}<br>......................</div></div>
-  <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة / حفظ PDF</button><button class="btn" data-act="rp-word" data-id="${esc(p.id)}">تحميل Word</button><button class="btn" data-act="rp-excel" data-id="${esc(p.id)}">تحميل Excel</button></div>
+  <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة / حفظ PDF</button><button class="btn" data-act="rp-word" data-id="${esc(p.id)}">تحميل Word</button><button class="btn" data-act="rp-excel" data-id="${esc(p.id)}">تحميل Excel</button>${hasRep(p) ? `<button class="btn danger" data-act="del-report" data-id="${esc(p.id)}">حذف التقرير كاملاً</button>` : ''}</div>
   </article>`;
 }
 function saveReport(id) {
@@ -990,7 +990,7 @@ function viewReports() {
     <h4 style="font-size:14px;margin-top:10px">الأهداف</h4><p style="margin:4px 0;white-space:pre-line">${esc(r.goals != null ? r.goals : autoGoals(p))}</p>
     <h4 style="font-size:14px;margin-top:10px">الشواهد</h4>
     ${evs.length ? '<ul style="margin:4px 0;padding-inline-start:18px">' + evs.map(e => `<li>${esc(e.title)} <small>(${esc(e.kind || '')}${e.added_by ? ' · ' + esc(e.added_by) : ''})</small></li>`).join('') + '</ul>' : '<p class="empty" style="padding:4px 0">لا توجد شواهد</p>'}
-    <div class="acts" style="margin:8px 0 0"><a class="btn sm pri" href="#/r/${encodeURIComponent(p.id)}">فتح التقرير</a></div></article>`;
+    <div class="acts" style="margin:8px 0 0"><a class="btn sm pri" href="#/r/${encodeURIComponent(p.id)}">${has ? 'تعديل التقرير' : 'كتابة التقرير'}</a>${has ? `<button class="btn sm danger" data-act="del-report" data-id="${esc(p.id)}">حذف التقرير</button>` : ''}</div></article>`;
   };
   return `<p class="hint" style="margin:0 4px 10px">هذا هو المكان الوحيد لكل تقارير البرامج: منه تفتح التقرير للكتابة ورفع الشواهد والطباعة والتحميل.</p><section class="card" style="margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap"><div class="kpi"><b>${ar(S.programs.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(written)}</b><small>تقرير مكتوب</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div></section>
   <div class="tools card"><select id="rp-f-d">${o('', 'كل المجالات', f.d)}${PLAN.domains.map(d => o(String(d.n), d.title, f.d)).join('')}</select><select id="rp-f-st">${o('', 'كل التقارير', f.st)}${o('saved', 'مكتوبة', f.st)}${o('none', 'لم تُكتب', f.st)}</select></div>
@@ -1075,6 +1075,17 @@ async function delEv(id) {
   try { await API.deleteEvidence(e); S.evidence = S.evidence.filter(x => x.id !== id); toast('تم الحذف'); } catch (x) { toast('تعذّر الحذف: ' + (x.message || x), true); }
   busy(false); render();
 }
+async function delReport(id) {
+  const p = S.programs.find(x => x.id === id); if (!p) return;
+  const mine = S.evidence.filter(e => e.program_id === id && e.kind === 'شاهد تقرير');
+  if (!confirm('حذف تقرير «' + p.name + '» نهائياً؟ سيُحذف نصه' + (mine.length ? ' وشواهده المرفوعة (' + ar(mine.length) + ')' : '') + ' ولا يمكن التراجع.')) return;
+  busy('جاري الحذف…');
+  try {
+    for (const e of mine.filter(canDel)) { await API.deleteEvidence(e); S.evidence = S.evidence.filter(x => x.id !== e.id); }
+    busy(false);
+    await saveState(id, { report: {} }, 'تم حذف التقرير');
+  } catch (x) { busy(false); toast('تعذّر الحذف: ' + (x.message || x), true); }
+}
 async function saveProg(id) {
   const v = k => $('#' + k).value.trim(); const name = v('pf-name'); if (!name) return toast('أدخل اسم البرنامج', true);
   const dom = +$('#pf-dom').value; const std = v('pf-std') || 'بدون معيار';
@@ -1149,6 +1160,7 @@ document.addEventListener('click', async e => {
     case 'ev-submit': submitEv(id); break;
     case 'ev-view': viewEv_(id); break;
     case 'ev-del': delEv(id); break;
+    case 'del-report': delReport(id); break;
     case 'edit-prog': needAdmin(() => { S.dlg = { t: 'edit', id }; renderDlg(); }); break;
     case 'add-prog': { const dm = +el.dataset.d; needAdmin(() => { S.dlg = { t: 'edit', id: null, domain: dm }; renderDlg(); }); break; }
     case 'save-prog': saveProg(id); break;
