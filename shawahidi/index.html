@@ -504,7 +504,7 @@ function headerHTML() {
   <div class="hd-r"><span class="today">${fmtHW(hstr(TODAY))} · ${greg(hstr(TODAY))}</span><button class="chipbtn" data-act="name">${S.user ? esc(S.user) : 'تعريف الاسم'}</button><button class="icbtn" data-act="settings" aria-label="الإعدادات">${ico('gear', 20)}</button></div></div></header>`;
 }
 function navHTML() {
-  const items = [['home', 'الرئيسية', '#/']].concat(PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n])).concat([['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
+  const items = [['home', 'الرئيسية', '#/']].concat(PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n])).concat([['rep', 'التقارير', '#/rep'], ['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
   return `<nav class="nv"><div class="nv-in">${items.map(([k, t, h]) => `<a href="${h}" class="${S.route === k ? 'on' : ''}">${t}</a>`).join('')}</div></nav>`;
 }
 function sbRef() { try { return new URL(CFG.SUPABASE_URL).hostname.split('.')[0]; } catch (e) { return ''; } }
@@ -534,6 +534,7 @@ function render() {
   if (S.route === 'home') body = viewHome();
   else if (/^d[1-4]$/.test(S.route)) body = viewDomain(+S.route.slice(1));
   else if (S.route === 'cal') body = viewCal();
+  else if (S.route === 'rep') body = viewReports();
   else body = viewEv();
   app.innerHTML = headerHTML() + navHTML() + `<main class="wrap">${banner()}${body}<div class="foot">شواهدي · ${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ · تقويم أم القرى</div></main>`;
   renderModal(); renderDlg();
@@ -932,6 +933,33 @@ function exportReportWord(id) {
   dlBlob('تقرير-' + (p ? p.name.slice(0, 60) : id) + '.doc', new Blob(['﻿' + html], { type: 'application/msword' }));
 }
 
+/* ============ صفحة التقارير ============ */
+const hasRep = p => { const r = st(p.id).report; return !!(r && (r.desc || r.goals || r.done || r.obst || r.rec)); };
+function viewReports() {
+  const f = S.repf || (S.repf = { d: '', st: '' });
+  const written = S.programs.filter(hasRep).length;
+  const withEv = S.programs.filter(p => evOf(p.id).length).length;
+  const list = S.programs.filter(p => !f.d || String(p.domain) === f.d)
+    .filter(p => !f.st || (f.st === 'saved' ? hasRep(p) : !hasRep(p)))
+    .sort(sortP);
+  const o = (v, t, c) => `<option value="${v}"${c === v ? ' selected' : ''}>${t}</option>`;
+  const card = p => {
+    const r = st(p.id).report || {}, d = domOf(p), evs = evOf(p.id), has = hasRep(p);
+    return `<article class="card" style="--dc:${d.color};border-top:4px solid var(--dc);margin-bottom:12px">
+    <div class="pc-top"><span class="pid">${pid(p)}</span><span class="chip ${has ? 'green' : 'gray'}">${has ? 'تقرير مكتوب' : 'لم يُكتب التقرير'}</span><span class="chip">${ar(evs.length)} شاهد</span></div>
+    <h4>${esc(p.name)}</h4>
+    <div class="meta">${esc(d.title)} · ${esc(p.std)} · ${rangeH(p)}</div>
+    <h4 style="font-size:14px;margin-top:10px">التوصيف</h4><p style="margin:4px 0;white-space:pre-line">${esc(r.desc != null ? r.desc : autoDesc(p))}</p>
+    <h4 style="font-size:14px;margin-top:10px">الأهداف</h4><p style="margin:4px 0;white-space:pre-line">${esc(r.goals != null ? r.goals : autoGoals(p))}</p>
+    <h4 style="font-size:14px;margin-top:10px">الشواهد</h4>
+    ${evs.length ? '<ul style="margin:4px 0;padding-inline-start:18px">' + evs.map(e => `<li>${esc(e.title)} <small>(${esc(e.kind || '')}${e.added_by ? ' · ' + esc(e.added_by) : ''})</small></li>`).join('') + '</ul>' : '<p class="empty" style="padding:4px 0">لا توجد شواهد</p>'}
+    <div class="acts" style="margin:8px 0 0"><a class="btn sm pri" href="#/r/${encodeURIComponent(p.id)}">فتح التقرير</a></div></article>`;
+  };
+  return `<section class="card" style="margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap"><div class="kpi"><b>${ar(S.programs.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(written)}</b><small>تقرير مكتوب</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div></section>
+  <div class="tools card"><select id="rp-f-d">${o('', 'كل المجالات', f.d)}${PLAN.domains.map(d => o(String(d.n), d.title, f.d)).join('')}</select><select id="rp-f-st">${o('', 'كل التقارير', f.st)}${o('saved', 'مكتوبة', f.st)}${o('none', 'لم تُكتب', f.st)}</select></div>
+  ${list.length ? list.map(card).join('') : '<div class="card empty">لا توجد تقارير مطابقة.</div>'}`;
+}
+
 /* ============ الإجراءات ============ */
 function needName(cb) { if (S.user) return cb(); S.dlg = { t: 'name', then: cb }; renderDlg(); }
 function needAdmin(cb) { if (S.admin) return cb(); S.dlg = { t: 'pin', then: cb }; renderDlg(); }
@@ -1120,6 +1148,8 @@ document.addEventListener('change', e => {
   else if (t.id === 'e-d') { S.evf.d = t.value; paintEv(); }
   else if (t.id === 'e-k') { S.evf.k = t.value; paintEv(); }
   else if (t.id === 'ev-file' || t.id === 'ev-cam') { pickFiles(t.files); t.value = ''; }
+  else if (t.id === 'rp-f-d') { S.repf = Object.assign({ d: '', st: '' }, S.repf, { d: t.value }); render(); }
+  else if (t.id === 'rp-f-st') { S.repf = Object.assign({ d: '', st: '' }, S.repf, { st: t.value }); render(); }
   else if (t.id === 'rp-file' || t.id === 'rp-cam') { RPICK = [...t.files]; t.value = ''; const el = $('#rp-picked'); if (el) el.textContent = RPICK.length ? 'تم اختيار ' + ar(RPICK.length) + ' ملف' : ''; }
   else if (t.closest && t.closest('.hp')) { const hp = t.closest('.hp'); const g = k => hp.querySelector('[data-k="' + k + '"]').value; const s = g('y') + '/' + g('m') + '/' + g('d'); const l = hp.querySelector('.hp-l'); l.textContent = hpLabel(s); l.classList.toggle('bad', !validH(s)); }
   else if (t.id === 'pf-dom') { const k = +t.value; const dlst = $('#pf-stds'); if (dlst) dlst.innerHTML = [...new Set(PLAN.standards.filter(s => s.domain === k).map(s => s.title).concat(S.programs.filter(x => x.domain === k).map(x => x.std)))].map(x => `<option value="${esc(x)}"></option>`).join(''); }
@@ -1136,7 +1166,7 @@ function routeNow() {
   const h = location.hash.replace(/^#\/?/, '');
   const rm = h.match(/^r\/(.+)$/);
   if (rm) { S.route = 'r'; S.rid = decodeURIComponent(rm[1]); }
-  else S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal') ? h : 'home';
+  else S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal' || h === 'rep') ? h : 'home';
   S.f.std = '';
   if (S.route === 'cal' && !S.cal.sel) S.cal = { y: TODAY.y, m: TODAY.m, sel: S.cal.sel };
   render(); window.scrollTo(0, 0);
