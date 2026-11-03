@@ -478,6 +478,7 @@ let RPICK = [];
 const st = id => S.state[id] || {};
 const curOf = p => { const v = st(p.id).cur; return (v == null || v === '') ? p.base : +v; };
 function ach(p) {
+  if (st(p.id).cur == null || st(p.id).cur === '') return 0; /* لا إنجاز قبل إدخال القيمة الحالية */
   const cur = curOf(p), t = +p.tgt;
   if (p.low) { const den = p.base - t; return den <= 0 ? 100 : clamp((p.base - cur) / den * 100); }
   return t > 0 ? clamp(cur / t * 100) : 0;
