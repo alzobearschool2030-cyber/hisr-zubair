@@ -460,6 +460,7 @@ const API = REMOTE ? Remote : Local;
 const DEVICE = localStorage.getItem('sh_dev') || (() => { const v = uid(); localStorage.setItem('sh_dev', v); return v; })();
 const S = { programs: [], state: {}, evidence: [], user: localStorage.getItem('sh_user') || '', admin: sessionStorage.getItem('sh_admin') === '1', route: 'home', f: { sem: '', tl: '', ev: '', q: '', std: '' }, open: null, tab: 'info', dlg: null, err: '', loading: true, cal: { y: TODAY.y, m: TODAY.m, sel: null } };
 let PICKED = [];
+let RPICK = [];
 const st = id => S.state[id] || {};
 const curOf = p => { const v = st(p.id).cur; return (v == null || v === '') ? p.base : +v; };
 function ach(p) {
@@ -760,6 +761,31 @@ function editForm(id, dom) {
 }
 
 /* ============ تقرير البرنامج ============ */
+const cut = (t, n) => { t = String(t || '').trim(); return t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + '…' : t; };
+function autoGoals(p) {
+  return [
+    'تنفيذ ' + p.name + ' وفق الفترة المحددة في الخطة التشغيلية',
+    'تحقيق مؤشر الإنجاز: ' + cut(p.ind, 160),
+    'رفع نسبة الإنجاز من ' + p1(curOf(p)) + ' إلى المستهدف ' + p1(p.tgt),
+    'خدمة ' + cut(p.who, 120) + ' من خلال ' + cut(p.how, 120),
+    'توثيق الأثر بقياس قبلي وبعدي ضمن ' + p.std
+  ].join('\n');
+}
+function autoDesc(p) {
+  return p.name + ' برنامج ضمن مجال ' + domOf(p).title + ' في معيار ' + p.std + '، يستهدف ' + cut(p.who, 120) + '، ويُنفَّذ عبر ' + cut(p.how, 160) + '، وتتولاه الجهة الرئيسة ' + cut(p.lead, 80) + (p.sup ? ' بمساندة ' + cut(p.sup, 80) : '') + '، ويُقاس أثره بمؤشر: ' + cut(p.ind, 160) + '.';
+}
+const autoPre = p => 'يُجرى قبل بدء البرنامج لقياس: ' + cut(p.ind, 200) + '، وخط الأساس في الخطة ' + p1(p.base) + '.';
+const autoPost = p => 'يُجرى بعد تنفيذ البرنامج ويُقارن بالمستهدف ' + p1(p.tgt) + (p.low ? '، وكلما انخفضت النتيجة كان ذلك أفضل' : '') + '.';
+const RP_MAX = 4;
+function rpAttachHTML(id) {
+  const have = evOf(id).filter(e => e.kind === 'شاهد تقرير');
+  const room = Math.max(0, RP_MAX - have.length);
+  return `<div class="box" style="margin:0"><p class="hint">المرفوع: ${ar(have.length)} من ${ar(RP_MAX)}. ${room ? 'يمكنك رفع ' + ar(room) + ' شواهد أخرى من الجوال أو الحاسب.' : 'وصلت إلى الحد الأقصى.'}</p>
+  ${have.map(e => evItem(e, S.programs.find(x => x.id === e.program_id))).join('')}
+  ${room ? `<div class="no-print"><label style="margin:0 0 8px">اختر الملفات من جهازك<input type="file" id="rp-file" multiple accept="${ACCEPT}"></label>
+  <div class="acts"><button class="btn sm" data-act="rp-camera">${ico('cam', 15)} تصوير بالكاميرا</button><button class="btn sm pri" data-act="rp-upload" data-id="${esc(id)}">${ico('up', 15)} رفع الشواهد</button></div>
+  <input type="file" id="rp-cam" accept="image/*" capture="environment" hidden><p class="hint" id="rp-picked"></p></div>` : ''}</div>`;
+}
 function viewReport() {
   const p = S.programs.find(x => x.id === S.rid);
   if (!p) return '<div class="card empty">البرنامج غير موجود. <a href="#/">العودة للرئيسية</a></div>';
@@ -770,27 +796,40 @@ function viewReport() {
     const g = p.low ? (+pre.v - +post.v) : (+post.v - +pre.v);
     gain = g > 0 ? 'تحسّن بمقدار ' + ar(+g.toFixed(2)) + ' نقطة' : g < 0 ? 'تراجع بمقدار ' + ar(+Math.abs(g).toFixed(2)) + ' نقطة' : 'لا فرق';
   }
+  const mo = parseH(p.from);
   const evRows = evs.length ? evs.map((e, i) => `<tr><td>${ar(i + 1)}</td><td>${esc(e.title)}</td><td>${esc(e.kind || '')}</td><td>${e.event_date ? fmtHW(e.event_date) : ''}</td></tr>`).join('') : '<tr><td colspan="4">لا توجد شواهد مرفقة</td></tr>';
   const g = greg(hstr(TODAY)), rg = rangeG(p);
+  const desc = r.desc != null ? r.desc : autoDesc(p);
+  const goals = r.goals != null ? r.goals : autoGoals(p);
+  const aiBtn = act => `<span class="no-print"><button class="btn sm" data-act="${act}">${ico('pen', 14)} توليد ذكي (مسودة)</button></span>`;
   return `<article class="rp" style="--dc:${d.color}">
   <div class="rp-head"><img src="assets/ministry-header.png" alt="وزارة التعليم - الإدارة العامة للتعليم بمنطقة المدينة المنورة"></div>
   <div class="rp-school">${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ</div>
-  <div class="rp-title">تقرير تنفيذ برنامج</div>
+  <div class="rp-title">تقرير تنفيذ: ${esc(p.name)}</div>
+  <div class="rp-school" style="font-weight:600;font-size:14px;margin-bottom:12px">${esc(MONTHS[mo.m - 1])} ${ar(mo.y)}هـ · ${esc(d.title)}</div>
   <table>
    <tr><th>اسم البرنامج</th><td colspan="3">${esc(p.name)}</td></tr>
    <tr><th>المجال</th><td>${esc(d.title)}</td><th>المعيار</th><td>${esc(p.std)} <bdi dir="ltr">${esc(p.code || '')}</bdi></td></tr>
    <tr><th>تاريخ التنفيذ حسب الخطة</th><td colspan="3">${rangeH(p)}${rg ? '<br><small>' + rg + '</small>' : ''}</td></tr>
    <tr><th>الجهة الرئيسة</th><td>${esc(p.lead)}</td><th>الجهة المساندة</th><td>${esc(p.sup)}</td></tr>
    <tr><th>المستهدفون</th><td colspan="3">${tx(p.who)}</td></tr>
-   <tr><th>مؤشر الإنجاز</th><td colspan="3">${tx(p.ind)}</td></tr>
    <tr><th>نسبة الإنجاز</th><td>${p1(curOf(p))} من المستهدف ${p1(p.tgt)}</td><th>نسبة الإنجاز من المستهدف</th><td>${p0(a)}</td></tr>
-   <tr><th>القياس القبلي</th><td>${fmtV(pre)}</td><th>القياس البعدي</th><td>${fmtV(post)}${gain ? ' <small>(' + gain + ')</small>' : ''}</td></tr>
+  </table>
+  <h4>توصيف البرنامج ${aiBtn('rp-ai-desc')}</h4>
+  <textarea id="rp-desc">${esc(desc)}</textarea>
+  <h4>الأهداف (من 3 إلى 5) ${aiBtn('rp-ai-goals')}</h4>
+  <textarea id="rp-goals" style="min-height:120px">${esc(goals)}</textarea>
+  <h4>قياس الأثر</h4>
+  <table>
+   <tr><th>القياس القبلي</th><td>${esc(autoPre(p))}<br><small>القيمة المسجلة: ${fmtV(pre)}</small></td></tr>
+   <tr><th>القياس البعدي</th><td>${esc(autoPost(p))}<br><small>القيمة المسجلة: ${fmtV(post)}${gain ? ' · ' + gain : ''}</small></td></tr>
   </table>
   <h4>الشواهد المرفقة</h4>
   <table><thead><tr><th style="width:8%">م</th><th>العنوان</th><th style="width:20%">النوع</th><th style="width:26%">التاريخ</th></tr></thead><tbody>${evRows}</tbody></table>
-  <h4>تفاصيل التقرير</h4>
+  <h4>شواهد التقرير (اختيارية، حتى ${ar(RP_MAX)})</h4>
+  <div id="rp-att">${rpAttachHTML(p.id)}</div>
+  <h4>ما تم تنفيذه والصعوبات والتوصيات</h4>
   <table>
-   <tr><th>الأهداف المتحققة</th><td><textarea id="rp-goals">${esc(r.goals || '')}</textarea></td></tr>
    <tr><th>ما تم تنفيذه</th><td><textarea id="rp-done">${esc(r.done || '')}</textarea></td></tr>
    <tr><th>الصعوبات</th><td><textarea id="rp-obst">${esc(r.obst || '')}</textarea></td></tr>
    <tr><th>التوصيات</th><td><textarea id="rp-rec">${esc(r.rec || '')}</textarea></td></tr>
@@ -801,8 +840,31 @@ function viewReport() {
 }
 function saveReport(id) {
   needName(() => saveState(id, { report: {
-    goals: $('#rp-goals').value.trim(), done: $('#rp-done').value.trim(), obst: $('#rp-obst').value.trim(), rec: $('#rp-rec').value.trim()
+    desc: $('#rp-desc').value.trim(), goals: $('#rp-goals').value.trim(),
+    done: $('#rp-done').value.trim(), obst: $('#rp-obst').value.trim(), rec: $('#rp-rec').value.trim()
   } }, 'تم حفظ التقرير'));
+}
+async function uploadReportFiles(id) {
+  needName(async () => {
+    const files = (RPICK || []).filter(f => f.size <= CFG.MAX_FILE_MB * 1048576);
+    if (!files.length) return toast('اختر ملفاً أولاً', true);
+    const room = RP_MAX - evOf(id).filter(e => e.kind === 'شاهد تقرير').length;
+    if (room <= 0) return toast('وصلت إلى الحد الأقصى وهو ' + ar(RP_MAX) + ' شواهد للتقرير', true);
+    const list = files.slice(0, room);
+    if (files.length > room) toast('رُفع أول ' + ar(room) + ' ملفات فقط للوصول إلى الحد الأقصى');
+    let ok = 0;
+    for (const f0 of list) {
+      busy('جاري رفع الشاهد…');
+      try {
+        const f = await maybeCompress(f0);
+        const row = { id: uid(), program_id: id, kind: 'شاهد تقرير', title: f0.name, note: '', link: '', added_by: S.user, device: DEVICE, event_date: hstr(TODAY), created_at: new Date().toISOString() };
+        await API.addEvidence(row, f); S.evidence.unshift(row); ok++;
+      } catch (e) { toast('تعذّر الرفع: ' + (e.message || e), true); break; }
+    }
+    RPICK = []; busy(false);
+    const box = $('#rp-att'); if (box) box.innerHTML = rpAttachHTML(id);
+    if (ok) toast('تم رفع ' + ar(ok) + ' شاهد للتقرير');
+  });
 }
 
 /* ============ الإجراءات ============ */
@@ -964,6 +1026,10 @@ document.addEventListener('click', async e => {
     case 'restore': needAdmin(restorePlan); break;
     case 'report': location.hash = '#/r/' + encodeURIComponent(id); break;
     case 'save-report': saveReport(id); break;
+    case 'rp-ai-goals': { const el = $('#rp-goals'), p = S.programs.find(x => x.id === S.rid); if (el && p) { el.value = autoGoals(p); toast('تم توليد الأهداف، راجعها ثم احفظ التقرير'); } break; }
+    case 'rp-ai-desc': { const el = $('#rp-desc'), p = S.programs.find(x => x.id === S.rid); if (el && p) { el.value = autoDesc(p); toast('تم توليد التوصيف، راجعه ثم احفظ التقرير'); } break; }
+    case 'rp-camera': $('#rp-cam').click(); break;
+    case 'rp-upload': uploadReportFiles(id); break;
     case 'print-report': window.print(); break;
     case 'print': printDomain(+el.dataset.d); break;
     case 'csv-d': csvPrograms(S.programs.filter(p => p.domain === +el.dataset.d), 'شواهدي-' + PLAN.domains[+el.dataset.d - 1].title + '.csv'); break;
@@ -986,6 +1052,7 @@ document.addEventListener('change', e => {
   else if (t.id === 'e-d') { S.evf.d = t.value; paintEv(); }
   else if (t.id === 'e-k') { S.evf.k = t.value; paintEv(); }
   else if (t.id === 'ev-file' || t.id === 'ev-cam') { pickFiles(t.files); t.value = ''; }
+  else if (t.id === 'rp-file' || t.id === 'rp-cam') { RPICK = [...t.files]; t.value = ''; const el = $('#rp-picked'); if (el) el.textContent = RPICK.length ? 'تم اختيار ' + ar(RPICK.length) + ' ملف' : ''; }
   else if (t.closest && t.closest('.hp')) { const hp = t.closest('.hp'); const g = k => hp.querySelector('[data-k="' + k + '"]').value; const s = g('y') + '/' + g('m') + '/' + g('d'); const l = hp.querySelector('.hp-l'); l.textContent = hpLabel(s); l.classList.toggle('bad', !validH(s)); }
   else if (t.id === 'pf-dom') { const k = +t.value; const dlst = $('#pf-stds'); if (dlst) dlst.innerHTML = [...new Set(PLAN.standards.filter(s => s.domain === k).map(s => s.title).concat(S.programs.filter(x => x.domain === k).map(x => x.std)))].map(x => `<option value="${esc(x)}"></option>`).join(''); }
 });
