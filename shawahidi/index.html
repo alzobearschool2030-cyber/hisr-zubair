@@ -557,8 +557,8 @@ function render() {
 
 /* ============ الرئيسية ============ */
 function domCard(d) {
-  const s = domainStats(d.n); const share = S.programs.length ? s.n / S.programs.length * 100 : 0; /* نسبة برامج المجال من برامج الخطة */
-  return `<a class="dc card" href="#/d${d.n}" style="--dc:${d.color}"><div class="dc-t"><b>${d.title}</b>${ring(share, 58)}</div>
+  const s = domainStats(d.n);
+  return `<a class="dc card" href="#/d${d.n}" style="--dc:${d.color}"><div class="dc-t"><b>${d.title}</b></div>
   <div class="dc-g"><div><b>${ar(s.n)}</b><small>برنامج</small></div><div><b>${ar(s.files)}</b><small>شاهد</small></div><div><b>${ar(s.ev)}</b><small>برنامج موثّق</small></div><div><b>${ar(s.post)}</b><small>قياس بعدي</small></div></div>
   <div class="ext">التقويم الخارجي ${p1(d.ext)} ← المستهدف ${p1(d.tgt)}</div></a>`;
 }
