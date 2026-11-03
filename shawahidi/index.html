@@ -542,7 +542,7 @@ function render() {
   if (gateOn() && !authed()) { app.innerHTML = gateHTML(S.gateErr); S.gateErr = ''; return; }
   if (S.loading) { app.innerHTML = headerHTML() + '<div class="wrap"><p class="empty"><span class="spin"></span> جاري تحميل شواهدي…</p></div>'; return; }
   document.body.classList.toggle('is-report', S.route === 'r');
-  if (S.route === 'r') { app.innerHTML = '<main class="wrap">' + viewReport() + '</main>'; renderModal(); renderDlg(); return; }
+  if (S.route === 'r') { app.innerHTML = '<main class="wrap">' + viewReport() + '</main>'; fitAllTA(); renderModal(); renderDlg(); return; }
   let body = '';
   if (S.route === 'home') body = viewHome();
   else if (/^d[1-4]$/.test(S.route)) body = viewDomain(+S.route.slice(1));
@@ -833,7 +833,7 @@ function viewReport() {
   <h4>توصيف البرنامج ${aiBtn('rp-ai-desc')}</h4>
   <textarea id="rp-desc">${esc(desc)}</textarea>
   <h4>الأهداف (من 3 إلى 5) ${aiBtn('rp-ai-goals')}</h4>
-  <textarea id="rp-goals" style="min-height:120px">${esc(goals)}</textarea>
+  <textarea id="rp-goals">${esc(goals)}</textarea>
   <h4>قياس الأثر</h4>
   <table>
    <tr><th>القياس القبلي</th><td>${esc(autoPre(p))}<br><small>القيمة المسجلة: ${fmtV(pre)}</small></td></tr>
@@ -1158,7 +1158,11 @@ document.addEventListener('click', async e => {
     case 'cal-today': S.cal = { y: TODAY.y, m: TODAY.m, sel: TODAY.d }; render(); break;
   }
 });
+/* ضبط ارتفاع منطقة النص على قدر محتواها كاملاً حتى لا يُخفى جزء من التوصيف أو الأهداف */
+function fitTA(el) { if (!el) return; el.style.height = 'auto'; el.style.height = (el.scrollHeight + 4) + 'px'; }
+function fitAllTA() { document.querySelectorAll('.rp textarea').forEach(fitTA); }
 document.addEventListener('input', e => {
+  if (e.target.closest && e.target.closest('.rp') && e.target.tagName === 'TEXTAREA') fitTA(e.target);
   if (e.target.id === 'f-q') { S.f.q = e.target.value; paintDyn(); }
   else if (e.target.id === 'e-q') { S.evf.q = e.target.value; paintEv(); }
 });
