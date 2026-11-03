@@ -725,7 +725,7 @@ function allClasses(){
 function clsGrid(classes,sel,act){
   const grp={};classes.forEach(c=>{const g=GO.find(x=>c.indexOf(x)===0);if(g)(grp[g]=grp[g]||[]).push(c)});
   if(!Object.keys(grp).length)return '';
-  return '<div class="cgrid">'+Object.keys(grp).map(g=>'<div class="crow"><span class="cg">'+esc(g)+'</span><div class="cbx">'+grp[g].map(c=>'<button class="cb" data-act="'+act+'" data-c="'+esc(c)+'" aria-pressed="'+(sel===c)+'">'+esc((c.match(/\d+/)||[c.replace(g,'').trim()||c])[0])+'</button>').join('')+'</div></div>').join('')+(sel?'<button class="btn ghost sm" data-act="'+act+'" data-c="">إلغاء اختيار الفصل</button>':'')+'</div>';
+  return '<div class="cgrid">'+Object.keys(grp).map(g=>'<div class="crow"><span class="cg">'+esc(g)+'</span><div class="cbx">'+grp[g].map(c=>'<button class="cb" data-act="'+act+'" data-c="'+esc(c)+'" aria-pressed="'+(sel===c)+'">'+esc(c.replace(g,'').trim()||c)+'</button>').join('')+'</div></div>').join('')+(sel?'<button class="btn ghost sm" data-act="'+act+'" data-c="">إلغاء اختيار الفصل</button>':'')+'</div>';
 }
 function paintStudents(){
   const ids=sIds();
