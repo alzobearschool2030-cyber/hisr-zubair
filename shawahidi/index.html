@@ -831,20 +831,13 @@ function viewReport() {
   <table><thead><tr><th style="width:8%">م</th><th>العنوان</th><th style="width:20%">النوع</th><th style="width:26%">التاريخ</th></tr></thead><tbody>${evRows}</tbody></table>
   <h4>شواهد التقرير (اختيارية، حتى ${ar(RP_MAX)})</h4>
   <div id="rp-att">${rpAttachHTML(p.id)}</div>
-  <h4>ما تم تنفيذه والصعوبات والتوصيات</h4>
-  <table>
-   <tr><th>ما تم تنفيذه</th><td><textarea id="rp-done">${esc(r.done || '')}</textarea></td></tr>
-   <tr><th>الصعوبات</th><td><textarea id="rp-obst">${esc(r.obst || '')}</textarea></td></tr>
-   <tr><th>التوصيات</th><td><textarea id="rp-rec">${esc(r.rec || '')}</textarea></td></tr>
-  </table>
   <div class="rp-sign"><div>إعداد: ${esc(S.user || '......................')}<br><small>${fmtHW(hstr(TODAY))} · ${g}</small></div><div>مدير المدرسة<br>${esc(CFG.PRINCIPAL)}<br>......................</div></div>
   <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة / حفظ PDF</button><button class="btn" data-act="rp-word" data-id="${esc(p.id)}">تحميل Word</button><button class="btn" data-act="rp-excel" data-id="${esc(p.id)}">تحميل Excel</button></div>
   </article>`;
 }
 function saveReport(id) {
   needName(() => saveState(id, { report: {
-    desc: $('#rp-desc').value.trim(), goals: $('#rp-goals').value.trim(),
-    done: $('#rp-done').value.trim(), obst: $('#rp-obst').value.trim(), rec: $('#rp-rec').value.trim()
+    desc: $('#rp-desc').value.trim(), goals: $('#rp-goals').value.trim()
   } }, 'تم حفظ التقرير'));
 }
 async function uploadReportFiles(id) {
@@ -934,7 +927,7 @@ function exportReportWord(id) {
 }
 
 /* ============ صفحة التقارير ============ */
-const hasRep = p => { const r = st(p.id).report; return !!(r && (r.desc || r.goals || r.done || r.obst || r.rec)); };
+const hasRep = p => { const r = st(p.id).report; return !!(r && (r.desc || r.goals)); };
 function viewReports() {
   const f = S.repf || (S.repf = { d: '', st: '' });
   const written = S.programs.filter(hasRep).length;
