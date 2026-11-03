@@ -514,7 +514,7 @@ function lockScroll() { document.body.style.overflow = (S.open || S.dlg) ? 'hidd
 /* ============ العرض: الإطار ============ */
 function headerHTML() {
   return `<header class="hd"><div class="hd-in"><div class="brand"><div class="logo">${LOGO}</div><div><h1>شواهدي</h1><p>${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ</p></div></div>
-  <div class="hd-r"><span class="today">${fmtHW(hstr(TODAY))} · ${greg(hstr(TODAY))}</span><button class="chipbtn" data-act="name">${S.user ? esc(S.user) : 'تعريف الاسم'}</button><button class="icbtn" data-act="settings" aria-label="الإعدادات">${ico('gear', 20)}</button></div></div></header>`;
+  <div class="hd-r"><span class="today">${fmtHW(hstr(TODAY))} · ${greg(hstr(TODAY))}</span><button class="chipbtn" data-act="name" ${gateOn() ? 'disabled title="الاسم هو بريد المدرسة ولا يتغير"' : ''}>${S.user ? esc(S.user) : 'تعريف الاسم'}</button><button class="icbtn" data-act="settings" aria-label="الإعدادات">${ico('gear', 20)}</button></div></div></header>`;
 }
 function navHTML() {
   const items = [['home', 'الرئيسية', '#/']].concat(PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n])).concat([['rep', 'التقارير', '#/rep'], ['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
@@ -750,7 +750,7 @@ function renderDlg() {
   else if (d.t === 'pin') inner = `<h3>رمز المشرف</h3><p class="hint">مطلوب لتعديل بيانات البرامج وحذفها.</p><label>الرمز<input id="pin" type="password" inputmode="numeric" autofocus></label><div class="row"><button class="btn pri" data-act="pin-ok">دخول</button><button class="btn" data-act="close-dlg">إلغاء</button></div>`;
   else if (d.t === 'img') inner = `<div class="lb"><img src="${esc(d.url)}" alt=""><p>${esc(d.title)}</p></div>`;
   else if (d.t === 'settings') inner = `<h3>الإعدادات</h3>
-    <label>اسمك<input id="nm" value="${esc(S.user)}"></label><button class="btn sm" data-act="save-name">حفظ الاسم</button>
+    ${gateOn() ? `<label>الاسم (بريد المدرسة المسجّل، ولا يمكن تغييره)<input value="${esc(S.user)}" dir="ltr" disabled></label>` : `<label>اسمك<input id="nm" value="${esc(S.user)}"></label><button class="btn sm" data-act="save-name">حفظ الاسم</button>`}
     <div class="box" style="margin-top:14px"><h4>المشرف</h4><p class="hint">${S.admin ? 'أنت مسجّل كمشرف في هذه الجلسة.' : 'سجّل الدخول لتعديل البرامج وحذف أي شاهد.'}</p>${S.admin ? '<button class="btn" data-act="admin-out">خروج المشرف</button>' : '<button class="btn" data-act="admin-in">' + ico('lock', 16) + ' دخول المشرف</button>'}</div>
     <div class="box"><h4>البيانات</h4><p class="hint">${REMOTE ? 'متصل بقاعدة البيانات المشتركة.' : 'وضع التجربة: البيانات على هذا الجهاز فقط.'}</p><div class="acts"><button class="btn sm" data-act="csv-all">تصدير كل البرامج (Excel)</button><button class="btn sm" data-act="csv-ev">تصدير فهرس الشواهد</button><button class="btn sm" data-act="restore">استعادة برامج الخطة المحذوفة</button></div></div>
     <div class="box"><h4>الحساب</h4><button class="btn sm" data-act="logout">تسجيل الخروج</button></div><div class="row"><button class="btn" data-act="close-dlg">إغلاق</button></div>`;
@@ -913,7 +913,7 @@ document.addEventListener('submit', async e => {
   let h = ''; try { h = await sha256Hex(pw); } catch (x) { return gateErr('المتصفح لا يدعم التحقق من الرقم السري، افتح الرابط عبر https'); }
   if (h !== CFG.ACCESS_PASSWORD_HASH) return gateErr('الرقم السري غير صحيح');
   try { localStorage.setItem(AUTH_KEY, mail); } catch (x) {}
-  if (!S.user) { S.user = mail; localStorage.setItem('sh_user', mail); }
+  S.user = mail; try { localStorage.setItem('sh_user', mail); } catch (x) {}
   S.gateErr = ''; S.loading = true; render();
   loadAll().then(() => { routeNow(); startLive(); });
 });
@@ -1117,7 +1117,7 @@ document.addEventListener('click', async e => {
     case 'settings': S.dlg = { t: 'settings' }; renderDlg(); break;
     case 'close-dlg': closeDlg(); break;
     case 'close-prog': closeProg(); break;
-    case 'save-name': { const v = ($('#nm').value || '').trim(); if (!v) return toast('اكتب اسمك', true); S.user = v; localStorage.setItem('sh_user', v); const then = S.dlg && S.dlg.then; S.dlg = null; renderDlg(); const nb = $('.chipbtn[data-act="name"]'); if (nb) nb.textContent = v; if (then) then(); else render(); toast('تم حفظ الاسم'); break; }
+    case 'save-name': { if (gateOn()) return toast('الاسم هو بريد المدرسة ولا يمكن تغييره', true); const v = ($('#nm').value || '').trim(); if (!v) return toast('اكتب اسمك', true); S.user = v; localStorage.setItem('sh_user', v); const then = S.dlg && S.dlg.then; S.dlg = null; renderDlg(); const nb = $('.chipbtn[data-act="name"]'); if (nb) nb.textContent = v; if (then) then(); else render(); toast('تم حفظ الاسم'); break; }
     case 'admin-in': S.dlg = { t: 'pin' }; renderDlg(); break;
     case 'admin-out': S.admin = false; sessionStorage.removeItem('sh_admin'); closeDlg(); render(); toast('تم الخروج من وضع المشرف'); break;
     case 'pin-ok': { if ($('#pin').value === String(CFG.ADMIN_PIN)) { S.admin = true; sessionStorage.setItem('sh_admin', '1'); const then = S.dlg && S.dlg.then; S.dlg = null; renderDlg(); if (then) then(); render(); toast('وضع المشرف مفعّل'); } else toast('الرمز غير صحيح', true); break; }
