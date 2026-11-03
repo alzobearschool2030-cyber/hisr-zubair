@@ -245,7 +245,28 @@ label input,label select,label textarea{margin-top:4px;font-weight:400}
 'use strict';
 const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', YEAR: 1448 }, window.SHAWAHIDI_CONFIG || {});
 const PLAN = window.PLAN;
-const $ = (s, r) => (r || document).querySelector(s);
+const SETUP_SQL = `create table if not exists public.sh_programs (id text primary key, data jsonb not null, updated_at timestamptz not null default now());
+create table if not exists public.sh_state (program_id text primary key, data jsonb not null, updated_at timestamptz not null default now());
+create table if not exists public.sh_evidence (id text primary key, program_id text not null, kind text, title text, note text, link text, file_path text, file_name text, mime text, size bigint, added_by text, device text, event_date text, created_at timestamptz not null default now());
+create index if not exists sh_evidence_program_idx on public.sh_evidence (program_id);
+alter table public.sh_programs enable row level security;
+alter table public.sh_state enable row level security;
+alter table public.sh_evidence enable row level security;
+drop policy if exists sh_programs_all on public.sh_programs;
+create policy sh_programs_all on public.sh_programs for all to anon, authenticated using (true) with check (true);
+drop policy if exists sh_state_all on public.sh_state;
+create policy sh_state_all on public.sh_state for all to anon, authenticated using (true) with check (true);
+drop policy if exists sh_evidence_all on public.sh_evidence;
+create policy sh_evidence_all on public.sh_evidence for all to anon, authenticated using (true) with check (true);
+insert into storage.buckets (id, name, public, file_size_limit) values ('shawahidi', 'shawahidi', true, 52428800) on conflict (id) do nothing;
+drop policy if exists shawahidi_read on storage.objects;
+create policy shawahidi_read on storage.objects for select to anon, authenticated using (bucket_id = 'shawahidi');
+drop policy if exists shawahidi_insert on storage.objects;
+create policy shawahidi_insert on storage.objects for insert to anon, authenticated with check (bucket_id = 'shawahidi');
+drop policy if exists shawahidi_delete on storage.objects;
+create policy shawahidi_delete on storage.objects for delete to anon, authenticated using (bucket_id = 'shawahidi');
+notify pgrst, 'reload schema';`;
+const $ =(s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const AD = '٠١٢٣٤٥٦٧٨٩';
@@ -469,9 +490,19 @@ function navHTML() {
   const items = [['home', 'الرئيسية', '#/']].concat(PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n])).concat([['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
   return `<nav class="nv"><div class="nv-in">${items.map(([k, t, h]) => `<a href="${h}" class="${S.route === k ? 'on' : ''}">${t}</a>`).join('')}</div></nav>`;
 }
+function sbRef() { try { return new URL(CFG.SUPABASE_URL).hostname.split('.')[0]; } catch (e) { return ''; } }
+function setupCard() {
+  return `<div class="banner err"><b>قاعدة البيانات تحتاج تهيئة لمرة واحدة فقط</b><br>جداول شواهدي لم تُنشأ بعد في مشروع Supabase، ولذلك تُعرض برامج الخطة الآن دون حفظ أي تغيير. التهيئة تستغرق دقيقة: أولاً اضغط «نسخ أمر الإعداد»، ثانياً اضغط «فتح محرر SQL» وسجّل دخولك إلى Supabase إن طُلب منك، ثالثاً الصق ما نسخته في المحرر واضغط زر Run، رابعاً ارجع إلى هنا وسيتحقق التطبيق تلقائياً أو اضغط «تحقق مرة أخرى».
+  <div class="acts" style="margin:10px 0 0"><button class="btn sm pri" data-act="copy-sql">نسخ أمر الإعداد</button><a class="btn sm" target="_blank" rel="noopener" href="https://supabase.com/dashboard/project/${sbRef()}/sql/new">فتح محرر SQL</a><button class="btn sm" data-act="retry-load">تحقق مرة أخرى</button></div></div>`;
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e) { try { const a = document.createElement('textarea'); a.value = t; a.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(a); a.select(); const ok = document.execCommand('copy'); a.remove(); return ok; } catch (x) { return false; } }
+}
 function banner() {
   let b = '';
-  if (S.err) b += `<div class="banner err">${esc(S.err)}</div>`;
+  if (S.setup) b += setupCard();
+  else if (S.err) b += `<div class="banner err">${esc(S.err)}</div>`;
   if (!REMOTE) b += `<div class="banner">وضع التجربة: البيانات والملفات محفوظة على هذا الجهاز فقط. لربط التطبيق بقاعدة بيانات مشتركة لجميع المستخدمين اتبع خطوات ملف README.</div>`;
   if (!HAS_UQ) b += `<div class="banner">تعذّر تحميل تقويم أم القرى في هذا المتصفح، وتُعرض التواريخ بتقدير حسابي قد يختلف يوماً واحداً، ولن تظهر أسماء الأيام.</div>`;
   return b;
@@ -851,6 +882,8 @@ document.addEventListener('click', async e => {
     case 'admin-in': S.dlg = { t: 'pin' }; renderDlg(); break;
     case 'admin-out': S.admin = false; sessionStorage.removeItem('sh_admin'); closeDlg(); render(); toast('تم الخروج من وضع المشرف'); break;
     case 'pin-ok': { if ($('#pin').value === String(CFG.ADMIN_PIN)) { S.admin = true; sessionStorage.setItem('sh_admin', '1'); const then = S.dlg && S.dlg.then; S.dlg = null; renderDlg(); if (then) then(); render(); toast('وضع المشرف مفعّل'); } else toast('الرمز غير صحيح', true); break; }
+    case 'copy-sql': { const ok = await copyText(SETUP_SQL); toast(ok ? 'تم نسخ أمر الإعداد، الصقه في محرر SQL' : 'تعذّر النسخ تلقائياً، انسخه من ملف supabase-setup.sql', !ok); break; }
+    case 'retry-load': { busy('جاري التحقق…'); await loadAll(); busy(false); render(); toast(S.setup ? 'الجداول ما زالت غير موجودة' : (S.err ? 'ما زالت هناك مشكلة في الاتصال' : 'تم الاتصال بقاعدة البيانات بنجاح'), !!(S.setup || S.err)); break; }
     case 'save-info': saveInfo(id); break;
     case 'save-msr': saveMsr(id); break;
     case 'adopt-post': adoptPost(id); break;
@@ -904,8 +937,13 @@ function routeNow() {
   render(); window.scrollTo(0, 0);
 }
 async function loadAll() {
-  try { const d = await API.load(); S.programs = d.programs; S.state = d.state; S.evidence = d.evidence; S.err = ''; }
-  catch (e) { S.err = 'تعذّر تحميل البيانات من قاعدة البيانات: ' + (e.message || e) + ' — تأكد من تنفيذ ملف supabase-setup.sql ومن صحة الإعدادات في config.js.'; if (!S.programs.length) S.programs = buildPlan(); }
+  try { const d = await API.load(); S.programs = d.programs; S.state = d.state; S.evidence = d.evidence; S.err = ''; S.setup = false; }
+  catch (e) {
+    const m = String((e && e.message) || e);
+    S.setup = !!(e && (e.code === 'PGRST205' || e.code === '42P01')) || /schema cache|does not exist|Could not find the table/i.test(m);
+    S.err = S.setup ? '' : 'تعذّر الاتصال بقاعدة البيانات: ' + m + ' — تأكد من صحة الإعدادات في config.js.';
+    if (!S.programs.length) S.programs = buildPlan();
+  }
   S.loading = false;
 }
 window.__SH = { S, buildPlan, validH, H2G };
