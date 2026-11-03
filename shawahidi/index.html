@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0a4f47">
+<title>شواهدي</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f5;--card:#fff;--ink:#16302c;--mut:#5d7570;--line:#dfe8e5;--g:#0d6b5f;--g2:#0a4f47;--gold:#c8a24a;--ok:#1f9d55;--warn:#d9822b;--bad:#c0392b;--blue:#2563a8;--r:16px;--dc:#0d6b5f}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Tajawal','IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;line-height:1.65;font-size:16px}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+.ic{flex:none;vertical-align:-3px}
+.hd{background:linear-gradient(135deg,var(--g2),var(--g));color:#fff;padding:calc(env(safe-area-inset-top) + 12px) 16px 14px}
+.hd-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;flex:none}
+.logo svg{width:100%;height:100%;display:block}
+.brand h1{margin:0;font-size:26px;line-height:1.1;font-weight:800}
+.brand p{margin:2px 0 0;font-size:13px;opacity:.85}
+.hd-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.today{font-size:13px;background:rgba(255,255,255,.14);padding:6px 12px;border-radius:99px}
+.chipbtn,.icbtn{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:99px;padding:6px 14px;cursor:pointer;font-size:13px}
+.icbtn{padding:7px;display:grid;place-items:center}
+.nv{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(10,79,71,.06)}
+.nv-in{max-width:1100px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:6px 12px;scrollbar-width:none}
+.nv-in::-webkit-scrollbar{display:none}
+.nv a{white-space:nowrap;padding:8px 14px;border-radius:99px;font-size:14px;font-weight:500;color:var(--mut)}
+.nv a.on{background:var(--g2);color:#fff;font-weight:700}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 14px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:0 1px 3px rgba(10,79,71,.05)}
+.banner{background:#fff7e0;border:1px solid #ecd9a0;color:#6b5513;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.banner.err{background:#fdecea;border-color:#f3b8b1;color:#8a2a20}
+h3{margin:0 0 10px;font-size:18px}
+h4{margin:0;font-size:16px;line-height:1.5}
+.hero{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.hero .t{flex:1;min-width:220px}
+.hero .t h2{margin:0 0 4px;font-size:22px}
+.hero .t p{margin:0;color:var(--mut);font-size:14px}
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.kpi{background:var(--bg);border-radius:12px;padding:8px 14px;min-width:92px;text-align:center}
+.kpi b{display:block;font-size:20px;line-height:1.2}
+.kpi small{color:var(--mut);font-size:12px}
+.dgrid{display:grid;gap:12px;grid-template-columns:1fr;margin-bottom:14px}
+.dc{display:block;border-top:5px solid var(--dc);transition:transform .15s}
+.dc:hover{transform:translateY(-2px)}
+.dc-t{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.dc-t b{font-size:18px;color:var(--dc)}
+.dc-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.dc-g b{display:block;font-size:18px}
+.dc-g small{color:var(--mut);font-size:12px}
+.ext{margin-top:10px;font-size:12.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:8px}
+.two{display:grid;gap:12px;grid-template-columns:1fr}
+.li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.li:last-child{border-bottom:0}
+.li .dot{width:10px;height:10px;border-radius:50%;background:var(--dc);flex:none}
+.li b{display:block;font-size:14.5px}
+.li small{color:var(--mut);font-size:12.5px}
+.empty{color:var(--mut);font-size:14px;padding:8px 0}
+.dh{border-top:6px solid var(--dc);margin-bottom:12px}
+.dh h2{margin:0 0 4px;font-size:22px;color:var(--dc)}
+.dh .sub{color:var(--mut);font-size:13.5px}
+.tools{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-bottom:10px;padding:12px}
+.tools input{grid-column:1/-1}
+input,select,textarea{width:100%;background:#fff;border:1px solid #cfdcd8;border-radius:10px;padding:9px 12px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(13,107,95,.14)}
+input:disabled{background:#f1f5f4;color:var(--mut)}
+textarea{min-height:76px;resize:vertical}
+label{display:block;font-size:13.5px;font-weight:500;margin-bottom:10px;color:var(--ink)}
+label input,label select,label textarea{margin-top:4px;font-weight:400}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;justify-content:center;border:1px solid #cfdcd8;background:#fff;border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:500;font-size:14.5px}
+.btn:hover{border-color:var(--g)}
+.btn.pri{background:var(--g);border-color:var(--g);color:#fff;font-weight:700}
+.btn.danger{color:var(--bad);border-color:#efc4be}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.schips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;scrollbar-width:none}
+.schips::-webkit-scrollbar{display:none}
+.sc{flex:none;border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
+.sc.on{background:var(--dc);border-color:var(--dc);color:#fff}
+.sg{margin:18px 0 8px}
+.sg-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;border-right:5px solid var(--dc);padding:4px 12px;background:#fff;border-radius:10px}
+.sg-h b{font-size:16px}
+.sg-h small{color:var(--mut);display:block;font-size:12.5px}
+.sg-h .avg{font-weight:800;color:var(--dc);white-space:nowrap}
+.mh{margin:14px 4px 6px;font-size:13px;font-weight:700;color:var(--mut);display:flex;align-items:center;gap:8px}
+.mh::after{content:'';flex:1;height:1px;background:var(--line)}
+.pgrid{display:grid;gap:10px;grid-template-columns:1fr}
+.pc{background:#fff;border:1px solid var(--line);border-right:4px solid var(--dc);border-radius:14px;padding:12px 14px;cursor:pointer;transition:box-shadow .15s}
+.pc:hover{box-shadow:0 4px 14px rgba(10,79,71,.12)}
+.pc-top{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.pid{font-size:12px;color:var(--mut);font-weight:700}
+.chip{font-size:12px;padding:1px 10px;border-radius:99px;background:#eef3f2;color:var(--mut);white-space:nowrap}
+.chip.now,.chip.green{background:#dff3e8;color:#17703d}
+.chip.soon,.chip.blue{background:#e1ecf8;color:#1c4f87}
+.chip.done,.chip.gray{background:#eceeee;color:#566}
+.chip.red{background:#fde4e0;color:#a52f23}
+.chip.sem{background:#f3ecd7;color:#7a6120}
+.meta{font-size:13px;color:var(--mut);margin-top:3px}
+.bar{height:8px;background:#e6eeec;border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;background:var(--dc);border-radius:99px;transition:width .3s}
+.bar.big{height:12px}
+.nums{display:flex;justify-content:space-between;gap:6px;font-size:12.5px;color:var(--mut);flex-wrap:wrap}
+.nums b{color:var(--dc)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tg{font-size:12px;padding:2px 10px;border-radius:8px;background:#f3f6f5;color:var(--mut);display:inline-flex;gap:4px;align-items:center}
+.tg.ok{background:#dff3e8;color:#17703d}
+.ov{position:fixed;inset:0;background:rgba(10,30,27,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.ov.top{z-index:70}
+.sheet{background:#fff;width:100%;max-width:760px;max-height:94vh;border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;border-top:6px solid var(--dc)}
+.sh-hd{padding:14px 16px 8px;display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.sh-hd h3{margin:4px 0 0;font-size:18px;line-height:1.5}
+.x{border:0;background:#eef3f2;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;flex:none}
+.tabs{display:flex;gap:4px;padding:0 12px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:none;padding:10px 12px;cursor:pointer;color:var(--mut);font-weight:500;white-space:nowrap;border-bottom:3px solid transparent;font-size:14.5px}
+.tabs button.on{color:var(--dc);border-bottom-color:var(--dc);font-weight:800}
+.sh-bd{padding:14px 16px calc(env(safe-area-inset-bottom) + 24px);overflow-y:auto}
+.pane{display:none}
+.pane.on{display:block}
+.dl{display:grid;gap:8px;margin:0 0 14px}
+.dl div{background:var(--bg);border-radius:10px;padding:8px 12px}
+.dl dt{font-size:12px;color:var(--mut)}
+.dl dd{margin:0;font-size:14.5px}
+.dl small{display:block;color:var(--mut);font-size:12.5px}
+.box{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.box h4{margin-bottom:10px;color:var(--dc)}
+.row2{display:grid;gap:10px;grid-template-columns:1fr}
+.row3{display:grid;gap:10px;grid-template-columns:1fr}
+.hint{font-size:12.5px;color:var(--mut);margin:6px 0 10px}
+.hp-r{display:grid;grid-template-columns:.7fr 1.5fr 1fr;gap:6px;margin-top:4px}
+.hp-r select{padding:9px 6px}
+.hp-l{display:block;margin-top:4px;font-size:12.5px;color:var(--g2);font-weight:500}
+.hp-l.bad{color:var(--bad)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.cmp div{background:var(--bg);border-radius:12px;padding:10px;text-align:center}
+.cmp b{font-size:22px;display:block}
+.cmp small{color:var(--mut)}
+.gain{padding:10px 14px;border-radius:12px;font-weight:700;text-align:center;margin-bottom:10px}
+.gain.up{background:#dff3e8;color:#17703d}
+.gain.dn{background:#fde4e0;color:#a52f23}
+.gain.eq{background:#eceeee;color:#566}
+.drop{border:2px dashed #b9cdc8;border-radius:14px;padding:16px;text-align:center;background:#f8fbfa;margin-bottom:10px}
+.drop.hot{border-color:var(--g);background:#eaf6f3}
+.drop .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.drop small{color:var(--mut);display:block;margin-top:8px;font-size:12px}
+.picked{display:grid;gap:6px;margin-bottom:10px}
+.pk{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:10px;padding:6px 10px;font-size:13.5px}
+.pk span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk button{border:0;background:none;color:var(--bad);cursor:pointer}
+.ev{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
+.ev-th{width:56px;height:56px;border-radius:10px;background:var(--bg);display:grid;place-items:center;overflow:hidden;flex:none;color:var(--mut)}
+.ev-th img{width:100%;height:100%;object-fit:cover}
+.ev-b{flex:1;min-width:0}
+.ev-b b{display:block;font-size:14.5px;word-break:break-word}
+.ev-b small{display:block;color:var(--mut);font-size:12.5px;word-break:break-word}
+.ev-b p{margin:4px 0 0;font-size:13.5px}
+.ev-a{display:flex;flex-direction:column;gap:6px}
+.dlg{background:#fff;width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom) + 20px);max-height:92vh;overflow-y:auto}
+.dlg h3{margin-bottom:12px}
+.dlg .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.lb{max-width:96vw;max-height:92vh;background:#000;border-radius:12px;overflow:hidden;position:relative}
+.lb img{display:block;max-width:96vw;max-height:84vh;margin:0 auto}
+.lb p{color:#fff;margin:0;padding:10px 14px;font-size:14px;background:#111}
+.cal-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.cal-h h2{margin:0;font-size:20px}
+.cal-h small{display:block;color:var(--mut);font-size:13px;font-weight:400}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .wh{text-align:center;font-size:12px;font-weight:700;color:var(--mut);padding:4px 0}
+.cal .wh.we{color:#a88}
+.cd{min-height:64px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px;cursor:pointer;display:flex;flex-direction:column;gap:2px;position:relative}
+.cd.blank{background:none;border:0;cursor:default}
+.cd.we{background:#faf7f2}
+.cd.act{background:#eef7f4}
+.cd.today{border:2px solid var(--gold)}
+.cd.sel{outline:3px solid var(--g);outline-offset:-1px}
+.cd b{font-size:15px;line-height:1.1}
+.cd small{font-size:10.5px;color:var(--mut);line-height:1}
+.dots{display:flex;gap:2px;flex-wrap:wrap;margin-top:auto}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--dc)}
+.dots em{font-size:10px;font-style:normal;color:var(--mut)}
+.cnt{position:absolute;left:4px;top:4px;font-size:10px;background:var(--g2);color:#fff;border-radius:99px;padding:0 6px}
+.cal-l{margin-top:12px}
+.cal-l h4{margin:12px 0 4px;font-size:14px;color:var(--mut)}
+.foot{text-align:center;color:var(--mut);font-size:12.5px;margin-top:30px}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 22px);transform:translateX(-50%) translateY(30px);background:#16302c;color:#fff;padding:10px 20px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:92vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#toast.bad{background:var(--bad)}
+#busy{position:fixed;inset:0;background:rgba(255,255,255,.7);display:none;place-items:center;z-index:98;font-weight:700}
+#busy.on{display:grid}
+#printSheet{display:none}
+.spin{width:22px;height:22px;border:3px solid #cfe;border-top-color:var(--g);border-radius:50%;animation:sp .8s linear infinite;display:inline-block;vertical-align:-5px;margin-left:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(min-width:720px){
+  .dgrid{grid-template-columns:repeat(2,1fr)}
+  .two{grid-template-columns:1fr 1fr}
+  .tools{grid-template-columns:2fr 1fr 1fr 1fr}
+  .tools input{grid-column:auto}
+  .pgrid{grid-template-columns:1fr 1fr}
+  .ov{align-items:center}
+  .sheet{border-radius:22px;max-height:90vh}
+  .dlg{border-radius:22px}
+  .dl{grid-template-columns:1fr 1fr}
+  .dl .full{grid-column:1/-1}
+  .row2{grid-template-columns:1fr 1fr}
+  .row3{grid-template-columns:1fr 1fr 1fr}
+  .cd{min-height:84px;padding:6px}
+}
+@media(min-width:1000px){.dgrid{grid-template-columns:repeat(4,1fr)}}
+@media print{
+  body{background:#fff}
+  #app,#modalRoot,#dlgRoot,#toast,#busy{display:none!important}
+  #printSheet{display:block!important;font-size:11px;color:#000}
+  #printSheet h2{margin:0 0 4px;font-size:16px}
+  #printSheet p{margin:0 0 10px;color:#444}
+  #printSheet table{width:100%;border-collapse:collapse}
+  #printSheet th,#printSheet td{border:1px solid #888;padding:3px 5px;vertical-align:top;text-align:right}
+  #printSheet th{background:#e8efed}
+  #printSheet tr.gh td{background:#f4ecd3;font-weight:700}
+  @page{size:A4 landscape;margin:10mm}
+}
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap"><p class="empty"><span class="spin"></span> جاري تحميل شواهدي…</p></div></div>
+<div id="modalRoot"></div>
+<div id="dlgRoot"></div>
+<div id="printSheet"></div>
+<div id="busy"><div><span class="spin"></span><span id="busyMsg">جاري الحفظ…</span></div></div>
+<div id="toast"></div>
+<noscript>يحتاج التطبيق إلى تفعيل جافاسكربت.</noscript>
+
+<script src="config.js"></script>
+<script src="plan-data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function () {
+'use strict';
+const CFG = Object.assign({ BUCKET: 'shawahidi', ADMIN_PIN: '1448', MAX_FILE_MB: 25, SCHOOL: 'مدرسة الزبير بن العوام الابتدائية', YEAR: 1448 }, window.SHAWAHIDI_CONFIG || {});
+const PLAN = window.PLAN;
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const AD = '٠١٢٣٤٥٦٧٨٩';
+const ar = v => String(v).replace(/\d/g, d => AD[d]).replace(/\./g, '٫');
+const tx = s => esc(String(s == null ? '' : s).replace(/\d+(?:\.\d+)?/g, m => ar(m)).replace(/%/g, '٪'));
+const p0 = v => ar(Math.round(v)) + '٪';
+const p1 = v => ar(+(+v).toFixed(2)) + '٪';
+const clamp = (v, a, b) => Math.max(a == null ? 0 : a, Math.min(b == null ? 100 : b, v));
+const num = v => (v === '' || v == null || isNaN(+v)) ? null : +v;
+const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+
+/* ============ تقويم أم القرى ============ */
+const MONTHS = ['محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'];
+const WD = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const GM = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+const UQF = (() => { try { return new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', { day: 'numeric', month: 'numeric', year: 'numeric', timeZone: 'UTC' }); } catch (e) { return null; } })();
+function uq(ms) {
+  if (!UQF) return null;
+  const o = {}; UQF.formatToParts(new Date(ms)).forEach(p => { o[p.type] = p.value; });
+  const y = +o.year, m = +o.month, d = +o.day;
+  return (y > 1300 && y < 1600 && m >= 1 && m <= 12 && d >= 1) ? { y, m, d } : null;
+}
+const H2G = {};
+(function () { for (let ms = Date.UTC(2025, 5, 1); ms < Date.UTC(2030, 0, 1); ms += 864e5) { const h = uq(ms); if (h) H2G[h.y + '/' + h.m + '/' + h.d] = ms; } })();
+const HAS_UQ = Object.keys(H2G).length > 1000;
+function tabular(ms) {
+  const jd = Math.floor(ms / 864e5) + 2440588;
+  let l = jd - 1948440 + 10632; const n = Math.floor((l - 1) / 10631); l = l - 10631 * n + 354;
+  const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) + Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+  l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+  const m = Math.floor((24 * l) / 709); const d = l - Math.floor((709 * m) / 24);
+  return { y: 30 * n + j - 30, m, d };
+}
+const NOW = new Date();
+const TODAY_MS = Date.UTC(NOW.getFullYear(), NOW.getMonth(), NOW.getDate());
+const TODAY = uq(TODAY_MS) || tabular(TODAY_MS);
+const hstr = h => h.y + '/' + h.m + '/' + h.d;
+const hkey = h => h.y * 10000 + h.m * 100 + h.d;
+const TK = hkey(TODAY);
+function parseH(s) { const a = String(s || '').split('/').map(Number); return { y: a[0] || 0, m: a[1] || 1, d: a[2] || 1 }; }
+const validH = s => !HAS_UQ || H2G[hstr(parseH(s))] != null;
+const msOf = s => H2G[hstr(parseH(s))];
+const wdOf = s => { const ms = msOf(s); return ms == null ? '' : WD[new Date(ms).getUTCDay()]; };
+function greg(s, withYear) { const ms = msOf(s); if (ms == null) return ''; const d = new Date(ms); return ar(d.getUTCDate()) + ' ' + GM[d.getUTCMonth()] + (withYear === false ? '' : ' ' + ar(d.getUTCFullYear()) + 'م'); }
+function fmtHW(s, y) { const h = parseH(s); const w = wdOf(s); return (w ? w + ' ' : '') + ar(h.d) + ' ' + MONTHS[h.m - 1] + (y === false ? '' : ' ' + ar(h.y) + 'هـ'); }
+function rangeH(p) {
+  if (p.from === p.to) return fmtHW(p.from);
+  const a = parseH(p.from), b = parseH(p.to);
+  return fmtHW(p.from, a.y !== b.y) + ' ← ' + fmtHW(p.to);
+}
+function rangeG(p) {
+  const a = msOf(p.from), b = msOf(p.to); if (a == null || b == null) return '';
+  if (p.from === p.to) return 'يوافق ' + greg(p.from);
+  const da = new Date(a), db = new Date(b);
+  if (da.getUTCFullYear() === db.getUTCFullYear() && da.getUTCMonth() === db.getUTCMonth()) return 'يوافق ' + ar(da.getUTCDate()) + ' – ' + ar(db.getUTCDate()) + ' ' + GM[db.getUTCMonth()] + ' ' + ar(db.getUTCFullYear()) + 'م';
+  return 'يوافق ' + greg(p.from, da.getUTCFullYear() !== db.getUTCFullYear()) + ' – ' + greg(p.to);
+}
+function mlen(y, m) { if (!HAS_UQ) return 30; return H2G[y + '/' + m + '/30'] != null ? 30 : (H2G[y + '/' + m + '/29'] != null ? 29 : 30); }
+function monthGreg(y, m) {
+  const a = H2G[y + '/' + m + '/1'], b = H2G[y + '/' + m + '/' + mlen(y, m)]; if (a == null || b == null) return '';
+  const da = new Date(a), db = new Date(b);
+  return da.getUTCMonth() === db.getUTCMonth() ? GM[da.getUTCMonth()] + ' ' + ar(da.getUTCFullYear()) + 'م' : GM[da.getUTCMonth()] + ' – ' + GM[db.getUTCMonth()] + ' ' + ar(db.getUTCFullYear()) + 'م';
+}
+function hpick(id, val) {
+  const h = parseH(val || hstr(TODAY));
+  const years = [...new Set([1447, 1448, 1449, 1450, h.y])].sort();
+  return `<div class="hp" id="${id}"><div class="hp-r">
+    <select data-k="d" aria-label="اليوم">${[...Array(30)].map((_, i) => `<option value="${i + 1}"${h.d === i + 1 ? ' selected' : ''}>${ar(i + 1)}</option>`).join('')}</select>
+    <select data-k="m" aria-label="الشهر">${MONTHS.map((n, i) => `<option value="${i + 1}"${h.m === i + 1 ? ' selected' : ''}>${n}</option>`).join('')}</select>
+    <select data-k="y" aria-label="السنة">${years.map(y => `<option value="${y}"${h.y === y ? ' selected' : ''}>${ar(y)}هـ</option>`).join('')}</select>
+  </div><small class="hp-l ${validH(hstr(h)) ? '' : 'bad'}">${hpLabel(hstr(h))}</small></div>`;
+}
+function hpLabel(s) { if (!validH(s)) return 'هذا اليوم غير موجود في تقويم أم القرى'; const g = greg(s); return fmtHW(s) + (g ? ' — يوافق ' + g : ''); }
+function readH(id) { const el = $('#' + id); const g = k => el.querySelector('[data-k="' + k + '"]').value; return g('y') + '/' + g('m') + '/' + g('d'); }
+
+/* ============ الأيقونات ============ */
+const IC = {
+  clip: '<path d="M21 12.5l-8.5 8.5a5.5 5.5 0 01-7.8-7.8l9-9a3.7 3.7 0 015.2 5.2l-9 9a1.8 1.8 0 01-2.6-2.6l8.3-8.3"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  pen: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/>', trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  cam: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  file: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>', up: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',
+  print: '<path d="M7 9V3h10v6M7 17H4v-6h16v6h-3M7 14h10v7H7z"/>', lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  down: '<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>', gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  img: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M4 17l5-5 4 4 3-3 4 4"/>',
+  link: '<path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/>',
+  cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>'
+};
+const ico = (n, s) => `<svg class="ic" width="${s || 18}" height="${s || 18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+const LOGO = '<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#c8a24a"/><path d="M11 21l6 6 12-14" stroke="#0a4f47" stroke-width="4.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ============ ثوابت ============ */
+const STATUS = ['لم يبدأ', 'قيد التنفيذ', 'منفّذ', 'متعثر'];
+const STC = { 'لم يبدأ': 'gray', 'قيد التنفيذ': 'blue', 'منفّذ': 'green', 'متعثر': 'red' };
+const KINDS = ['شاهد', 'تقرير', 'محضر', 'صورة', 'استبانة', 'شهادة أو تكريم', 'أخرى'];
+const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.jpg,.jpeg,.png,.gif,.webp,.heic,.mp4,.mov,.mp3,.m4a,.zip,.rar';
+const fsize = n => !n ? '' : (n > 1048576 ? ar((n / 1048576).toFixed(1)) + ' م.ب' : ar(Math.max(1, Math.round(n / 1024))) + ' ك.ب');
+
+/* ============ بناء بيانات الخطة ============ */
+const fixD = s => s.split('/').length === 3 ? s : '1448/' + s;
+function buildPlan() {
+  const std = {}; PLAN.standards.forEach(s => { std[s.id] = s; });
+  return PLAN.rows.map(r => {
+    const [sem, no, sid, name, from, to, who, how, lead, sup, ind, base, tgt, flag] = r; const s = std[sid];
+    return { id: sem + '-' + no, sem, no, domain: s.domain, std: s.title, code: s.code, name, from: fixD(from), to: fixD(to), who, how, lead, sup, ind, base, tgt, low: flag === 'L' };
+  });
+}
+
+/* ============ طبقة البيانات ============ */
+const REMOTE = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+const sb = REMOTE ? window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY) : null;
+const LS = { get: (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }, set: (k, v) => localStorage.setItem(k, JSON.stringify(v)) };
+const idb = {
+  db: null,
+  open() { return this.db ? Promise.resolve(this.db) : new Promise((res, rej) => { const r = indexedDB.open('shawahidi', 1); r.onupgradeneeded = () => r.result.createObjectStore('files'); r.onsuccess = () => { this.db = r.result; res(this.db); }; r.onerror = () => rej(r.error); }); },
+  async put(k, v) { const d = await this.open(); return new Promise((res, rej) => { const t = d.transaction('files', 'readwrite'); t.objectStore('files').put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error); }); },
+  async get(k) { const d = await this.open(); return new Promise((res, rej) => { const r = d.transaction('files').objectStore('files').get(k); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  async del(k) { const d = await this.open(); return new Promise((res, rej) => { const t = d.transaction('files', 'readwrite'); t.objectStore('files').delete(k); t.oncomplete = res; t.onerror = () => rej(t.error); }); }
+};
+const Local = {
+  async load() { let programs = LS.get('sh_programs', null); if (!programs) { programs = buildPlan(); LS.set('sh_programs', programs); } return { programs, state: LS.get('sh_state', {}), evidence: LS.get('sh_evidence', []) }; },
+  async saveProgram(p) { const a = LS.get('sh_programs', []); const i = a.findIndex(x => x.id === p.id); if (i < 0) a.push(p); else a[i] = p; LS.set('sh_programs', a); },
+  async deleteProgram(id) {
+    LS.set('sh_programs', LS.get('sh_programs', []).filter(x => x.id !== id));
+    const s = LS.get('sh_state', {}); delete s[id]; LS.set('sh_state', s);
+    const ev = LS.get('sh_evidence', []); for (const e of ev.filter(e => e.program_id === id)) { try { await idb.del(e.id); } catch (x) { } }
+    LS.set('sh_evidence', ev.filter(e => e.program_id !== id));
+  },
+  async saveState(id, d) { const s = LS.get('sh_state', {}); s[id] = d; LS.set('sh_state', s); },
+  async addEvidence(row, f) { if (f) { await idb.put(row.id, f); Object.assign(row, { file_name: f.name, mime: f.type, size: f.size, file_path: 'local' }); } const a = LS.get('sh_evidence', []); a.unshift(row); LS.set('sh_evidence', a); },
+  async deleteEvidence(e) { try { await idb.del(e.id); } catch (x) { } LS.set('sh_evidence', LS.get('sh_evidence', []).filter(x => x.id !== e.id)); },
+  async fileUrl(e) { if (!e.file_path) return e.link || null; const b = await idb.get(e.id); return b ? URL.createObjectURL(b) : null; },
+  thumb() { return null; }
+};
+const Remote = {
+  async load() {
+    const [a, b, c] = await Promise.all([
+      sb.from('sh_programs').select('id,data'), sb.from('sh_state').select('program_id,data'),
+      sb.from('sh_evidence').select('*').order('created_at', { ascending: false }).limit(5000)]);
+    for (const r of [a, b, c]) if (r.error) throw r.error;
+    let programs = a.data.map(r => r.data);
+    if (!programs.length) {
+      programs = buildPlan();
+      const { error } = await sb.from('sh_programs').upsert(programs.map(p => ({ id: p.id, data: p })), { onConflict: 'id', ignoreDuplicates: true });
+      if (error) throw error;
+    }
+    const state = {}; b.data.forEach(r => { state[r.program_id] = r.data; });
+    return { programs, state, evidence: c.data };
+  },
+  async saveProgram(p) { const { error } = await sb.from('sh_programs').upsert({ id: p.id, data: p, updated_at: new Date().toISOString() }); if (error) throw error; },
+  async deleteProgram(id) {
+    const ev = S.evidence.filter(e => e.program_id === id && e.file_path);
+    if (ev.length) await sb.storage.from(CFG.BUCKET).remove(ev.map(e => e.file_path));
+    await sb.from('sh_evidence').delete().eq('program_id', id); await sb.from('sh_state').delete().eq('program_id', id);
+    const { error } = await sb.from('sh_programs').delete().eq('id', id); if (error) throw error;
+  },
+  async saveState(id, d) { const { error } = await sb.from('sh_state').upsert({ program_id: id, data: d, updated_at: new Date().toISOString() }); if (error) throw error; },
+  async addEvidence(row, f) {
+    if (f) {
+      const ext = ((f.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8)) || 'bin';
+      const path = row.program_id + '/' + row.id + '.' + ext;
+      const { error: ue } = await sb.storage.from(CFG.BUCKET).upload(path, f, { contentType: f.type || 'application/octet-stream', upsert: false });
+      if (ue) throw ue;
+      Object.assign(row, { file_path: path, file_name: f.name, mime: f.type, size: f.size });
+    }
+    const { error } = await sb.from('sh_evidence').insert(row);
+    if (error) { if (row.file_path) await sb.storage.from(CFG.BUCKET).remove([row.file_path]); throw error; }
+  },
+  async deleteEvidence(e) { if (e.file_path) await sb.storage.from(CFG.BUCKET).remove([e.file_path]); const { error } = await sb.from('sh_evidence').delete().eq('id', e.id); if (error) throw error; },
+  async fileUrl(e) { return e.file_path ? sb.storage.from(CFG.BUCKET).getPublicUrl(e.file_path).data.publicUrl : e.link; },
+  thumb(e) { return (e.file_path && /^image\//.test(e.mime || '')) ? sb.storage.from(CFG.BUCKET).getPublicUrl(e.file_path).data.publicUrl : null; }
+};
+const API = REMOTE ? Remote : Local;
+
+/* ============ الحالة ============ */
+const DEVICE = localStorage.getItem('sh_dev') || (() => { const v = uid(); localStorage.setItem('sh_dev', v); return v; })();
+const S = { programs: [], state: {}, evidence: [], user: localStorage.getItem('sh_user') || '', admin: sessionStorage.getItem('sh_admin') === '1', route: 'home', f: { sem: '', tl: '', ev: '', q: '', std: '' }, open: null, tab: 'info', dlg: null, err: '', loading: true, cal: { y: TODAY.y, m: TODAY.m, sel: null } };
+let PICKED = [];
+const st = id => S.state[id] || {};
+const curOf = p => { const v = st(p.id).cur; return (v == null || v === '') ? p.base : +v; };
+function ach(p) {
+  const cur = curOf(p), t = +p.tgt;
+  if (p.low) { const den = p.base - t; return den <= 0 ? 100 : clamp((p.base - cur) / den * 100); }
+  return t > 0 ? clamp(cur / t * 100) : 0;
+}
+const evOf = id => S.evidence.filter(e => e.program_id === id);
+const hasM = (p, k) => { const m = st(p.id)[k]; return !!(m && m.v != null && m.v !== ''); };
+const sortP = (a, b) => hkey(parseH(a.from)) - hkey(parseH(b.from)) || hkey(parseH(a.to)) - hkey(parseH(b.to)) || a.sem - b.sem || a.no - b.no;
+function timeline(p) { const a = hkey(parseH(p.from)), b = hkey(parseH(p.to)); return TK < a ? ['قادم', 'soon'] : TK > b ? ['انتهى', 'done'] : ['جارٍ الآن', 'now']; }
+const pid = p => String(p.id).startsWith('c-') ? 'مضاف' : (p.sem === 1 ? 'ف١' : 'ف٢') + '·' + ar(p.no);
+const domOf = p => PLAN.domains[p.domain - 1];
+function domainStats(n) {
+  const ps = S.programs.filter(p => p.domain === n); const ids = new Set(ps.map(p => p.id));
+  return { n: ps.length, avg: ps.length ? ps.reduce((a, p) => a + ach(p), 0) / ps.length : 0, ev: ps.filter(p => evOf(p.id).length).length, pre: ps.filter(p => hasM(p, 'pre')).length, post: ps.filter(p => hasM(p, 'post')).length, files: S.evidence.filter(e => ids.has(e.program_id)).length };
+}
+function stdGroups(n) {
+  const ps = S.programs.filter(p => p.domain === n);
+  const order = PLAN.standards.filter(s => s.domain === n).map(s => s.title);
+  const map = new Map(order.map(t => [t, []]));
+  ps.forEach(p => { if (!map.has(p.std)) map.set(p.std, []); map.get(p.std).push(p); });
+  return [...map].map(([title, list]) => ({ title, code: (list[0] && list[0].code) || (PLAN.standards.find(s => s.title === title) || {}).code || '', list: list.sort(sortP) }));
+}
+
+/* ============ مساعدات الواجهة ============ */
+function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.className = 'show' + (bad ? ' bad' : ''); clearTimeout(toast.t); toast.t = setTimeout(() => { t.className = ''; }, 3200); }
+function busy(msg) { const b = $('#busy'); if (msg) { $('#busyMsg').textContent = msg; b.classList.add('on'); } else b.classList.remove('on'); }
+function ring(v, sz) {
+  sz = sz || 96; const r = sz / 2 - 7, c = 2 * Math.PI * r;
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" class="ring" style="color:var(--ink)"><circle cx="${sz / 2}" cy="${sz / 2}" r="${r}" fill="none" stroke="#e3ecea" stroke-width="7"/><circle cx="${sz / 2}" cy="${sz / 2}" r="${r}" fill="none" stroke="var(--dc,#0d6b5f)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - clamp(v) / 100)}" transform="rotate(-90 ${sz / 2} ${sz / 2})"/><text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" font-size="${sz * .24}" font-weight="800" fill="currentColor">${p0(v)}</text></svg>`;
+}
+function csv(rows) { return '﻿' + rows.map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(',')).join('\r\n'); }
+function dl(name, text) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500); }
+function lockScroll() { document.body.style.overflow = (S.open || S.dlg) ? 'hidden' : ''; }
+
+/* ============ العرض: الإطار ============ */
+function headerHTML() {
+  return `<header class="hd"><div class="hd-in"><div class="brand"><div class="logo">${LOGO}</div><div><h1>شواهدي</h1><p>${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ</p></div></div>
+  <div class="hd-r"><span class="today">${fmtHW(hstr(TODAY))} · ${greg(hstr(TODAY))}</span><button class="chipbtn" data-act="name">${S.user ? esc(S.user) : 'تعريف الاسم'}</button><button class="icbtn" data-act="settings" aria-label="الإعدادات">${ico('gear', 20)}</button></div></div></header>`;
+}
+function navHTML() {
+  const items = [['home', 'الرئيسية', '#/']].concat(PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n])).concat([['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
+  return `<nav class="nv"><div class="nv-in">${items.map(([k, t, h]) => `<a href="${h}" class="${S.route === k ? 'on' : ''}">${t}</a>`).join('')}</div></nav>`;
+}
+function banner() {
+  let b = '';
+  if (S.err) b += `<div class="banner err">${esc(S.err)}</div>`;
+  if (!REMOTE) b += `<div class="banner">وضع التجربة: البيانات والملفات محفوظة على هذا الجهاز فقط. لربط التطبيق بقاعدة بيانات مشتركة لجميع المستخدمين اتبع خطوات ملف README.</div>`;
+  if (!HAS_UQ) b += `<div class="banner">تعذّر تحميل تقويم أم القرى في هذا المتصفح، وتُعرض التواريخ بتقدير حسابي قد يختلف يوماً واحداً، ولن تظهر أسماء الأيام.</div>`;
+  return b;
+}
+function render() {
+  const app = $('#app');
+  if (S.loading) { app.innerHTML = headerHTML() + '<div class="wrap"><p class="empty"><span class="spin"></span> جاري تحميل شواهدي…</p></div>'; return; }
+  let body = '';
+  if (S.route === 'home') body = viewHome();
+  else if (/^d[1-4]$/.test(S.route)) body = viewDomain(+S.route.slice(1));
+  else if (S.route === 'cal') body = viewCal();
+  else body = viewEv();
+  app.innerHTML = headerHTML() + navHTML() + `<main class="wrap">${banner()}${body}<div class="foot">شواهدي · ${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ · تقويم أم القرى</div></main>`;
+  renderModal(); renderDlg();
+}
+
+/* ============ الرئيسية ============ */
+function domCard(d) {
+  const s = domainStats(d.n);
+  return `<a class="dc card" href="#/d${d.n}" style="--dc:${d.color}"><div class="dc-t"><b>${d.title}</b>${ring(s.avg, 58)}</div>
+  <div class="dc-g"><div><b>${ar(s.n)}</b><small>برنامج</small></div><div><b>${ar(s.files)}</b><small>شاهد</small></div><div><b>${ar(s.ev)}</b><small>برنامج موثّق</small></div><div><b>${ar(s.post)}</b><small>قياس بعدي</small></div></div>
+  <div class="ext">التقويم الخارجي ${p1(d.ext)} ← المستهدف ${p1(d.tgt)}</div></a>`;
+}
+function liProg(p, sub) { const d = domOf(p); return `<div class="li" data-open="${p.id}" data-tab="${sub || 'info'}" style="--dc:${d.color}"><span class="dot"></span><div><b>${esc(p.name)}</b><small>${d.title} · ${rangeH(p)}</small></div></div>`; }
+function viewHome() {
+  const all = S.programs; const avg = all.length ? all.reduce((a, p) => a + ach(p), 0) / all.length : 0;
+  const withEv = all.filter(p => evOf(p.id).length).length;
+  const now = all.filter(p => timeline(p)[1] === 'now');
+  const gap = now.filter(p => !evOf(p.id).length).sort((a, b) => hkey(parseH(a.to)) - hkey(parseH(b.to))).slice(0, 8);
+  const rec = S.evidence.slice(0, 6);
+  const sem = n => { const l = all.filter(p => p.sem === n); return l.length ? l.reduce((a, p) => a + ach(p), 0) / l.length : 0; };
+  return `<section class="hero card" style="--dc:#0d6b5f">${ring(avg, 104)}<div class="t"><h2>نسبة الإنجاز العامة للخطة</h2><p>الفصل الأول ${p0(sem(1))} · الفصل الثاني ${p0(sem(2))}</p>
+  <div class="kpis"><div class="kpi"><b>${ar(all.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(S.evidence.length)}</b><small>شاهد وتقرير</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div><div class="kpi"><b>${ar(now.length)}</b><small>جارٍ الآن</small></div></div></div></section>
+  <section class="dgrid">${PLAN.domains.map(domCard).join('')}</section>
+  <div class="two"><section class="card"><h3>برامج جارية الآن وبلا شواهد</h3>${gap.length ? gap.map(p => liProg(p, 'ev')).join('') : '<p class="empty">لا توجد برامج جارية بلا شواهد.</p>'}</section>
+  <section class="card"><h3>آخر الشواهد المضافة</h3>${rec.length ? rec.map(e => { const p = S.programs.find(x => x.id === e.program_id); return p ? `<div class="li" data-open="${p.id}" data-tab="ev" style="--dc:${domOf(p).color}"><span class="dot"></span><div><b>${esc(e.title)}</b><small>${esc(p.name)} · ${esc(e.added_by || '')}</small></div></div>` : ''; }).join('') : '<p class="empty">لم تُضف شواهد بعد.</p>'}</section></div>`;
+}
+
+/* ============ صفحة المجال ============ */
+function pcard(p) {
+  const s = st(p.id), a = ach(p), tl = timeline(p), n = evOf(p.id).length, cur = curOf(p);
+  const pre = hasM(p, 'pre'), post = hasM(p, 'post');
+  return `<article class="pc" data-open="${p.id}" style="--dc:${domOf(p).color}">
+  <div class="pc-top"><span class="pid">${pid(p)}</span><span class="chip sem">${p.sem === 1 ? 'الفصل الأول' : 'الفصل الثاني'}</span><span class="chip ${tl[1]}">${tl[0]}</span>${s.status ? `<span class="chip ${STC[s.status]}">${s.status}</span>` : ''}</div>
+  <h4>${esc(p.name)}</h4>
+  <div class="meta">${ico('cal', 14)} ${rangeH(p)}</div>
+  <div class="meta">${esc(p.lead)}</div>
+  <div class="bar"><i style="width:${a}%"></i></div>
+  <div class="nums"><span>الحالية ${p1(cur)}</span><span>المستهدف ${p1(p.tgt)}</span><b>الإنجاز ${p0(a)}</b></div>
+  <div class="tags"><span class="tg ${n ? 'ok' : ''}">${ico('clip', 13)} ${ar(n)} شاهد</span><span class="tg ${pre ? 'ok' : ''}">قياس قبلي ${pre ? '✓' : '—'}</span><span class="tg ${post ? 'ok' : ''}">قياس بعدي ${post ? '✓' : '—'}</span></div></article>`;
+}
+function passes(p) {
+  const f = S.f;
+  if (f.sem && String(p.sem) !== f.sem) return false;
+  if (f.tl && timeline(p)[1] !== f.tl) return false;
+  if (f.ev === 'no' && evOf(p.id).length) return false;
+  if (f.ev === 'yes' && !evOf(p.id).length) return false;
+  if (f.q) { const t = [p.name, p.lead, p.sup, p.ind, p.who, p.how].join(' ').toLowerCase(); if (!t.includes(f.q.toLowerCase())) return false; }
+  return true;
+}
+function groupsHTML(n) {
+  const out = [];
+  stdGroups(n).forEach(g => {
+    if (S.f.std && g.title !== S.f.std) return;
+    const list = g.list.filter(passes); if (!list.length) return;
+    const avg = g.list.reduce((a, p) => a + ach(p), 0) / (g.list.length || 1);
+    let h = `<section class="sg"><div class="sg-h"><div><b>${esc(g.title)}</b><small>المعيار <bdi dir="ltr">${esc(g.code)}</bdi> · ${ar(g.list.length)} برنامج</small></div><span class="avg">${p0(avg)}</span></div>`;
+    let last = '';
+    list.forEach(p => { const a = parseH(p.from), k = a.y + '/' + a.m; if (k !== last) { last = k; h += `<div class="mh">${MONTHS[a.m - 1]} ${ar(a.y)}هـ · ${monthGreg(a.y, a.m)}</div><div class="pgrid">`; if (false) h += ''; } h += pcard(p); const nx = list[list.indexOf(p) + 1]; if (!nx || (parseH(nx.from).y + '/' + parseH(nx.from).m) !== k) h += '</div>'; });
+    out.push(h + '</section>');
+  });
+  return out.join('') || '<div class="card empty">لا توجد برامج مطابقة للتصفية الحالية.</div>';
+}
+function dynHTML(n) {
+  const d = PLAN.domains[n - 1], s = domainStats(n);
+  const chips = stdGroups(n).map(g => `<button class="sc ${S.f.std === g.title ? 'on' : ''}" data-std="${esc(g.title)}">${esc(g.title)}</button>`).join('');
+  return `<div class="schips"><button class="sc ${S.f.std ? '' : 'on'}" data-std="">كل المعايير</button>${chips}</div>${groupsHTML(n)}`;
+}
+function viewDomain(n) {
+  const d = PLAN.domains[n - 1], s = domainStats(n); const f = S.f;
+  const o = (v, t, cur) => `<option value="${v}"${cur === v ? ' selected' : ''}>${t}</option>`;
+  return `<section class="dh card" style="--dc:${d.color}"><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">${ring(s.avg, 86)}<div style="flex:1;min-width:200px"><h2>المجال ${['الأول', 'الثاني', 'الثالث', 'الرابع'][n - 1]}: ${d.title}</h2>
+  <div class="sub">نتيجة التقويم الخارجي ${p1(d.ext)} ← المستهدف ${p1(d.tgt)}</div>
+  <div class="kpis"><div class="kpi"><b>${ar(s.n)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(s.files)}</b><small>شاهد وتقرير</small></div><div class="kpi"><b>${ar(s.ev)}</b><small>برنامج موثّق</small></div><div class="kpi"><b>${ar(s.pre)}/${ar(s.post)}</b><small>قبلي / بعدي</small></div></div></div></div></section>
+  <div class="tools card"><input id="f-q" type="search" placeholder="ابحث في البرامج أو الجهة أو المؤشر…" value="${esc(f.q)}">
+  <select id="f-sem">${o('', 'كل الفصول', f.sem)}${o('1', 'الفصل الأول', f.sem)}${o('2', 'الفصل الثاني', f.sem)}</select>
+  <select id="f-tl">${o('', 'كل المواعيد', f.tl)}${o('now', 'جارٍ الآن', f.tl)}${o('soon', 'قادم', f.tl)}${o('done', 'انتهى', f.tl)}</select>
+  <select id="f-ev">${o('', 'كل الشواهد', f.ev)}${o('no', 'بلا شواهد', f.ev)}${o('yes', 'لها شواهد', f.ev)}</select></div>
+  <div class="acts"><button class="btn" data-act="print" data-d="${n}">${ico('print', 17)} طباعة / PDF</button><button class="btn" data-act="csv-d" data-d="${n}">${ico('down', 17)} تصدير Excel</button><button class="btn pri" data-act="add-prog" data-d="${n}">${ico('plus', 17)} برنامج جديد</button></div>
+  <div id="dyn" style="--dc:${d.color}">${dynHTML(n)}</div>`;
+}
+function paintDyn() { const el = $('#dyn'); if (el && /^d[1-4]$/.test(S.route)) el.innerHTML = dynHTML(+S.route.slice(1)); }
+
+/* ============ التقويم الشهري (أم القرى) ============ */
+function viewCal() {
+  const { y, m } = S.cal, n = mlen(y, m);
+  const first = H2G[y + '/' + m + '/1']; const w0 = first != null ? new Date(first).getUTCDay() : 0;
+  const keyOf = d => y * 10000 + m * 100 + d;
+  let cells = WD.map((w, i) => `<div class="wh ${i >= 5 ? 'we' : ''}">${w}</div>`).join('');
+  for (let i = 0; i < w0; i++) cells += '<div class="cd blank"></div>';
+  for (let d = 1; d <= n; d++) {
+    const k = keyOf(d), wd = (w0 + d - 1) % 7;
+    const act = S.programs.filter(p => hkey(parseH(p.from)) <= k && hkey(parseH(p.to)) >= k);
+    const starts = act.filter(p => hkey(parseH(p.from)) === k), ends = act.filter(p => hkey(parseH(p.to)) === k);
+    const g = H2G[y + '/' + m + '/' + d]; const gd = g != null ? new Date(g) : null;
+    cells += `<div class="cd ${wd >= 5 ? 'we' : ''} ${act.length ? 'act' : ''} ${k === TK ? 'today' : ''} ${S.cal.sel === d ? 'sel' : ''}" data-day="${d}"><b>${ar(d)}</b><small>${gd ? ar(gd.getUTCDate()) + ' ' + GM[gd.getUTCMonth()] : ''}</small>${act.length ? `<span class="cnt">${ar(act.length)}</span>` : ''}<div class="dots">${starts.slice(0, 5).map(p => `<i style="--dc:${domOf(p).color}"></i>`).join('')}${starts.length > 5 ? '<em>+' + ar(starts.length - 5) + '</em>' : ''}${ends.length ? `<em>تنتهي ${ar(ends.length)}</em>` : ''}</div></div>`;
+  }
+  let list = '';
+  if (S.cal.sel) {
+    const d = S.cal.sel, k = keyOf(d), ds = y + '/' + m + '/' + d;
+    const act = S.programs.filter(p => hkey(parseH(p.from)) <= k && hkey(parseH(p.to)) >= k).sort(sortP);
+    const grp = (t, l) => l.length ? `<h4>${t} (${ar(l.length)})</h4>${l.map(p => liProg(p)).join('')}` : '';
+    list = `<section class="card cal-l"><h3>${fmtHW(ds)} · ${greg(ds)}</h3>${act.length ? grp('تبدأ اليوم', act.filter(p => p.from === ds)) + grp('تنتهي اليوم', act.filter(p => p.to === ds && p.from !== ds)) + grp('جارية', act.filter(p => p.from !== ds && p.to !== ds)) : '<p class="empty">لا توجد برامج في هذا اليوم.</p>'}</section>`;
+  }
+  return `<div class="card"><div class="cal-h"><button class="btn sm" data-act="cal-next" aria-label="الشهر التالي">›</button><h2 style="text-align:center">${MONTHS[m - 1]} ${ar(y)}هـ<small>${monthGreg(y, m)} · تقويم أم القرى</small></h2><button class="btn sm" data-act="cal-prev" aria-label="الشهر السابق">‹</button></div>
+  <div style="text-align:center;margin-bottom:10px"><button class="btn sm" data-act="cal-today">اليوم</button></div>
+  <div class="cal">${cells}</div><p class="hint">الأيام الملونة فيها برامج، والنقاط الملونة تدل على برامج تبدأ في ذلك اليوم بلون مجالها، واضغط اليوم لعرض برامجه.</p></div>${list}`;
+}
+
+/* ============ سجل الشواهد ============ */
+function viewEv() {
+  const f = S.evf || (S.evf = { d: '', k: '', q: '' });
+  let list = S.evidence.filter(e => { const p = S.programs.find(x => x.id === e.program_id); if (!p) return false; if (f.d && String(p.domain) !== f.d) return false; if (f.k && e.kind !== f.k) return false; if (f.q && !(e.title + ' ' + (e.note || '') + ' ' + p.name + ' ' + (e.added_by || '')).toLowerCase().includes(f.q.toLowerCase())) return false; return true; });
+  const o = (v, t, c) => `<option value="${v}"${c === v ? ' selected' : ''}>${t}</option>`;
+  return `<div class="tools card"><input id="e-q" type="search" placeholder="ابحث في الشواهد…" value="${esc(f.q)}"><select id="e-d">${o('', 'كل المجالات', f.d)}${PLAN.domains.map(d => o(String(d.n), d.title, f.d)).join('')}</select><select id="e-k">${o('', 'كل الأنواع', f.k)}${KINDS.map(k => o(k, k, f.k)).join('')}</select></div>
+  <div class="acts"><button class="btn" data-act="csv-ev">${ico('down', 17)} تصدير فهرس الشواهد (Excel)</button></div>
+  <div id="evlist">${evListHTML(list)}</div>`;
+}
+function evListHTML(list) { return list.length ? list.slice(0, 200).map(e => { const p = S.programs.find(x => x.id === e.program_id); return `<div style="--dc:${domOf(p).color}">${evItem(e, p)}</div>`; }).join('') + (list.length > 200 ? '<p class="empty">يُعرض أحدث ٢٠٠ شاهد، استخدم البحث للوصول لغيرها.</p>' : '') : '<div class="card empty">لا توجد شواهد مطابقة.</div>'; }
+function paintEv() {
+  const f = S.evf; const list = S.evidence.filter(e => { const p = S.programs.find(x => x.id === e.program_id); if (!p) return false; if (f.d && String(p.domain) !== f.d) return false; if (f.k && e.kind !== f.k) return false; if (f.q && !(e.title + ' ' + (e.note || '') + ' ' + p.name + ' ' + (e.added_by || '')).toLowerCase().includes(f.q.toLowerCase())) return false; return true; });
+  const el = $('#evlist'); if (el) el.innerHTML = evListHTML(list);
+}
+const canDel = e => S.admin || e.device === DEVICE;
+function evItem(e, prog) {
+  const th = API.thumb(e), isImg = /^image\//.test(e.mime || '');
+  const when = e.event_date ? fmtHW(e.event_date) : fmtHW(hstr(uq(Date.parse(e.created_at) - Date.parse(e.created_at) % 864e5) || TODAY));
+  return `<div class="ev"><div class="ev-th">${th ? `<img loading="lazy" src="${esc(th)}" alt="">` : ico(isImg ? 'img' : (e.file_path ? 'file' : 'link'), 26)}</div>
+  <div class="ev-b"><b>${esc(e.title)}</b><small>${esc(e.kind || '')}${e.file_name ? ' · ' + esc(e.file_name) + (e.size ? ' · ' + fsize(e.size) : '') : (e.link ? ' · رابط' : '')}</small>
+  <small>${prog ? esc(prog.name) + ' · ' : ''}أضافه ${esc(e.added_by || '—')} · ${when}</small>${e.note ? `<p>${esc(e.note)}</p>` : ''}</div>
+  <div class="ev-a"><button class="btn sm" data-act="ev-view" data-id="${esc(e.id)}">عرض</button>${canDel(e) ? `<button class="btn sm danger" data-act="ev-del" data-id="${esc(e.id)}" aria-label="حذف">${ico('trash', 15)}</button>` : ''}</div></div>`;
+}
+
+/* ============ نافذة البرنامج ============ */
+function paneInfo(p) {
+  const s = st(p.id), cur = curOf(p), a = ach(p), g = rangeG(p);
+  return `<dl class="dl"><div class="full"><dt>الفترة (تقويم أم القرى)</dt><dd>${rangeH(p)}${g ? `<small>${g}</small>` : ''}</dd></div>
+  <div><dt>الفصل الدراسي</dt><dd>${p.sem === 1 ? 'الأول' : 'الثاني'}</dd></div><div><dt>المعيار</dt><dd>${esc(p.std)} <bdi dir="ltr">(${esc(p.code || '')})</bdi></dd></div>
+  <div><dt>المستهدفون</dt><dd>${tx(p.who)}</dd></div><div><dt>أسلوب التنفيذ</dt><dd>${tx(p.how)}</dd></div>
+  <div><dt>الجهة الرئيسة</dt><dd>${esc(p.lead)}</dd></div><div><dt>الجهة المساندة</dt><dd>${esc(p.sup)}</dd></div>
+  <div class="full"><dt>مؤشر الإنجاز</dt><dd>${tx(p.ind)}</dd></div></dl>
+  <div class="box"><h4>تحديد نسبة الإنجاز</h4>
+  <div class="row3"><label>النسبة الحالية ٪<input id="i-cur" type="number" step="0.01" min="0" max="100" inputmode="decimal" value="${cur}"></label><label>المستهدف ٪<input value="${p.tgt}" disabled></label><label>حالة التنفيذ<select id="i-st"><option value="">غير محددة</option>${STATUS.map(x => `<option${s.status === x ? ' selected' : ''}>${x}</option>`).join('')}</select></label></div>
+  <div class="bar big"><i style="width:${a}%"></i></div><div class="nums"><span>نسبة الإنجاز من المستهدف</span><b>${p0(a)}</b></div>
+  <p class="hint">${p.low ? 'في هذا البرنامج كلما انخفضت النسبة كان ذلك أفضل، فتُحسب نسبة الإنجاز بمقدار الانخفاض عن خط الأساس (' + p1(p.base) + ') نحو المستهدف.' : 'نسبة الإنجاز = النسبة الحالية ÷ المستهدف.'}</p>
+  <label>ملاحظات المتابعة<textarea id="i-note">${esc(s.note || '')}</textarea></label>
+  <button class="btn pri" data-act="save-info" data-id="${esc(p.id)}">حفظ الإنجاز</button>${s.at ? `<p class="hint">آخر تحديث بواسطة ${esc(s.by || '—')} · ${fmtHW(hstr(uq(Date.parse(s.at) - Date.parse(s.at) % 864e5) || TODAY))}</p>` : ''}</div>
+  <div class="acts"><button class="btn" data-act="edit-prog" data-id="${esc(p.id)}">${S.admin ? ico('pen', 16) : ico('lock', 16)} تعديل بيانات البرنامج</button><button class="btn danger" data-act="del-prog" data-id="${esc(p.id)}">${ico('trash', 16)} حذف البرنامج</button></div>`;
+}
+function msrBox(kind, title, m) {
+  m = m || {};
+  return `<div class="box"><h4>${title}</h4><label>أداة القياس<input id="m-${kind}-tool" value="${esc(m.tool || '')}" placeholder="اختبار / استبانة / بطاقة ملاحظة"></label>
+  <label>تاريخ القياس${hpick('m-' + kind + '-date', m.date)}</label>
+  <label>النتيجة ٪<input id="m-${kind}-v" type="number" step="0.01" min="0" max="100" inputmode="decimal" value="${m.v == null ? '' : m.v}"></label>
+  <label>ملاحظات<textarea id="m-${kind}-note">${esc(m.note || '')}</textarea></label></div>`;
+}
+function paneMsr(p) {
+  const s = st(p.id), pre = s.pre, post = s.post;
+  let gain = '';
+  if (pre && post && pre.v != null && post.v != null && pre.v !== '' && post.v !== '') {
+    const g = p.low ? (+pre.v - +post.v) : (+post.v - +pre.v);
+    gain = `<div class="gain ${g > 0 ? 'up' : g < 0 ? 'dn' : 'eq'}">${g > 0 ? 'تحسّن بمقدار ' + ar(+g.toFixed(2)) + ' نقطة مئوية' : g < 0 ? 'تراجع بمقدار ' + ar(+Math.abs(g).toFixed(2)) + ' نقطة مئوية' : 'لا فرق بين القياسين'}</div>`;
+  }
+  const fmtV = m => m && m.v != null && m.v !== '' ? p1(m.v) : '—';
+  return `<p class="hint">قياس أثر البرنامج بنتيجتين: قبل التنفيذ وبعده، ويُحسب الأثر تلقائياً.${p.low ? ' (كلما انخفضت النتيجة كان ذلك أفضل في هذا البرنامج)' : ''}</p>
+  <div class="cmp"><div><small>القياس القبلي</small><b>${fmtV(pre)}</b></div><div><small>القياس البعدي</small><b>${fmtV(post)}</b></div></div>${gain}
+  ${msrBox('pre', 'القياس القبلي', pre)}${msrBox('post', 'القياس البعدي', post)}
+  <div class="acts"><button class="btn pri" data-act="save-msr" data-id="${esc(p.id)}">حفظ القياس</button><button class="btn" data-act="adopt-post" data-id="${esc(p.id)}">اعتماد البعدي كنسبة حالية</button></div>`;
+}
+function paneEv(p) {
+  const evs = evOf(p.id);
+  return `<div class="box"><h4>إضافة شاهد أو تقرير</h4>
+  <div class="row2"><label>النوع<select id="ev-kind">${KINDS.map(k => `<option>${k}</option>`).join('')}</select></label><label>تاريخ الشاهد${hpick('ev-date')}</label></div>
+  <label>العنوان<input id="ev-title" placeholder="مثال: صور فعالية اليوم الوطني"></label>
+  <label>وصف مختصر<textarea id="ev-note"></textarea></label>
+  <label>رابط (اختياري)<input id="ev-link" type="url" dir="ltr" placeholder="https://"></label>
+  <div class="drop" id="drop"><div>اسحب الملفات هنا أو اخترها من جهازك</div><div class="btns"><button type="button" class="btn" data-act="ev-pick">${ico('up', 17)} اختيار ملف</button><button type="button" class="btn" data-act="ev-cam">${ico('cam', 17)} تصوير بالكاميرا</button></div><small>الصيغ: PDF · Word · Excel · PowerPoint · صور · فيديو · صوت · ZIP — حتى ${ar(CFG.MAX_FILE_MB)} ميجابايت للملف</small></div>
+  <input type="file" id="ev-file" multiple accept="${ACCEPT}" hidden><input type="file" id="ev-cam" accept="image/*" capture="environment" hidden>
+  <div class="picked" id="picked">${pickedHTML()}</div>
+  <button class="btn pri" data-act="ev-submit" data-id="${esc(p.id)}">${ico('up', 17)} رفع وحفظ</button></div>
+  <h4 style="margin:6px 0 8px">الشواهد المضافة (${ar(evs.length)})</h4>${evs.length ? evs.map(e => evItem(e)).join('') : '<p class="empty">لم تُضف شواهد لهذا البرنامج بعد.</p>'}`;
+}
+const pickedHTML = () => PICKED.map((f, i) => `<div class="pk">${ico(/^image\//.test(f.type) ? 'img' : 'file', 18)}<span>${esc(f.name)} · ${fsize(f.size)}</span><button type="button" data-act="ev-rm" data-i="${i}" aria-label="إزالة">${ico('x', 16)}</button></div>`).join('');
+function renderModal() {
+  const root = $('#modalRoot'); const p = S.open && S.programs.find(x => x.id === S.open);
+  if (!p) { root.innerHTML = ''; lockScroll(); return; }
+  const keep = root.querySelector('.sh-bd') ? root.querySelector('.sh-bd').scrollTop : 0;
+  const d = domOf(p), tl = timeline(p), n = evOf(p.id).length;
+  root.innerHTML = `<div class="ov" style="--dc:${d.color}"><div class="sheet"><div class="sh-hd"><div><div class="pc-top"><span class="pid">${pid(p)}</span><span class="chip sem">${p.sem === 1 ? 'الفصل الأول' : 'الفصل الثاني'}</span><span class="chip ${tl[1]}">${tl[0]}</span></div><h3>${esc(p.name)}</h3></div><button class="x" data-act="close-prog" aria-label="إغلاق">${ico('x', 18)}</button></div>
+  <div class="tabs"><button data-tab="info" class="${S.tab === 'info' ? 'on' : ''}">الإنجاز والتفاصيل</button><button data-tab="msr" class="${S.tab === 'msr' ? 'on' : ''}">قياس الأثر</button><button data-tab="ev" class="${S.tab === 'ev' ? 'on' : ''}">الشواهد والتقارير (${ar(n)})</button></div>
+  <div class="sh-bd"><div class="pane ${S.tab === 'info' ? 'on' : ''}" data-pane="info">${paneInfo(p)}</div><div class="pane ${S.tab === 'msr' ? 'on' : ''}" data-pane="msr">${paneMsr(p)}</div><div class="pane ${S.tab === 'ev' ? 'on' : ''}" data-pane="ev">${paneEv(p)}</div></div></div></div>`;
+  const bd = root.querySelector('.sh-bd'); if (bd) bd.scrollTop = keep; lockScroll();
+}
+
+/* ============ الحوارات ============ */
+function renderDlg() {
+  const root = $('#dlgRoot'); const d = S.dlg; if (!d) { root.innerHTML = ''; lockScroll(); return; }
+  let inner = '';
+  if (d.t === 'name') inner = `<h3>ما اسمك؟</h3><p class="hint">يظهر اسمك بجانب كل شاهد أو تحديث تضيفه.</p><label>الاسم<input id="nm" value="${esc(S.user)}" placeholder="مثال: محمد العتيبي" autofocus></label><div class="row"><button class="btn pri" data-act="save-name">حفظ</button><button class="btn" data-act="close-dlg">إلغاء</button></div>`;
+  else if (d.t === 'pin') inner = `<h3>رمز المشرف</h3><p class="hint">مطلوب لتعديل بيانات البرامج وحذفها.</p><label>الرمز<input id="pin" type="password" inputmode="numeric" autofocus></label><div class="row"><button class="btn pri" data-act="pin-ok">دخول</button><button class="btn" data-act="close-dlg">إلغاء</button></div>`;
+  else if (d.t === 'img') inner = `<div class="lb"><img src="${esc(d.url)}" alt=""><p>${esc(d.title)}</p></div>`;
+  else if (d.t === 'settings') inner = `<h3>الإعدادات</h3>
+    <label>اسمك<input id="nm" value="${esc(S.user)}"></label><button class="btn sm" data-act="save-name">حفظ الاسم</button>
+    <div class="box" style="margin-top:14px"><h4>المشرف</h4><p class="hint">${S.admin ? 'أنت مسجّل كمشرف في هذه الجلسة.' : 'سجّل الدخول لتعديل البرامج وحذف أي شاهد.'}</p>${S.admin ? '<button class="btn" data-act="admin-out">خروج المشرف</button>' : '<button class="btn" data-act="admin-in">' + ico('lock', 16) + ' دخول المشرف</button>'}</div>
+    <div class="box"><h4>البيانات</h4><p class="hint">${REMOTE ? 'متصل بقاعدة البيانات المشتركة.' : 'وضع التجربة: البيانات على هذا الجهاز فقط.'}</p><div class="acts"><button class="btn sm" data-act="csv-all">تصدير كل البرامج (Excel)</button><button class="btn sm" data-act="csv-ev">تصدير فهرس الشواهد</button><button class="btn sm" data-act="restore">استعادة برامج الخطة المحذوفة</button></div></div>
+    <div class="row"><button class="btn" data-act="close-dlg">إغلاق</button></div>`;
+  else if (d.t === 'edit') inner = editForm(d.id, d.domain);
+  root.innerHTML = `<div class="ov top" id="dlgOv"><div class="dlg" ${d.t === 'img' ? 'style="background:none;padding:0;max-width:none"' : ''}>${inner}</div></div>`;
+  lockScroll();
+}
+function editForm(id, dom) {
+  const p = id ? S.programs.find(x => x.id === id) : null;
+  const v = p || { sem: S.cal && 1, domain: dom || 1, std: '', code: '', name: '', from: hstr(TODAY), to: hstr(TODAY), who: '', how: '', lead: '', sup: '', ind: '', base: 0, tgt: 100, low: false };
+  const stds = k => [...new Set(PLAN.standards.filter(s => s.domain === k).map(s => s.title).concat(S.programs.filter(x => x.domain === k).map(x => x.std)))];
+  return `<h3>${p ? 'تعديل البرنامج' : 'برنامج جديد'}</h3>
+  <label>اسم البرنامج<input id="pf-name" value="${esc(v.name)}"></label>
+  <div class="row2"><label>المجال<select id="pf-dom">${PLAN.domains.map(d => `<option value="${d.n}"${v.domain === d.n ? ' selected' : ''}>${d.title}</option>`).join('')}</select></label><label>الفصل الدراسي<select id="pf-sem"><option value="1"${v.sem === 1 ? ' selected' : ''}>الأول</option><option value="2"${v.sem === 2 ? ' selected' : ''}>الثاني</option></select></label></div>
+  <label>المعيار<input id="pf-std" list="pf-stds" value="${esc(v.std)}" placeholder="اختر معياراً أو اكتب معياراً جديداً"></label><datalist id="pf-stds">${stds(v.domain).map(t => `<option value="${esc(t)}"></option>`).join('')}</datalist>
+  <label>رمز المعيار (للمعيار الجديد)<input id="pf-code" value="${esc(v.code || '')}" dir="ltr"></label>
+  <div class="row2"><label>تاريخ البداية${hpick('pf-from', v.from)}</label><label>تاريخ النهاية${hpick('pf-to', v.to)}</label></div>
+  <label>المستهدفون<input id="pf-who" value="${esc(v.who)}"></label><label>أسلوب التنفيذ<textarea id="pf-how">${esc(v.how)}</textarea></label>
+  <div class="row2"><label>الجهة الرئيسة<input id="pf-lead" value="${esc(v.lead)}"></label><label>الجهة المساندة<input id="pf-sup" value="${esc(v.sup)}"></label></div>
+  <label>مؤشر الإنجاز<textarea id="pf-ind">${esc(v.ind)}</textarea></label>
+  <div class="row2"><label>النسبة الحالية في الخطة ٪<input id="pf-base" type="number" step="0.01" value="${v.base}"></label><label>المستهدف ٪<input id="pf-tgt" type="number" step="0.01" value="${v.tgt}"></label></div>
+  <label style="display:flex;gap:8px;align-items:center"><input id="pf-low" type="checkbox" style="width:auto"${v.low ? ' checked' : ''}> كلما انخفضت النسبة كان أفضل</label>
+  <div class="row"><button class="btn pri" data-act="save-prog" data-id="${p ? esc(p.id) : ''}">حفظ</button><button class="btn" data-act="close-dlg">إلغاء</button></div>`;
+}
+
+/* ============ الإجراءات ============ */
+function needName(cb) { if (S.user) return cb(); S.dlg = { t: 'name', then: cb }; renderDlg(); }
+function needAdmin(cb) { if (S.admin) return cb(); S.dlg = { t: 'pin', then: cb }; renderDlg(); }
+function closeDlg() { S.dlg = null; renderDlg(); }
+function openProg(id, tab) { S.open = id; S.tab = tab || 'info'; PICKED = []; renderModal(); }
+function closeProg() { S.open = null; PICKED = []; renderModal(); render(); }
+function setTab(t) { S.tab = t; $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t)); $$('.pane').forEach(x => x.classList.toggle('on', x.dataset.pane === t)); }
+
+async function saveState(id, patch, msg) {
+  const cur = Object.assign({}, st(id), patch, { by: S.user, at: new Date().toISOString() });
+  busy('جاري الحفظ…');
+  try { await API.saveState(id, cur); S.state[id] = cur; toast(msg || 'تم الحفظ'); } catch (e) { toast('تعذّر الحفظ: ' + (e.message || e), true); }
+  busy(false); render();
+}
+function saveInfo(id) {
+  needName(() => {
+    const c = num($('#i-cur').value); if (c == null || c < 0 || c > 100) return toast('أدخل نسبة بين ٠ و ١٠٠', true);
+    saveState(id, { cur: c, status: $('#i-st').value, note: $('#i-note').value.trim() }, 'تم حفظ نسبة الإنجاز');
+  });
+}
+function readM(k) {
+  const v = $('#m-' + k + '-v').value.trim(), tool = $('#m-' + k + '-tool').value.trim(), note = $('#m-' + k + '-note').value.trim();
+  if (v === '' && !tool && !note) return null;
+  if (v !== '' && (isNaN(+v) || +v < 0 || +v > 100)) throw new Error('نتيجة القياس يجب أن تكون بين ٠ و ١٠٠');
+  const date = readH('m-' + k + '-date'); if (!validH(date)) throw new Error('تاريخ القياس غير موجود في تقويم أم القرى');
+  return { v: v === '' ? null : +v, tool, note, date };
+}
+function saveMsr(id) {
+  needName(() => { let pre, post; try { pre = readM('pre'); post = readM('post'); } catch (e) { return toast(e.message, true); } saveState(id, { pre, post }, 'تم حفظ قياس الأثر'); });
+}
+function adoptPost(id) {
+  const m = st(id).post; if (!m || m.v == null) return toast('أدخل نتيجة القياس البعدي أولاً وسجّلها', true);
+  needName(() => saveState(id, { cur: m.v }, 'اعتُمد القياس البعدي نسبةً حالية'));
+}
+function pickFiles(list) {
+  [...list].forEach(f => { if (f.size > CFG.MAX_FILE_MB * 1048576) toast('الملف ' + f.name + ' أكبر من ' + ar(CFG.MAX_FILE_MB) + ' ميجابايت', true); else PICKED.push(f); });
+  const el = $('#picked'); if (el) el.innerHTML = pickedHTML();
+}
+async function maybeCompress(f) {
+  if (!/^image\/(jpeg|png|webp)$/.test(f.type) || f.size < 600 * 1024) return f;
+  try {
+    const bmp = await createImageBitmap(f); const sc = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc); c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', .82));
+    if (blob && blob.size < f.size) return new File([blob], f.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) { }
+  return f;
+}
+function submitEv(pid_) {
+  needName(async () => {
+    const title = $('#ev-title').value.trim(), note = $('#ev-note').value.trim(), link = $('#ev-link').value.trim(), kind = $('#ev-kind').value, date = readH('ev-date');
+    if (!validH(date)) return toast('تاريخ الشاهد غير موجود في تقويم أم القرى', true);
+    if (!PICKED.length && !link && !title) return toast('أضف ملفاً أو رابطاً أو عنواناً للشاهد', true);
+    const files = PICKED.length ? PICKED.slice() : [null]; let ok = 0;
+    for (let i = 0; i < files.length; i++) {
+      busy('جاري رفع ' + ar(i + 1) + ' من ' + ar(files.length) + '…');
+      try {
+        let f = files[i]; if (f) f = await maybeCompress(f);
+        const row = { id: uid(), program_id: pid_, kind, title: (files.length > 1 && title) ? title + ' (' + ar(i + 1) + ')' : (title || (f ? f.name : 'شاهد')), note, link, added_by: S.user, device: DEVICE, event_date: date, created_at: new Date().toISOString() };
+        await API.addEvidence(row, f); S.evidence.unshift(row); ok++;
+      } catch (e) { toast('تعذّر الرفع: ' + (e.message || e), true); }
+    }
+    PICKED = []; busy(false); if (ok) toast('تم حفظ ' + ar(ok) + ' من الشواهد');
+    S.tab = 'ev'; render();
+  });
+}
+async function viewEv_(id) {
+  const e = S.evidence.find(x => x.id === id); if (!e) return;
+  const url = await API.fileUrl(e); if (!url) return toast('الملف غير متاح على هذا الجهاز', true);
+  if (/^image\//.test(e.mime || '')) { S.dlg = { t: 'img', url, title: e.title }; renderDlg(); } else window.open(url, '_blank', 'noopener');
+}
+async function delEv(id) {
+  const e = S.evidence.find(x => x.id === id); if (!e || !canDel(e)) return;
+  if (!confirm('حذف هذا الشاهد نهائياً؟')) return;
+  busy('جاري الحذف…');
+  try { await API.deleteEvidence(e); S.evidence = S.evidence.filter(x => x.id !== id); toast('تم الحذف'); } catch (x) { toast('تعذّر الحذف: ' + (x.message || x), true); }
+  busy(false); render();
+}
+async function saveProg(id) {
+  const v = k => $('#' + k).value.trim(); const name = v('pf-name'); if (!name) return toast('أدخل اسم البرنامج', true);
+  const dom = +$('#pf-dom').value; const std = v('pf-std') || 'بدون معيار';
+  const from = readH('pf-from'), to = readH('pf-to');
+  if (!validH(from) || !validH(to)) return toast('أحد التاريخين غير موجود في تقويم أم القرى', true);
+  if (hkey(parseH(to)) < hkey(parseH(from))) return toast('تاريخ النهاية قبل تاريخ البداية', true);
+  const known = PLAN.standards.find(s => s.domain === dom && s.title === std) || S.programs.find(p => p.domain === dom && p.std === std);
+  const old = id ? S.programs.find(x => x.id === id) : null;
+  const p = Object.assign({}, old || {}, { id: id || 'c-' + Date.now().toString(36), sem: +$('#pf-sem').value, no: old ? old.no : 900 + S.programs.length, domain: dom, std, code: known ? known.code : v('pf-code'), name, from, to, who: v('pf-who'), how: v('pf-how'), lead: v('pf-lead'), sup: v('pf-sup'), ind: v('pf-ind'), base: num($('#pf-base').value) || 0, tgt: num($('#pf-tgt').value) || 0, low: $('#pf-low').checked });
+  busy('جاري الحفظ…');
+  try { await API.saveProgram(p); const i = S.programs.findIndex(x => x.id === p.id); if (i < 0) S.programs.push(p); else S.programs[i] = p; S.dlg = null; toast('تم حفظ البرنامج'); } catch (e) { toast('تعذّر الحفظ: ' + (e.message || e), true); }
+  busy(false); render();
+}
+async function delProg(id) {
+  const p = S.programs.find(x => x.id === id); if (!p) return;
+  if (!confirm('حذف البرنامج «' + p.name + '» مع جميع شواهده وقياساته نهائياً؟')) return;
+  busy('جاري الحذف…');
+  try { await API.deleteProgram(id); S.programs = S.programs.filter(x => x.id !== id); S.evidence = S.evidence.filter(e => e.program_id !== id); delete S.state[id]; S.open = null; toast('تم حذف البرنامج'); } catch (e) { toast('تعذّر الحذف: ' + (e.message || e), true); }
+  busy(false); render();
+}
+async function restorePlan() {
+  const have = new Set(S.programs.map(p => p.id)); const miss = buildPlan().filter(p => !have.has(p.id));
+  if (!miss.length) return toast('كل برامج الخطة موجودة');
+  busy('جاري الاستعادة…');
+  try { for (const p of miss) await API.saveProgram(p); S.programs = S.programs.concat(miss); toast('استُعيد ' + ar(miss.length) + ' برنامج'); } catch (e) { toast('تعذّرت الاستعادة: ' + (e.message || e), true); }
+  busy(false); render();
+}
+function csvPrograms(list, name) {
+  const rows = [['المجال', 'المعيار', 'رمز المعيار', 'الفصل', 'البرنامج', 'من (هجري)', 'يوم البداية', 'إلى (هجري)', 'يوم النهاية', 'المستهدفون', 'الجهة الرئيسة', 'الجهة المساندة', 'مؤشر الإنجاز', 'النسبة الحالية', 'المستهدف', 'نسبة الإنجاز', 'حالة التنفيذ', 'القياس القبلي', 'القياس البعدي', 'عدد الشواهد']];
+  list.slice().sort((a, b) => a.domain - b.domain || sortP(a, b)).forEach(p => { const s = st(p.id); rows.push([domOf(p).title, p.std, p.code, p.sem, p.name, p.from, wdOf(p.from), p.to, wdOf(p.to), p.who, p.lead, p.sup, p.ind, curOf(p), p.tgt, Math.round(ach(p)), s.status || '', hasM(p, 'pre') ? s.pre.v : '', hasM(p, 'post') ? s.post.v : '', evOf(p.id).length]); });
+  dl(name, csv(rows));
+}
+function csvEvidence() {
+  const rows = [['المجال', 'البرنامج', 'النوع', 'العنوان', 'الوصف', 'اسم الملف', 'رابط', 'تاريخ الشاهد (هجري)', 'أضافه']];
+  S.evidence.forEach(e => { const p = S.programs.find(x => x.id === e.program_id); if (p) rows.push([domOf(p).title, p.name, e.kind, e.title, e.note, e.file_name, e.link, e.event_date, e.added_by]); });
+  dl('فهرس-الشواهد.csv', csv(rows));
+}
+function printDomain(n) {
+  const d = PLAN.domains[n - 1];
+  const rows = stdGroups(n).map(g => `<tr class="gh"><td colspan="10">${esc(g.title)} — ${esc(g.code)}</td></tr>` + g.list.map((p, i) => { const s = st(p.id); return `<tr><td>${ar(i + 1)}</td><td>${esc(p.name)}</td><td>${rangeH(p)}</td><td>${esc(p.lead)}</td><td>${p1(curOf(p))}</td><td>${p1(p.tgt)}</td><td>${p0(ach(p))}</td><td>${hasM(p, 'pre') ? p1(s.pre.v) : '—'}</td><td>${hasM(p, 'post') ? p1(s.post.v) : '—'}</td><td>${ar(evOf(p.id).length)}</td></tr>`; }).join('')).join('');
+  $('#printSheet').innerHTML = `<h2>شواهدي — ${d.title}</h2><p>${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ · ${fmtHW(hstr(TODAY))}</p><table><thead><tr><th>م</th><th>البرنامج</th><th>الفترة</th><th>الجهة الرئيسة</th><th>الحالية</th><th>المستهدف</th><th>الإنجاز</th><th>قبلي</th><th>بعدي</th><th>الشواهد</th></tr></thead><tbody>${rows}</tbody></table>`;
+  setTimeout(() => window.print(), 80);
+}
+
+/* ============ الأحداث ============ */
+document.addEventListener('click', async e => {
+  const t = e.target;
+  if (t.classList && t.classList.contains('ov')) { if (t.id === 'dlgOv') closeDlg(); else closeProg(); return; }
+  const day = t.closest('[data-day]'); if (day) { S.cal.sel = +day.dataset.day; render(); return; }
+  const stdb = t.closest('[data-std]'); if (stdb) { S.f.std = stdb.dataset.std; paintDyn(); return; }
+  const el = t.closest('[data-act],[data-open],[data-tab]'); if (!el) return;
+  if (el.dataset.open) { openProg(el.dataset.open, el.dataset.tab); return; }
+  if (!el.dataset.act && el.dataset.tab) { setTab(el.dataset.tab); return; }
+  const a = el.dataset.act, id = el.dataset.id;
+  switch (a) {
+    case 'name': S.dlg = { t: 'name' }; renderDlg(); break;
+    case 'settings': S.dlg = { t: 'settings' }; renderDlg(); break;
+    case 'close-dlg': closeDlg(); break;
+    case 'close-prog': closeProg(); break;
+    case 'save-name': { const v = ($('#nm').value || '').trim(); if (!v) return toast('اكتب اسمك', true); S.user = v; localStorage.setItem('sh_user', v); const then = S.dlg && S.dlg.then; S.dlg = null; renderDlg(); const nb = $('.chipbtn[data-act="name"]'); if (nb) nb.textContent = v; if (then) then(); else render(); toast('تم حفظ الاسم'); break; }
+    case 'admin-in': S.dlg = { t: 'pin' }; renderDlg(); break;
+    case 'admin-out': S.admin = false; sessionStorage.removeItem('sh_admin'); closeDlg(); render(); toast('تم الخروج من وضع المشرف'); break;
+    case 'pin-ok': { if ($('#pin').value === String(CFG.ADMIN_PIN)) { S.admin = true; sessionStorage.setItem('sh_admin', '1'); const then = S.dlg && S.dlg.then; S.dlg = null; renderDlg(); if (then) then(); render(); toast('وضع المشرف مفعّل'); } else toast('الرمز غير صحيح', true); break; }
+    case 'save-info': saveInfo(id); break;
+    case 'save-msr': saveMsr(id); break;
+    case 'adopt-post': adoptPost(id); break;
+    case 'ev-pick': $('#ev-file').click(); break;
+    case 'ev-cam': $('#ev-cam').click(); break;
+    case 'ev-rm': PICKED.splice(+el.dataset.i, 1); $('#picked').innerHTML = pickedHTML(); break;
+    case 'ev-submit': submitEv(id); break;
+    case 'ev-view': viewEv_(id); break;
+    case 'ev-del': delEv(id); break;
+    case 'edit-prog': needAdmin(() => { S.dlg = { t: 'edit', id }; renderDlg(); }); break;
+    case 'add-prog': { const dm = +el.dataset.d; needAdmin(() => { S.dlg = { t: 'edit', id: null, domain: dm }; renderDlg(); }); break; }
+    case 'save-prog': saveProg(id); break;
+    case 'del-prog': needAdmin(() => delProg(id)); break;
+    case 'restore': needAdmin(restorePlan); break;
+    case 'print': printDomain(+el.dataset.d); break;
+    case 'csv-d': csvPrograms(S.programs.filter(p => p.domain === +el.dataset.d), 'شواهدي-' + PLAN.domains[+el.dataset.d - 1].title + '.csv'); break;
+    case 'csv-all': csvPrograms(S.programs, 'شواهدي-كل-البرامج.csv'); break;
+    case 'csv-ev': csvEvidence(); break;
+    case 'cal-prev': S.cal.m--; if (S.cal.m < 1) { S.cal.m = 12; S.cal.y--; } S.cal.sel = null; render(); break;
+    case 'cal-next': S.cal.m++; if (S.cal.m > 12) { S.cal.m = 1; S.cal.y++; } S.cal.sel = null; render(); break;
+    case 'cal-today': S.cal = { y: TODAY.y, m: TODAY.m, sel: TODAY.d }; render(); break;
+  }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'f-q') { S.f.q = e.target.value; paintDyn(); }
+  else if (e.target.id === 'e-q') { S.evf.q = e.target.value; paintEv(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'f-sem') { S.f.sem = t.value; paintDyn(); }
+  else if (t.id === 'f-tl') { S.f.tl = t.value; paintDyn(); }
+  else if (t.id === 'f-ev') { S.f.ev = t.value; paintDyn(); }
+  else if (t.id === 'e-d') { S.evf.d = t.value; paintEv(); }
+  else if (t.id === 'e-k') { S.evf.k = t.value; paintEv(); }
+  else if (t.id === 'ev-file' || t.id === 'ev-cam') { pickFiles(t.files); t.value = ''; }
+  else if (t.closest && t.closest('.hp')) { const hp = t.closest('.hp'); const g = k => hp.querySelector('[data-k="' + k + '"]').value; const s = g('y') + '/' + g('m') + '/' + g('d'); const l = hp.querySelector('.hp-l'); l.textContent = hpLabel(s); l.classList.toggle('bad', !validH(s)); }
+  else if (t.id === 'pf-dom') { const k = +t.value; const dlst = $('#pf-stds'); if (dlst) dlst.innerHTML = [...new Set(PLAN.standards.filter(s => s.domain === k).map(s => s.title).concat(S.programs.filter(x => x.domain === k).map(x => x.std)))].map(x => `<option value="${esc(x)}"></option>`).join(''); }
+});
+document.addEventListener('dragover', e => { const d = e.target.closest && e.target.closest('#drop'); if (d) { e.preventDefault(); d.classList.add('hot'); } });
+document.addEventListener('dragleave', e => { const d = e.target.closest && e.target.closest('#drop'); if (d) d.classList.remove('hot'); });
+document.addEventListener('drop', e => { const d = e.target.closest && e.target.closest('#drop'); if (d) { e.preventDefault(); d.classList.remove('hot'); pickFiles(e.dataTransfer.files); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (S.dlg) closeDlg(); else if (S.open) closeProg(); } if (e.key === 'Enter' && S.dlg && (S.dlg.t === 'pin' || S.dlg.t === 'name')) { const b = $('#dlgRoot .btn.pri'); if (b) b.click(); } });
+window.addEventListener('hashchange', () => { S.open = null; S.dlg = null; routeNow(); });
+let lastLoad = Date.now();
+window.addEventListener('focus', () => { if (REMOTE && !S.open && !S.dlg && Date.now() - lastLoad > 30000) { lastLoad = Date.now(); loadAll().then(render); } });
+
+function routeNow() {
+  const h = location.hash.replace(/^#\/?/, '');
+  S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal') ? h : 'home'; S.f.std = '';
+  if (S.route === 'cal' && !S.cal.sel) S.cal = { y: TODAY.y, m: TODAY.m, sel: S.cal.sel };
+  render(); window.scrollTo(0, 0);
+}
+async function loadAll() {
+  try { const d = await API.load(); S.programs = d.programs; S.state = d.state; S.evidence = d.evidence; S.err = ''; }
+  catch (e) { S.err = 'تعذّر تحميل البيانات من قاعدة البيانات: ' + (e.message || e) + ' — تأكد من تنفيذ ملف supabase-setup.sql ومن صحة الإعدادات في config.js.'; if (!S.programs.length) S.programs = buildPlan(); }
+  S.loading = false;
+}
+window.__SH = { S, buildPlan, validH, H2G };
+render();
+loadAll().then(routeNow);
+})();
+</script>
+</body>
+</html>

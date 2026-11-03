@@ -1,0 +1,14 @@
+{
+  "name": "شواهدي",
+  "short_name": "شواهدي",
+  "description": "شواهد الخطة التشغيلية 1448هـ - مدرسة الزبير بن العوام الابتدائية",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#f3f6f5",
+  "theme_color": "#0a4f47",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
