@@ -951,14 +951,20 @@ function startLive() {
 
 /* ============ تصدير التقرير ============ */
 function dlBlob(name, blob) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
-function exportReportWord(id) {
+async function exportReportWord(id) {
   const el = document.querySelector('.rp'); if (!el) return;
   const p = S.programs.find(x => x.id === id);
   const c = el.cloneNode(true);
   const liveTa = [...el.querySelectorAll('textarea')], cloneTa = [...c.querySelectorAll('textarea')];
   cloneTa.forEach((t, i) => { const d = document.createElement('div'); d.textContent = liveTa[i] ? liveTa[i].value : ''; d.style.cssText = 'white-space:pre-wrap;border:1px solid #888;padding:6px;min-height:30px'; t.replaceWith(d); });
   c.querySelectorAll('.no-print, input, label').forEach(x => x.remove());
-  c.querySelectorAll('img').forEach(i => i.setAttribute('src', new URL(i.getAttribute('src'), location.href).href));
+  /* تضمين الشعار داخل الملف نفسه (data URI) حتى يظهر في Word على أي جهاز دون اتصال بالموقع */
+  for (const i of c.querySelectorAll('img')) {
+    try {
+      const b = await (await fetch(new URL(i.getAttribute('src'), location.href).href)).blob();
+      i.setAttribute('src', await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }));
+    } catch (e) { i.setAttribute('src', new URL(i.getAttribute('src'), location.href).href); }
+  }
   const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;direction:rtl} table{width:100%;border-collapse:collapse;margin-bottom:10px} th,td{border:1px solid #888;padding:5px;text-align:right;vertical-align:top} th{background:#eef5f3} h4{color:#0d6b5f}</style></head><body dir="rtl">' + c.outerHTML + '</body></html>';
   dlBlob('تقرير-' + (p ? p.name.slice(0, 60) : id) + '.doc', new Blob(['﻿' + html], { type: 'application/msword' }));
 }
