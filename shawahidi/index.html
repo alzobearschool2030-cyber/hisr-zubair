@@ -794,11 +794,20 @@ const autoPost = p => 'يُجرى بعد تنفيذ البرنامج ويُقا�
 const RP_MAX = Infinity;
 function rpAttachHTML(id) {
   const have = evOf(id).filter(e => e.kind === 'شاهد تقرير');
-  return `<div class="box" style="margin:0"><p class="hint">المرفوع: ${ar(have.length)} شاهد. يمكنك رفع أكثر من شاهد لنفس التقرير.</p>
+  return `<div class="box" style="margin:0"><p class="hint">المرفوع: ${ar(have.length)} شاهد. كل شاهد يُرفع يُضاف إلى الشواهد السابقة ولا يستبدلها.</p>
   ${have.map(e => evItem(e, S.programs.find(x => x.id === e.program_id))).join('')}
-  <div class="no-print"><label style="margin:0 0 8px">اختر الملفات من جهازك<input type="file" id="rp-file" multiple accept="${ACCEPT}"></label>
-  <div class="acts"><button class="btn sm" data-act="rp-camera">${ico('cam', 15)} تصوير بالكاميرا</button><button class="btn sm pri" data-act="rp-upload" data-id="${esc(id)}">${ico('up', 15)} رفع الشواهد</button></div>
-  <input type="file" id="rp-cam" accept="image/*" capture="environment" hidden><p class="hint" id="rp-picked"></p></div></div>`;
+  <div class="no-print"><label style="margin:0 0 8px">أضف ملفات من جهازك (يمكن اختيار أكثر من ملف دفعة واحدة)<input type="file" id="rp-file" multiple accept="${ACCEPT}"></label>
+  <div class="acts"><button class="btn sm" data-act="rp-camera">${ico('cam', 15)} تصوير بالكاميرا</button></div>
+  <input type="file" id="rp-cam" accept="image/*" capture="environment" hidden><div id="rp-picked"></div></div></div>`;
+}
+function rpEvRows(id) {
+  const evs = evOf(id);
+  return evs.length ? evs.map((e, i) => `<tr><td>${ar(i + 1)}</td><td>${esc(e.title)}</td><td>${esc(e.kind || '')}</td><td>${e.event_date ? fmtHW(e.event_date) : ''}</td></tr>`).join('') : '<tr><td colspan="4">لا توجد شواهد مرفقة</td></tr>';
+}
+function rpRefresh(id) {
+  const box = $('#rp-att'); if (box) box.innerHTML = rpAttachHTML(id);
+  const tb = $('#rp-evrows'); if (tb) tb.innerHTML = rpEvRows(id);
+  rpShowPicked();
 }
 function viewReport() {
   const p = S.programs.find(x => x.id === S.rid);
@@ -811,7 +820,7 @@ function viewReport() {
     gain = g > 0 ? 'تحسّن بمقدار ' + ar(+g.toFixed(2)) + ' نقطة' : g < 0 ? 'تراجع بمقدار ' + ar(+Math.abs(g).toFixed(2)) + ' نقطة' : 'لا فرق';
   }
   const mo = parseH(p.from);
-  const evRows = evs.length ? evs.map((e, i) => `<tr><td>${ar(i + 1)}</td><td>${esc(e.title)}</td><td>${esc(e.kind || '')}</td><td>${e.event_date ? fmtHW(e.event_date) : ''}</td></tr>`).join('') : '<tr><td colspan="4">لا توجد شواهد مرفقة</td></tr>';
+  const evRows = rpEvRows(p.id);
   const g = greg(hstr(TODAY)), rg = rangeG(p);
   const desc = r.desc != null ? r.desc : autoDesc(p);
   const goals = r.goals != null ? r.goals : autoGoals(p);
@@ -840,7 +849,7 @@ function viewReport() {
    <tr><th>القياس البعدي</th><td>${esc(autoPost(p))}<br><small>القيمة المسجلة: ${fmtV(post)}${gain ? ' · ' + gain : ''}</small></td></tr>
   </table>
   <h4>الشواهد المرفقة</h4>
-  <table><thead><tr><th style="width:8%">م</th><th>العنوان</th><th style="width:20%">النوع</th><th style="width:26%">التاريخ</th></tr></thead><tbody>${evRows}</tbody></table>
+  <table><thead><tr><th style="width:8%">م</th><th>العنوان</th><th style="width:20%">النوع</th><th style="width:26%">التاريخ</th></tr></thead><tbody id="rp-evrows">${evRows}</tbody></table>
   <h4>شواهد التقرير (اختيارية)</h4>
   <div id="rp-att">${rpAttachHTML(p.id)}</div>
   <div class="rp-sign"><div>إعداد: ${esc(S.user || '......................')}<br><small>${fmtHW(hstr(TODAY))} · ${g}</small></div><div>مدير المدرسة<br>${esc(CFG.PRINCIPAL)}<br>......................</div></div>
@@ -852,30 +861,31 @@ function saveReport(id) {
     desc: $('#rp-desc').value.trim(), goals: $('#rp-goals').value.trim()
   } }, 'تم حفظ التقرير'));
 }
-async function rpShowPicked() {
+function rpShowPicked() {
   const el = $('#rp-picked'); if (!el) return;
-  el.innerHTML = RPICK.length ? 'تم اختيار ' + ar(RPICK.length) + ' ملف: ' + RPICK.map(f => esc(f.name)).join('، ') + ' <button class="btn sm" data-act="rp-clear">إفراغ القائمة</button>' : '';
+  if (!RPICK.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<p class="hint">مختار للرفع (${ar(RPICK.length)}):</p>` +
+    RPICK.map((f, i) => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #e3ebe8"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(f.name)}</span><button class="btn sm" data-act="rp-rm" data-i="${i}">إزالة</button></div>`).join('') +
+    `<div class="acts" style="margin-top:10px"><button class="btn sm pri" data-act="rp-upload" data-id="${esc(S.rid)}">${ico('up', 15)} رفع ${ar(RPICK.length)} شاهد</button><button class="btn sm" data-act="rp-clear">إفراغ القائمة</button></div>`;
 }
 function uploadReportFiles(id) {
   needName(async () => {
-    const files = (RPICK || []).filter(f => f.size <= CFG.MAX_FILE_MB * 1048576);
+    const files = RPICK.slice();
     if (!files.length) return toast('اختر ملفاً أولاً', true);
-    const room = RP_MAX - evOf(id).filter(e => e.kind === 'شاهد تقرير').length;
-    if (room <= 0) return toast('وصلت إلى الحد الأقصى وهو ' + ar(RP_MAX) + ' شواهد للتقرير', true);
-    const list = files.slice(0, room);
-    if (files.length > room) toast('رُفع أول ' + ar(room) + ' ملفات فقط للوصول إلى الحد الأقصى');
-    let ok = 0;
-    for (const f0 of list) {
-      busy('جاري رفع الشاهد…');
+    let ok = 0; const failed = [];
+    for (const f0 of files) {
+      busy('جاري رفع ' + ar(ok + failed.length + 1) + ' من ' + ar(files.length) + '…');
       try {
         const f = await maybeCompress(f0);
         const row = { id: uid(), program_id: id, kind: 'شاهد تقرير', title: f0.name, note: '', link: '', added_by: S.user, device: DEVICE, event_date: hstr(TODAY), created_at: new Date().toISOString() };
         await API.addEvidence(row, f); S.evidence.unshift(row); ok++;
-      } catch (e) { toast('تعذّر الرفع: ' + (e.message || e), true); break; }
+        RPICK = RPICK.filter(x => x !== f0);
+      } catch (e) { failed.push(f0.name); }
     }
-    RPICK = []; busy(false);
-    const box = $('#rp-att'); if (box) box.innerHTML = rpAttachHTML(id);
-    if (ok) toast('تم رفع ' + ar(ok) + ' شاهد للتقرير');
+    busy(false);
+    rpRefresh(id);
+    if (ok) toast('تم رفع ' + ar(ok) + ' شاهد وأُضيف إلى شواهد التقرير دون حذف السابقة');
+    if (failed.length) toast('تعذّر رفع ' + ar(failed.length) + ' ملف، ما زال في القائمة: ' + failed.join('، '), true);
   });
 }
 
@@ -1144,6 +1154,7 @@ document.addEventListener('click', async e => {
     case 'rp-ai-desc': { const el = $('#rp-desc'), p = S.programs.find(x => x.id === S.rid); if (el && p) { el.value = autoDesc(p); toast('تم توليد التوصيف، راجعه ثم احفظ التقرير'); } break; }
     case 'rp-camera': $('#rp-cam').click(); break;
     case 'rp-clear': RPICK = []; rpShowPicked(); break;
+    case 'rp-rm': RPICK.splice(+el.dataset.i, 1); rpShowPicked(); break;
     case 'rp-upload': uploadReportFiles(id); break;
     case 'print-report': window.print(); break;
     case 'rp-word': exportReportWord(id); break;
@@ -1178,10 +1189,10 @@ document.addEventListener('change', e => {
   else if (t.id === 'rp-f-d') { S.repf = Object.assign({ d: '', st: '' }, S.repf, { d: t.value }); render(); }
   else if (t.id === 'rp-f-st') { S.repf = Object.assign({ d: '', st: '' }, S.repf, { st: t.value }); render(); }
   else if (t.id === 'rp-file' || t.id === 'rp-cam') {
-    const room = RP_MAX - evOf(S.rid).filter(e => e.kind === 'شاهد تقرير').length - RPICK.length;
-    const added = [...t.files].filter(f => f.size <= CFG.MAX_FILE_MB * 1048576);
-    if (added.length > Math.max(0, room)) toast('يمكن إضافة ' + ar(Math.max(0, room)) + ' ملفات فقط، وتم تجاهل الباقي', true);
-    RPICK = RPICK.concat(added.slice(0, Math.max(0, room)));
+    const all = [...t.files];
+    const okSize = all.filter(f => f.size <= CFG.MAX_FILE_MB * 1048576);
+    if (okSize.length < all.length) toast('تم تجاهل ' + ar(all.length - okSize.length) + ' ملف لأن حجمه يتجاوز ' + ar(CFG.MAX_FILE_MB) + ' ميجابايت', true);
+    RPICK = RPICK.concat(okSize);
     t.value = '';
     rpShowPicked();
   }
