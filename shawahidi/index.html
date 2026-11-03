@@ -670,7 +670,7 @@ function paintEv() {
   const f = S.evf; const list = S.evidence.filter(e => { const p = S.programs.find(x => x.id === e.program_id); if (!p) return false; if (f.d && String(p.domain) !== f.d) return false; if (f.k && e.kind !== f.k) return false; if (f.q && !(e.title + ' ' + (e.note || '') + ' ' + p.name + ' ' + (e.added_by || '')).toLowerCase().includes(f.q.toLowerCase())) return false; return true; });
   const el = $('#evlist'); if (el) el.innerHTML = evListHTML(list);
 }
-const canDel = e => S.admin || e.device === DEVICE;
+const canDel = () => true;
 function evItem(e, prog) {
   const th = API.thumb(e), isImg = /^image\//.test(e.mime || '');
   const when = e.event_date ? fmtHW(e.event_date) : fmtHW(hstr(uq(Date.parse(e.created_at) - Date.parse(e.created_at) % 864e5) || TODAY));
@@ -1072,7 +1072,6 @@ async function viewEv_(id) {
 }
 async function delEv(id) {
   const e = S.evidence.find(x => x.id === id); if (!e || !canDel(e)) return;
-  if (!confirm('حذف هذا الشاهد نهائياً؟')) return;
   busy('جاري الحذف…');
   try { await API.deleteEvidence(e); S.evidence = S.evidence.filter(x => x.id !== id); toast('تم الحذف'); } catch (x) { toast('تعذّر الحذف: ' + (x.message || x), true); }
   busy(false); render();
