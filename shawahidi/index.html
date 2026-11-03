@@ -1201,7 +1201,12 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const t = e.target;
-  if (t.id === 'f-sem') { S.f.sem = t.value; paintDyn(); }
+  /* حفظ تلقائي لنصوص التقرير عند الخروج من الحقل، فلا يضيع أي تعديل */
+  if (t.tagName === 'TEXTAREA' && t.closest && t.closest('.rp') && S.rid && S.user) {
+    const v = id => { const el = $('#' + id); return el ? el.value.trim() : ''; };
+    saveState(S.rid, { report: { desc: v('rp-desc'), goals: v('rp-goals'), pre_desc: v('rp-pre'), post_desc: v('rp-post') } }, 'تم الحفظ تلقائياً');
+  }
+  else if (t.id === 'f-sem') { S.f.sem = t.value; paintDyn(); }
   else if (t.id === 'f-tl') { S.f.tl = t.value; paintDyn(); }
   else if (t.id === 'f-ev') { S.f.ev = t.value; paintDyn(); }
   else if (t.id === 'e-d') { S.evf.d = t.value; paintEv(); }
