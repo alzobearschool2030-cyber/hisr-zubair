@@ -163,6 +163,32 @@ input[type=search]{background:var(--surface) url("data:image/svg+xml,%3Csvg xmln
 .hb{display:grid;grid-template-columns:62px 1fr 34px;gap:8px;align-items:center;font-size:13px}.hb .bar{height:12px;border-radius:6px;background:var(--line);overflow:hidden;display:flex}.hb .bar i{display:block;height:100%}
 .top{display:grid;gap:6px}.top div{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;border-bottom:1px solid var(--line);padding-bottom:5px}.top div:last-child{border-bottom:0}
 .dupd{font-size:12px;color:var(--muted);text-align:center}
+.d2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+.dcol{display:grid;gap:10px;min-width:0}
+.dhead{display:flex;align-items:center;gap:8px;justify-content:center;padding:10px;border-radius:14px;font-family:var(--f-display);font-weight:700;font-size:15px;color:#fff}
+.dhead.da{background:linear-gradient(135deg,#B3321F,#1D5FA6)}
+.dhead.dl{background:linear-gradient(135deg,#8F5A08,#E0A53A)}
+.dt2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ta{border-radius:12px;padding:8px 6px;text-align:center;display:grid;gap:0}
+.ta b{font-family:var(--f-display);font-size:24px;line-height:1.2}.ta span{font-size:10.5px;color:var(--muted)}
+.ta.u{background:var(--u-soft);color:var(--u)}.ta.e{background:var(--e-soft);color:var(--e)}.ta.s{background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.tl{border:2px dashed var(--l);border-radius:50px;padding:6px 4px;text-align:center;display:grid;background:var(--surface)}
+.tl b{font-family:var(--f-display);font-size:22px;line-height:1.2;color:var(--l)}.tl span{font-size:10.5px;color:var(--muted)}
+.dbox{background:var(--surface);border-radius:12px;padding:10px;display:grid;gap:6px;min-width:0}
+.dbox h4{font-size:12.5px;margin:0}
+.dbox.ba{border:1px solid var(--line);border-top:4px solid var(--u)}
+.dbox.bl{border:1px solid var(--l);border-radius:4px 18px 4px 18px}
+.hb2{display:grid;grid-template-columns:40px 1fr 22px;gap:5px;align-items:center;font-size:11px}
+.hb2 .bar{height:9px;border-radius:5px;background:var(--line);overflow:hidden}.hb2 .bar i{display:block;height:100%;border-radius:5px}
+.cat{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:11px;border-bottom:1px solid var(--line);padding-bottom:4px}.cat:last-child{border-bottom:0}
+.cat span{font-weight:700;min-width:42px}.cat em{font-style:normal;border-radius:99px;padding:0 6px}.cat em.u{background:var(--u-soft);color:var(--u)}.cat em.e{background:var(--e-soft);color:var(--e)}
+.steps4{display:grid;grid-template-columns:1fr 1fr;gap:6px}.steps4 div{display:grid;text-align:center;background:var(--l-soft);border-radius:10px;padding:4px}.steps4 b{font-size:18px;color:var(--l)}.steps4 span{font-size:10px;color:var(--muted)}
+.tp{display:grid;grid-template-columns:18px 1fr auto;gap:5px;align-items:center;font-size:11.5px;cursor:pointer;padding:3px 0;border-bottom:1px solid var(--line)}.tp:last-child{border-bottom:0}
+.tp .rk{width:18px;height:18px;border-radius:50%;background:var(--u-soft);color:var(--u);display:grid;place-items:center;font-size:10px;font-weight:700}.tp .rk.l{background:var(--l-soft);color:var(--l);border-radius:5px}
+.tp .tn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tp small{display:block;color:var(--muted);font-size:10px}
+.tp b.u{color:var(--u)}.tp b.l{color:var(--l)}
+.dleg{display:flex;gap:8px;flex-wrap:wrap;font-size:10.5px;color:var(--muted)}.dleg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-inline-end:4px;vertical-align:middle}
+@media (min-width:760px){.dhead{font-size:17px}.ta b,.tl b{font-size:30px}.ta span,.tl span{font-size:12px}.dbox h4{font-size:14px}.hb2{grid-template-columns:56px 1fr 28px;font-size:13px}.tp{font-size:13.5px}}
 .rsel{min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 10px;font-size:15px;width:100%}
 .pen{min-height:36px;padding:0 10px;border:1px solid var(--line);background:transparent;border-radius:8px;font-size:12.5px;color:var(--muted)}
 .edtx{display:grid;gap:8px;grid-column:2 / 4}
@@ -938,47 +964,46 @@ function censusText(){
 
 /* --- لوحة المتابعة --- */
 function mountDash(){$('#page').innerHTML='<div id="dash" style="display:grid;gap:14px"></div>'}
+function dChart(days,series,W,H){
+  const B=30,cw=(W-8)/days.length,bw=Math.max(5,cw*0.55),mx=Math.max(1,...days.map(d=>series.reduce((t,sr)=>t+sr.v(d),0)));
+  let g='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
+  for(let k=0;k<=3;k++){const y=6+(H-B-6)*k/3;g+='<line x1="4" x2="'+(W-4)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)" stroke-width="0.6"/>'}
+  days.forEach((d,i)=>{
+    const cx=W-4-cw*(i+0.5);let base=H-B,tot=0;
+    series.forEach(sr=>{const v=sr.v(d),h=(H-B-6)*v/mx;if(v){g+='<rect x="'+(cx-bw/2)+'" y="'+(base-h)+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+sr.c+'"/>';base-=h;tot+=v}});
+    if(tot)g+='<text x="'+cx+'" y="'+(base-3)+'" font-size="8" text-anchor="middle" fill="var(--ink)">'+tot+'</text>';
+    const hj=g2h(d);g+='<text x="'+cx+'" y="'+(H-17)+'" font-size="7" text-anchor="middle" fill="var(--muted)">'+wdL(d).replace(/^ال/,'').slice(0,4)+'</text><text x="'+cx+'" y="'+(H-6)+'" font-size="7" text-anchor="middle" fill="var(--muted)">'+(hj?hj[2]+'/'+hj[1]:'')+'</text>';
+  });
+  return g+'</svg>';
+}
 function paintDash(){
   const el=$('#dash');if(!el)return;
   const t=today(),ids=sIds(),[wa,wb]=periodOf('week',t),[ma,mb]=periodOf('month',t),inR=(d,a,b)=>d>=a&&d<=b;
   const ab=S.abs.filter(a=>S.students[a.sid]),lt=S.late.filter(l=>S.students[l.sid]);
   const c=(arr,f)=>arr.filter(f).length,uniq=arr=>new Set(arr.map(x=>x.sid)).size;
-  const tU=c(ab,a=>a.d===t&&a.t==='u'),tE=c(ab,a=>a.d===t&&a.t==='e'),tL=c(lt,l=>l.d===t);
-  const kpi=(cls,k,v,sub)=>'<div class="kpi '+cls+'"><span class="k">'+k+'</span><span class="v">'+v+'</span>'+(sub?'<span class="s">'+sub+'</span>':'')+'</div>';
-  let h='<div class="dupd">'+esc(fmt(t))+' · يتحدث تلقائيًا مع كل إدخال</div>';
-  h+='<div class="kpis">'+kpi('u','غياب اليوم بدون عذر',tU)+kpi('e','غياب اليوم بعذر',tE)+kpi('l','المتأخرون اليوم',tL)+kpi('g','عدد الطلاب',ids.length)+'</div>';
-  h+='<div class="kpis">'+kpi('u','غياب هذا الأسبوع',c(ab,a=>inR(a.d,wa,wb)),uniq(ab.filter(a=>inR(a.d,wa,wb)))+' طالبًا')+kpi('l','تأخر هذا الأسبوع',c(lt,l=>inR(l.d,wa,wb)),uniq(lt.filter(l=>inR(l.d,wa,wb)))+' طالبًا')+kpi('u','غياب هذا الشهر',c(ab,a=>inR(a.d,ma,mb)),'')+kpi('l','تأخر هذا الشهر',c(lt,l=>inR(l.d,ma,mb)),'')+'</div>';
-  // last 10 school days chart
   const days=[];{const d=parseD(t);while(days.length<10){if(!isOff(d))days.unshift(iso(d));d.setDate(d.getDate()-1)}}
-  const data=days.map(d=>({d,u:c(ab,a=>a.d===d&&a.t==='u'),e:c(ab,a=>a.d===d&&a.t==='e'),l:c(lt,l=>l.d===d)}));
-  const mx=Math.max(1,...data.map(x=>Math.max(x.u+x.e,x.l))),W=360,H=200,B=38,cw=(W-20)/10,bw=Math.min(14,cw/2.6);
-  let svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="الغياب والتأخر آخر 10 أيام دراسية" style="display:block;overflow:visible">';
-  for(let g=0;g<=4;g++){const y=10+(H-B-10)*g/4;svg+='<line x1="10" x2="'+(W-10)+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/>'}
-  data.forEach((x,i)=>{
-    const cx=W-10-cw*(i+0.5),sc=v=>(H-B-10)*v/mx,base=H-B;
-    const hu=sc(x.u),he=sc(x.e),hl=sc(x.l);
-    svg+='<rect x="'+(cx-bw-1)+'" y="'+(base-hu)+'" width="'+bw+'" height="'+hu+'" fill="var(--u)" rx="2"><title>بدون عذر '+x.u+'</title></rect>';
-    svg+='<rect x="'+(cx-bw-1)+'" y="'+(base-hu-he)+'" width="'+bw+'" height="'+he+'" fill="var(--e)" rx="2"><title>بعذر '+x.e+'</title></rect>';
-    svg+='<rect x="'+(cx+1)+'" y="'+(base-hl)+'" width="'+bw+'" height="'+hl+'" fill="var(--l)" rx="2"><title>تأخر '+x.l+'</title></rect>';
-    if(x.u+x.e)svg+='<text x="'+(cx-bw/2-1)+'" y="'+(base-hu-he-4)+'" font-size="10" text-anchor="middle" fill="var(--ink)">'+(x.u+x.e)+'</text>';
-    if(x.l)svg+='<text x="'+(cx+bw/2+1)+'" y="'+(base-hl-4)+'" font-size="10" text-anchor="middle" fill="var(--ink)">'+x.l+'</text>';
-    const hj=g2h(x.d);svg+='<text x="'+cx+'" y="'+(H-22)+'" font-size="9" text-anchor="middle" fill="var(--muted)">'+wdL(x.d).replace(/^ال/,'')+'</text><text x="'+cx+'" y="'+(H-8)+'" font-size="9" text-anchor="middle" fill="var(--muted)">'+(hj?hj[2]+'/'+hj[1]:x.d.slice(5))+'</text>';
-  });
-  svg+='</svg>';
-  h+='<div class="dcard"><h3>آخر 10 أيام دراسية</h3><div class="dleg"><span><i style="background:var(--u)"></i>غياب بدون عذر</span><span><i style="background:var(--e)"></i>غياب بعذر</span><span><i style="background:var(--l)"></i>تأخر عن الطابور</span></div>'+svg+'</div>';
-  // per grade this month
-  const gr=GO.map(g=>{const inG=sid=>(S.students[sid].cls||'').indexOf(g)===0;return {g,a:c(ab,a=>inR(a.d,ma,mb)&&inG(a.sid)),l:c(lt,l=>inR(l.d,ma,mb)&&inG(l.sid))}});
-  const gm=Math.max(1,...gr.map(x=>x.a+x.l));
-  h+='<div class="dcard"><h3>حسب الصف في شهر '+esc(periodOf('month',t)[2].replace('شهر ',''))+'</h3><div class="dleg"><span><i style="background:var(--u)"></i>غياب</span><span><i style="background:var(--l)"></i>تأخر</span></div>'+gr.map(x=>'<div class="hb"><span>'+x.g+'</span><div class="bar"><i style="width:'+(x.a/gm*100)+'%;background:var(--u)"></i><i style="width:'+(x.l/gm*100)+'%;background:var(--l)"></i></div><b>'+(x.a+x.l)+'</b></div>').join('')+'</div>';
-  // categories
-  h+='<div class="kpis">'+CATS.filter(z=>z.tr).map(z=>kpi(z.tr,z.label,catList(z).length,'')).join('')+'</div>';
-  // tops
+  const inG=(sid,g)=>(S.students[sid].cls||'').indexOf(g)===0,mName=periodOf('month',t)[2].replace('شهر ','');
+  // ---- الغياب (يمين)
+  const aT=(tp)=>c(ab,a=>a.d===t&&a.t===tp);
+  let A='<div class="dhead da"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M9 14l6 4M15 14l-6 4"/></svg>الغياب</div>';
+  A+='<div class="dt2"><div class="ta u"><b>'+aT('u')+'</b><span>اليوم بدون عذر</span></div><div class="ta e"><b>'+aT('e')+'</b><span>اليوم بعذر</span></div><div class="ta s"><b>'+c(ab,a=>inR(a.d,wa,wb))+'</b><span>هذا الأسبوع</span></div><div class="ta s"><b>'+c(ab,a=>inR(a.d,ma,mb))+'</b><span>هذا الشهر</span></div></div>';
+  A+='<div class="dbox ba"><h4>آخر 10 أيام دراسية</h4><div class="dleg"><span><i style="background:var(--u)"></i>بدون عذر</span><span><i style="background:var(--e)"></i>بعذر</span></div>'+dChart(days,[{c:'var(--u)',v:d=>c(ab,a=>a.d===d&&a.t==='u')},{c:'var(--e)',v:d=>c(ab,a=>a.d===d&&a.t==='e')}],180,120)+'</div>';
+  const ga=GO.map(g=>({g,v:c(ab,a=>inR(a.d,ma,mb)&&inG(a.sid,g))})),gam=Math.max(1,...ga.map(x=>x.v));
+  A+='<div class="dbox ba"><h4>حسب الصف · '+esc(mName)+'</h4>'+ga.map(x=>'<div class="hb2"><span>'+x.g+'</span><div class="bar"><i style="width:'+(x.v/gam*100)+'%;background:linear-gradient(90deg,var(--e),var(--u))"></i></div><b>'+x.v+'</b></div>').join('')+'</div>';
+  A+='<div class="dbox ba"><h4>فئات اللائحة</h4>'+[3,5,10].map(k=>{const cu=catList(CATS.find(z=>z.id==='u'+k)).length,ce=catList(CATS.find(z=>z.id==='e'+k)).length;return '<div class="cat"><span>'+k+' أيام</span><em class="u">'+cu+' بدون عذر</em><em class="e">'+ce+' بعذر</em></div>'}).join('')+'</div>';
   const topA=ids.filter(i=>D[i].u.length+D[i].e.length).sort((a,b)=>(D[b].u.length+D[b].e.length)-(D[a].u.length+D[a].e.length)).slice(0,5);
+  A+='<div class="dbox ba"><h4>الأكثر غيابًا</h4>'+(topA.length?topA.map((i,n)=>'<div class="tp" data-act="open" data-id="'+esc(i)+'"><span class="rk">'+(n+1)+'</span><span class="tn">'+esc(S.students[i].name)+'<small>'+esc(S.students[i].cls||'')+'</small></span><b class="u">'+(D[i].u.length+D[i].e.length)+'</b></div>').join(''):'<p class="muted sm" style="margin:0">لا يوجد.</p>')+'</div>';
+  // ---- التأخر (يسار)
+  let L='<div class="dhead dl"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>التأخر عن الطابور</div>';
+  L+='<div class="dt2"><div class="tl"><b>'+c(lt,l=>l.d===t)+'</b><span>اليوم</span></div><div class="tl"><b>'+uniq(lt.filter(l=>l.d===t))+'</b><span>طلاب اليوم</span></div><div class="tl"><b>'+c(lt,l=>inR(l.d,wa,wb))+'</b><span>هذا الأسبوع</span></div><div class="tl"><b>'+c(lt,l=>inR(l.d,ma,mb))+'</b><span>هذا الشهر</span></div></div>';
+  L+='<div class="dbox bl"><h4>آخر 10 أيام دراسية</h4><div class="dleg"><span><i style="background:var(--l)"></i>مرات التأخر</span></div>'+dChart(days,[{c:'var(--l)',v:d=>c(lt,l=>l.d===d)}],180,120)+'</div>';
+  const gl=GO.map(g=>({g,v:c(lt,l=>inR(l.d,ma,mb)&&inG(l.sid,g))})),glm=Math.max(1,...gl.map(x=>x.v));
+  L+='<div class="dbox bl"><h4>حسب الصف · '+esc(mName)+'</h4>'+gl.map(x=>'<div class="hb2"><span>'+x.g+'</span><div class="bar"><i style="width:'+(x.v/glm*100)+'%;background:repeating-linear-gradient(45deg,var(--l),var(--l) 6px,#d9a24a 6px,#d9a24a 12px)"></i></div><b>'+x.v+'</b></div>').join('')+'</div>';
+  const st=[1,2,3,4].map(k=>ids.filter(i=>k<4?D[i].l.length===k:D[i].l.length>=4).length);
+  L+='<div class="dbox bl"><h4>مراحل الإجراء</h4><div class="steps4">'+st.map((v,k)=>'<div><b>'+v+'</b><span>'+(k<3?'المرة '+(k+1):'4 فأكثر')+'</span></div>').join('')+'</div></div>';
   const topL=ids.filter(i=>D[i].l.length).sort((a,b)=>D[b].l.length-D[a].l.length).slice(0,5);
-  const lst=(arr,f,cls)=>arr.length?arr.map(i=>'<div data-act="open" data-id="'+esc(i)+'" style="cursor:pointer"><span>'+esc(S.students[i].name)+' <span class="cl">'+esc(S.students[i].cls||'')+'</span></span><span class="pill '+cls+'">'+f(i)+'</span></div>').join(''):'<p class="muted sm" style="margin:0">لا يوجد.</p>';
-  h+='<div class="dcard"><h3>الأكثر غيابًا هذا العام</h3><div class="top">'+lst(topA,i=>D[i].u.length+D[i].e.length+' يوم','u')+'</div></div>';
-  h+='<div class="dcard"><h3>الأكثر تأخرًا هذا العام</h3><div class="top">'+lst(topL,i=>D[i].l.length+' مرة','l')+'</div></div>';
-  el.innerHTML=h;
+  L+='<div class="dbox bl"><h4>الأكثر تأخرًا</h4>'+(topL.length?topL.map((i,n)=>'<div class="tp" data-act="open" data-id="'+esc(i)+'"><span class="rk l">'+(n+1)+'</span><span class="tn">'+esc(S.students[i].name)+'<small>'+esc(S.students[i].cls||'')+'</small></span><b class="l">'+D[i].l.length+'</b></div>').join(''):'<p class="muted sm" style="margin:0">لا يوجد.</p>')+'</div>';
+  el.innerHTML='<div class="dupd">'+esc(fmt(t))+' · '+ids.length+' طالبًا · تتحدث تلقائيًا مع كل إدخال</div><div class="d2"><div class="dcol ca">'+A+'</div><div class="dcol cl2">'+L+'</div></div>';
 }
 
 /* --- الطباعة --- */
