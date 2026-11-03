@@ -841,7 +841,11 @@ function saveReport(id) {
     desc: $('#rp-desc').value.trim(), goals: $('#rp-goals').value.trim()
   } }, 'تم حفظ التقرير'));
 }
-async function uploadReportFiles(id) {
+async function rpShowPicked() {
+  const el = $('#rp-picked'); if (!el) return;
+  el.innerHTML = RPICK.length ? 'تم اختيار ' + ar(RPICK.length) + ' ملف: ' + RPICK.map(f => esc(f.name)).join('، ') + ' <button class="btn sm" data-act="rp-clear">إفراغ القائمة</button>' : '';
+}
+function uploadReportFiles(id) {
   needName(async () => {
     const files = (RPICK || []).filter(f => f.size <= CFG.MAX_FILE_MB * 1048576);
     if (!files.length) return toast('اختر ملفاً أولاً', true);
@@ -1117,6 +1121,7 @@ document.addEventListener('click', async e => {
     case 'rp-ai-goals': { const el = $('#rp-goals'), p = S.programs.find(x => x.id === S.rid); if (el && p) { el.value = autoGoals(p); toast('تم توليد الأهداف، راجعها ثم احفظ التقرير'); } break; }
     case 'rp-ai-desc': { const el = $('#rp-desc'), p = S.programs.find(x => x.id === S.rid); if (el && p) { el.value = autoDesc(p); toast('تم توليد التوصيف، راجعه ثم احفظ التقرير'); } break; }
     case 'rp-camera': $('#rp-cam').click(); break;
+    case 'rp-clear': RPICK = []; rpShowPicked(); break;
     case 'rp-upload': uploadReportFiles(id); break;
     case 'print-report': window.print(); break;
     case 'rp-word': exportReportWord(id); break;
@@ -1145,7 +1150,14 @@ document.addEventListener('change', e => {
   else if (t.id === 'ev-file' || t.id === 'ev-cam') { pickFiles(t.files); t.value = ''; }
   else if (t.id === 'rp-f-d') { S.repf = Object.assign({ d: '', st: '' }, S.repf, { d: t.value }); render(); }
   else if (t.id === 'rp-f-st') { S.repf = Object.assign({ d: '', st: '' }, S.repf, { st: t.value }); render(); }
-  else if (t.id === 'rp-file' || t.id === 'rp-cam') { RPICK = [...t.files]; t.value = ''; const el = $('#rp-picked'); if (el) el.textContent = RPICK.length ? 'تم اختيار ' + ar(RPICK.length) + ' ملف' : ''; }
+  else if (t.id === 'rp-file' || t.id === 'rp-cam') {
+    const room = RP_MAX - evOf(S.rid).filter(e => e.kind === 'شاهد تقرير').length - RPICK.length;
+    const added = [...t.files].filter(f => f.size <= CFG.MAX_FILE_MB * 1048576);
+    if (added.length > Math.max(0, room)) toast('يمكن إضافة ' + ar(Math.max(0, room)) + ' ملفات فقط، وتم تجاهل الباقي', true);
+    RPICK = RPICK.concat(added.slice(0, Math.max(0, room)));
+    t.value = '';
+    rpShowPicked();
+  }
   else if (t.closest && t.closest('.hp')) { const hp = t.closest('.hp'); const g = k => hp.querySelector('[data-k="' + k + '"]').value; const s = g('y') + '/' + g('m') + '/' + g('d'); const l = hp.querySelector('.hp-l'); l.textContent = hpLabel(s); l.classList.toggle('bad', !validH(s)); }
   else if (t.id === 'pf-dom') { const k = +t.value; const dlst = $('#pf-stds'); if (dlst) dlst.innerHTML = [...new Set(PLAN.standards.filter(s => s.domain === k).map(s => s.title).concat(S.programs.filter(x => x.domain === k).map(x => x.std)))].map(x => `<option value="${esc(x)}"></option>`).join(''); }
 });
