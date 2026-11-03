@@ -1252,7 +1252,7 @@ function routeNow() {
   const h = location.hash.replace(/^#\/?/, '');
   const rm = h.match(/^r\/(.+)$/);
   if (rm) { S.route = 'r'; S.rid = decodeURIComponent(rm[1]); }
-  else S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal' || h === 'rep' || h === 'dash') ? h : 'home';
+  else S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal' || h === 'rep' || h === 'dash') ? h : (h === '' ? 'd1' : 'home');
   S.f.std = '';
   if (S.route === 'cal' && !S.cal.sel) S.cal = { y: TODAY.y, m: TODAY.m, sel: S.cal.sel };
   render(); window.scrollTo(0, 0);
