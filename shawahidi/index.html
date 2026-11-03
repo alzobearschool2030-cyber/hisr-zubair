@@ -677,7 +677,7 @@ function evItem(e, prog) {
   return `<div class="ev"><div class="ev-th">${th ? `<img loading="lazy" src="${esc(th)}" alt="">` : ico(isImg ? 'img' : (e.file_path ? 'file' : 'link'), 26)}</div>
   <div class="ev-b"><b>${esc(e.title)}</b><small>${esc(e.kind || '')}${e.file_name ? ' · ' + esc(e.file_name) + (e.size ? ' · ' + fsize(e.size) : '') : (e.link ? ' · رابط' : '')}</small>
   <small>${prog ? esc(prog.name) + ' · ' : ''}أضافه ${esc(e.added_by || '—')} · ${when}</small>${e.note ? `<p>${esc(e.note)}</p>` : ''}</div>
-  <div class="ev-a"><button class="btn sm" data-act="ev-view" data-id="${esc(e.id)}">عرض</button>${canDel(e) ? `<button class="btn sm danger" data-act="ev-del" data-id="${esc(e.id)}" aria-label="حذف">${ico('trash', 15)}</button>` : ''}</div></div>`;
+  <div class="ev-a"><button class="btn sm" data-act="ev-view" data-id="${esc(e.id)}">عرض</button><button class="btn sm danger" data-act="ev-del" data-id="${esc(e.id)}" aria-label="حذف">${ico('trash', 15)} حذف</button></div></div>`;
 }
 
 /* ============ نافذة البرنامج ============ */
@@ -989,7 +989,7 @@ function viewReports() {
     <h4 style="font-size:14px;margin-top:10px">التوصيف</h4><p style="margin:4px 0;white-space:pre-line">${esc(r.desc != null ? r.desc : autoDesc(p))}</p>
     <h4 style="font-size:14px;margin-top:10px">الأهداف</h4><p style="margin:4px 0;white-space:pre-line">${esc(r.goals != null ? r.goals : autoGoals(p))}</p>
     <h4 style="font-size:14px;margin-top:10px">الشواهد</h4>
-    ${evs.length ? '<ul style="margin:4px 0;padding-inline-start:18px">' + evs.map(e => `<li style="margin:4px 0">${esc(e.title)} <small>(${esc(e.kind || '')}${e.added_by ? ' · ' + esc(e.added_by) : ''})</small>${canDel(e) ? ` <button class="btn sm danger" data-act="ev-del" data-id="${esc(e.id)}" aria-label="حذف الشاهد">${ico('trash', 13)} حذف</button>` : ''}</li>`).join('') + '</ul>' : '<p class="empty" style="padding:4px 0">لا توجد شواهد</p>'}
+    ${evs.length ? '<ul style="margin:4px 0;padding-inline-start:18px">' + evs.map(e => `<li style="margin:4px 0">${esc(e.title)} <small>(${esc(e.kind || '')}${e.added_by ? ' · ' + esc(e.added_by) : ''})</small> <button class="btn sm danger" data-act="ev-del" data-id="${esc(e.id)}" aria-label="حذف الشاهد">${ico('trash', 13)} حذف</button></li>`).join('') + '</ul>' : '<p class="empty" style="padding:4px 0">لا توجد شواهد</p>'}
     <div class="acts" style="margin:8px 0 0"><a class="btn sm pri" href="#/r/${encodeURIComponent(p.id)}">${has ? 'تعديل التقرير' : 'كتابة وتعديل التقرير'}</a>${has ? `<button class="btn sm danger" data-act="del-report" data-id="${esc(p.id)}">حذف التقرير</button>` : ''}</div></article>`;
   };
   return `<p class="hint" style="margin:0 4px 10px">هذا هو المكان الوحيد لكل تقارير البرامج: منه تفتح التقرير للكتابة ورفع الشواهد والطباعة والتحميل.</p><section class="card" style="margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap"><div class="kpi"><b>${ar(S.programs.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(written)}</b><small>تقرير مكتوب</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div></section>
@@ -1159,7 +1159,7 @@ document.addEventListener('click', async e => {
     case 'ev-rm': PICKED.splice(+el.dataset.i, 1); $('#picked').innerHTML = pickedHTML(); break;
     case 'ev-submit': submitEv(id); break;
     case 'ev-view': viewEv_(id); break;
-    case 'ev-del': delEv(id); break;
+    case 'ev-del': { const ev = S.evidence.find(x => x.id === id); if (ev && !canDel(ev)) needAdmin(() => delEv(id)); else delEv(id); break; }
     case 'del-report': delReport(id); break;
     case 'edit-prog': needAdmin(() => { S.dlg = { t: 'edit', id }; renderDlg(); }); break;
     case 'add-prog': { const dm = +el.dataset.d; needAdmin(() => { S.dlg = { t: 'edit', id: null, domain: dm }; renderDlg(); }); break; }
