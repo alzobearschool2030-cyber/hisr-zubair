@@ -883,7 +883,7 @@ function uploadReportFiles(id) {
 
 /* ============ الدخول الموحد ============ */
 const AUTH_KEY = 'sh_auth';
-const authed = () => { try { return !!localStorage.getItem(AUTH_KEY); } catch (e) { return true; } };
+const authed = () => { try { return !!(localStorage.getItem(AUTH_KEY) || sessionStorage.getItem(AUTH_KEY)); } catch (e) { return true; } };
 const gateOn = () => !!CFG.ACCESS_PASSWORD_HASH;
 async function sha256Hex(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function gateHTML(err) {
@@ -899,6 +899,7 @@ function gateHTML(err) {
       <input id="g-pw" type="password" dir="ltr" autocomplete="current-password" required>
     </label>
     <label class="gate-show"><input id="g-show" type="checkbox"> إظهار الرقم السري</label>
+    <label class="gate-show"><input id="g-rem" type="checkbox" checked> ${ico('lock', 14)} تذكرني على هذا الجهاز</label>
     <button class="gate-btn" type="submit">دخول</button>
     <p class="gate-foot">الدخول موحد لجميع أعضاء المدرسة</p>
   </form></div>`;
@@ -913,7 +914,8 @@ document.addEventListener('submit', async e => {
   if (CFG.SCHOOL_EMAIL_DOMAINS.length && !CFG.SCHOOL_EMAIL_DOMAINS.includes(dom)) return gateErr('هذا البريد غير مسموح به');
   let h = ''; try { h = await sha256Hex(pw); } catch (x) { return gateErr('المتصفح لا يدعم التحقق من الرقم السري، افتح الرابط عبر https'); }
   if (h !== CFG.ACCESS_PASSWORD_HASH) return gateErr('الرقم السري غير صحيح');
-  try { localStorage.setItem(AUTH_KEY, mail); } catch (x) {}
+  const remember = $('#g-rem') ? $('#g-rem').checked : true;
+  try { (remember ? localStorage : sessionStorage).setItem(AUTH_KEY, mail); } catch (x) {}
   S.user = mail; try { localStorage.setItem('sh_user', mail); } catch (x) {}
   S.gateErr = ''; S.loading = true; render();
   loadAll().then(() => { routeNow(); startLive(); });
@@ -1148,7 +1150,7 @@ document.addEventListener('click', async e => {
     case 'print-report': window.print(); break;
     case 'rp-word': exportReportWord(id); break;
     case 'rp-excel': { const p = S.programs.find(x => x.id === id); if (p) csvPrograms([p], 'تقرير-' + p.name.slice(0, 60) + '.csv'); break; }
-    case 'logout': try { localStorage.removeItem(AUTH_KEY); } catch (x) {} location.reload(); break;
+    case 'logout': try { localStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(AUTH_KEY); } catch (x) {} location.reload(); break;
     case 'print': printDomain(+el.dataset.d); break;
     case 'csv-d': csvPrograms(S.programs.filter(p => p.domain === +el.dataset.d), 'شواهدي-' + PLAN.domains[+el.dataset.d - 1].title + '.csv'); break;
     case 'csv-all': csvPrograms(S.programs, 'شواهدي-كل-البرامج.csv'); break;
