@@ -517,7 +517,7 @@ function headerHTML() {
   <div class="hd-r"><span class="today">${fmtHW(hstr(TODAY))} · ${greg(hstr(TODAY))}</span><button class="chipbtn" data-act="name" ${gateOn() ? 'disabled title="الاسم هو بريد المدرسة ولا يتغير"' : ''}>${S.user ? esc(S.user) : 'تعريف الاسم'}</button><button class="icbtn" data-act="settings" aria-label="الإعدادات">${ico('gear', 20)}</button></div></div></header>`;
 }
 function navHTML() {
-  const items = PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n]).concat([['home', 'لوحة المؤشرات', '#/'], ['rep', 'التقارير', '#/rep'], ['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
+  const items = PLAN.domains.map(d => ['d' + d.n, d.title, '#/d' + d.n]).concat([['dash', 'لوحة المؤشرات', '#/dash'], ['rep', 'التقارير', '#/rep'], ['cal', 'التقويم', '#/cal'], ['ev', 'سجل الشواهد', '#/ev']]);
   return `<div style="display:flex;gap:8px;justify-content:space-between;padding:8px 16px 0;max-width:1200px;margin:0 auto"><button class="btn sm" data-act="nav-back" aria-label="رجوع">&rarr; رجوع</button><button class="btn sm" data-act="nav-fwd" aria-label="التالي">التالي &larr;</button></div><nav class="nv"><div class="nv-in">${items.map(([k, t, h]) => `<a href="${h}" class="${S.route === k ? 'on' : ''}">${t}</a>`).join('')}</div></nav>`;
 }
 function sbRef() { try { return new URL(CFG.SUPABASE_URL).hostname.split('.')[0]; } catch (e) { return ''; } }
@@ -548,6 +548,7 @@ function render() {
   else if (/^d[1-4]$/.test(S.route)) body = viewDomain(+S.route.slice(1));
   else if (S.route === 'cal') body = viewCal();
   else if (S.route === 'rep') body = viewReports();
+  else if (S.route === 'dash') body = viewDash();
   else body = viewEv();
   app.innerHTML = headerHTML() + navHTML() + `<main class="wrap">${banner()}${body}<div class="foot">شواهدي · ${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ · تقويم أم القرى</div></main>`;
   renderModal(); renderDlg();
@@ -568,11 +569,22 @@ function viewHome() {
   const gap = now.filter(p => !evOf(p.id).length).sort((a, b) => hkey(parseH(a.to)) - hkey(parseH(b.to))).slice(0, 8);
   const rec = S.evidence.slice(0, 6);
   const sem = n => { const l = all.filter(p => p.sem === n); return l.length ? l.reduce((a, p) => a + ach(p), 0) / l.length : 0; };
-  return `  <section class="dgrid">${PLAN.domains.map(domCard).join('')}</section>
-  <section class="hero card" style="--dc:#0d6b5f">${ring(avg, 104)}<div class="t"><h2>نسبة الإنجاز العامة للخطة</h2><p>الفصل الأول ${p0(sem(1))} · الفصل الثاني ${p0(sem(2))}</p>
-  <div class="kpis"><div class="kpi"><b>${ar(all.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(S.evidence.length)}</b><small>شاهد وتقرير</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div><div class="kpi"><b>${ar(now.length)}</b><small>جارٍ الآن</small></div></div></div></section>
+  return `<section class="dgrid">${PLAN.domains.map(domCard).join('')}</section>
+
   <div class="two"><section class="card"><h3>برامج جارية الآن وبلا شواهد</h3>${gap.length ? gap.map(p => liProg(p, 'ev')).join('') : '<p class="empty">لا توجد برامج جارية بلا شواهد.</p>'}</section>
   <section class="card"><h3>آخر الشواهد المضافة</h3>${rec.length ? rec.map(e => { const p = S.programs.find(x => x.id === e.program_id); return p ? `<div class="li" data-open="${p.id}" data-tab="ev" style="--dc:${domOf(p).color}"><span class="dot"></span><div><b>${esc(e.title)}</b><small>${esc(p.name)} · ${esc(e.added_by || '')}</small></div></div>` : ''; }).join('') : '<p class="empty">لم تُضف شواهد بعد.</p>'}</section></div>`;
+}
+
+function viewDash() {
+
+  const all = S.programs; const avg = all.length ? all.reduce((a, p) => a + ach(p), 0) / all.length : 0;
+  const withEv = all.filter(p => evOf(p.id).length).length;
+  const now = all.filter(p => timeline(p)[1] === 'now');
+  const gap = now.filter(p => !evOf(p.id).length).sort((a, b) => hkey(parseH(a.to)) - hkey(parseH(b.to))).slice(0, 8);
+  const rec = S.evidence.slice(0, 6);
+  const sem = n => { const l = all.filter(p => p.sem === n); return l.length ? l.reduce((a, p) => a + ach(p), 0) / l.length : 0; };
+  return `<section class="hero card" style="--dc:#0d6b5f">${ring(avg, 104)}<div class="t"><h2>نسبة الإنجاز العامة للخطة</h2><p>الفصل الأول ${p0(sem(1))} · الفصل الثاني ${p0(sem(2))}</p>
+  <div class="kpis"><div class="kpi"><b>${ar(all.length)}</b><small>برنامج</small></div><div class="kpi"><b>${ar(S.evidence.length)}</b><small>شاهد وتقرير</small></div><div class="kpi"><b>${ar(withEv)}</b><small>برنامج له شواهد</small></div><div class="kpi"><b>${ar(now.length)}</b><small>جارٍ الآن</small></div></div></div></section>`;
 }
 
 /* ============ صفحة المجال ============ */
@@ -1241,7 +1253,7 @@ function routeNow() {
   const h = location.hash.replace(/^#\/?/, '');
   const rm = h.match(/^r\/(.+)$/);
   if (rm) { S.route = 'r'; S.rid = decodeURIComponent(rm[1]); }
-  else S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal' || h === 'rep') ? h : 'home';
+  else S.route = (/^d[1-4]$/.test(h) || h === 'ev' || h === 'cal' || h === 'rep' || h === 'dash') ? h : 'home';
   S.f.std = '';
   if (S.route === 'cal' && !S.cal.sel) S.cal = { y: TODAY.y, m: TODAY.m, sel: S.cal.sel };
   render(); window.scrollTo(0, 0);
