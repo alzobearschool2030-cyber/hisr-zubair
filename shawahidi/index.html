@@ -1010,7 +1010,7 @@ async function exportReportExcel(id) { const html = await reportHTML(id); if (!h
 /* ============ صفحة التقارير ============ */
 const hasRep = p => { const r = st(p.id).report; return !!(r && (r.desc || r.goals)); };
 function viewReports() {
-  const f = S.repf || (S.repf = { d: '', st: '' });
+  const f = S.repf || (S.repf = { d: '', st: 'saved' }); /* تظهر التقارير المكتوبة أولاً */
   const written = S.programs.filter(hasRep).length;
   const withEv = S.programs.filter(p => evOf(p.id).length).length;
   const list = S.programs.filter(p => !f.d || String(p.domain) === f.d)
