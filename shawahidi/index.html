@@ -885,7 +885,7 @@ function viewReport() {
   <h4>شواهد التقرير (الأول والثاني إلزاميان، والبقية اختيارية)</h4>
   <div id="rp-att">${rpAttachHTML(p.id)}</div>
   <div class="rp-sign"><div>إعداد: ${esc(S.user || '......................')}<br><small>${fmtHW(hstr(TODAY))} · ${g}</small></div><div>مدير المدرسة<br>${esc(CFG.PRINCIPAL)}<br>......................</div></div>
-  <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><a class="btn" href="#/">العودة إلى الصفحة الرئيسية</a><button class="btn" data-act="rp-edit">تعديل التقرير</button><button class="btn" data-act="rp-preview">${S.rpPreview ? 'إنهاء الاستعراض' : 'استعراض التقرير'}</button><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة / حفظ PDF</button><button class="btn" data-act="rp-word" data-id="${esc(p.id)}">تحميل Word</button><button class="btn" data-act="rp-excel" data-id="${esc(p.id)}">تحميل Excel</button>${hasRep(p) ? `<button class="btn danger" data-act="del-report" data-id="${esc(p.id)}">حذف التقرير كاملاً</button>` : ''}</div>
+  <div class="acts no-print" style="margin-top:16px"><a class="btn" href="#/d${p.domain}">رجوع</a><a class="btn" href="#/">العودة إلى الصفحة الرئيسية</a><button class="btn" data-act="rp-edit">تعديل التقرير</button><button class="btn" data-act="rp-preview">${S.rpPreview ? 'إنهاء الاستعراض' : 'استعراض التقرير'}</button><button class="btn pri" data-act="save-report" data-id="${esc(p.id)}">حفظ التقرير</button><button class="btn" data-act="print-report">طباعة</button><button class="btn" data-act="rp-pdf" data-id="${esc(p.id)}">حفظ PDF</button><button class="btn" data-act="rp-word" data-id="${esc(p.id)}">تحميل Word</button><button class="btn" data-act="rp-excel" data-id="${esc(p.id)}">تحميل Excel</button>${hasRep(p) ? `<button class="btn danger" data-act="del-report" data-id="${esc(p.id)}">حذف التقرير كاملاً</button>` : ''}</div>
   </article>`;
 }
 function saveReport(id) {
@@ -985,6 +985,26 @@ function startLive() {
 }
 
 /* ============ تصدير التقرير ============ */
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+async function exportReportPdf(id) {
+  const el = document.querySelector('.rp'); if (!el) return;
+  const p = S.programs.find(x => x.id === id);
+  if (!window.html2pdf) { try { await loadScript('https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js'); } catch (e) { return toast('تعذّر تحميل أداة PDF، استخدم «طباعة» واختر حفظ PDF', true); } }
+  busy('جاري إنشاء ملف PDF…');
+  const wrap = document.createElement('div'); wrap.dir = 'rtl'; wrap.style.cssText = 'position:absolute;left:-10000px;top:0;width:190mm;background:#fff';
+  try {
+    const c = el.cloneNode(true);
+    const liveTa = [...el.querySelectorAll('textarea')], cloneTa = [...c.querySelectorAll('textarea')];
+    cloneTa.forEach((t, i) => { const d = document.createElement('div'); d.textContent = liveTa[i] ? liveTa[i].value : ''; d.style.cssText = 'white-space:pre-wrap;border:1px solid #888;padding:6px;min-height:30px'; t.replaceWith(d); });
+    c.querySelectorAll('.no-print, .pvbar, input, label').forEach(x => x.remove());
+    c.style.cssText = 'background:#fff;color:#000;border:0;box-shadow:none;max-width:none;padding:0;margin:0';
+    wrap.appendChild(c); document.body.appendChild(wrap);
+    const blob = await window.html2pdf().set({ margin: 10, image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(wrap).outputPdf('blob');
+    dlBlob('تقرير-' + (p ? p.name.slice(0, 60) : id) + '.pdf', new Blob([blob], { type: 'application/pdf' }));
+    toast('تم إنشاء ملف PDF');
+  } catch (e) { toast('تعذّر إنشاء PDF: ' + (e.message || e), true); }
+  wrap.remove(); busy(false);
+}
 function printSized(sz) { let s = document.getElementById('pgsz'); if (!s) { s = document.createElement('style'); s.id = 'pgsz'; document.head.appendChild(s); } s.textContent = '@page{size:A4 ' + sz + ';margin:10mm}'; window.print(); }
 function dlBlob(name, blob) { try { const f = new File([blob], name, { type: blob.type }); if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: name }).catch(() => {}); return; } } catch (e) {} const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
 async function reportHTML(id) {
@@ -1221,6 +1241,7 @@ document.addEventListener('click', async e => {
     case 'rp-rm': RPICK.splice(+el.dataset.i, 1); rpShowPicked(); break;
     case 'rp-upload': uploadReportFiles(id); break;
     case 'print-report': printSized('portrait'); break;
+    case 'rp-pdf': exportReportPdf(id); break;
     case 'rp-word': exportReportWord(id); break;
     case 'rp-excel': exportReportExcel(id); break;
     case 'logout': try { localStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(AUTH_KEY); } catch (x) {} location.reload(); break;
