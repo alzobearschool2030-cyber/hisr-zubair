@@ -894,6 +894,7 @@ function saveReport(id) {
 function rpShowPicked() {
   const el = $('#rp-picked'); if (!el) return;
   if (!RPICK.length) { el.innerHTML = ''; return; }
+  if (!RPICK.length) return;
   el.innerHTML = `<p class="hint">مختار للرفع (${ar(RPICK.length)}):</p>` +
     RPICK.map((f, i) => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #e3ebe8"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(f.name)}</span><button class="btn sm" data-act="rp-rm" data-i="${i}">إزالة</button></div>`).join('') +
     `<div class="acts" style="margin-top:10px"><button class="btn sm pri" data-act="rp-upload" data-id="${esc(S.rid)}">${ico('up', 15)} رفع ${ar(RPICK.length)} شاهد</button><button class="btn sm" data-act="rp-clear">إفراغ القائمة</button></div>`;
@@ -1256,7 +1257,6 @@ document.addEventListener('change', e => {
     const room = Math.max(0, RP_MAX - evOf(S.rid).filter(e => e.kind === 'شاهد تقرير').length - RPICK.length);
     if (okSize.length > room) toast('يمكن إضافة ' + ar(room) + ' شواهد فقط لهذا التقرير، والحد الأقصى ' + ar(RP_MAX), true);
     RPICK = RPICK.concat(okSize.slice(0, room));
-    t.value = '';
     rpShowPicked();
   }
   else if (t.closest && t.closest('.hp')) { const hp = t.closest('.hp'); const g = k => hp.querySelector('[data-k="' + k + '"]').value; const s = g('y') + '/' + g('m') + '/' + g('d'); const l = hp.querySelector('.hp-l'); l.textContent = hpLabel(s); l.classList.toggle('bad', !validH(s)); }
