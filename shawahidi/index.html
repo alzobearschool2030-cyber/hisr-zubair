@@ -257,7 +257,6 @@ label input,label select,label textarea{margin-top:4px;font-weight:400}
   #printSheet th,#printSheet td{border:1px solid #888;padding:3px 5px;vertical-align:top;text-align:right}
   #printSheet th{background:#e8efed}
   #printSheet tr.gh td{background:#f4ecd3;font-weight:700}
-  @page{size:A4 landscape;margin:10mm}
 }
 </style>
 </head>
@@ -707,7 +706,7 @@ function evItem(e, prog) {
   return `<div class="ev"><div class="ev-th">${th ? `<img loading="lazy" src="${esc(th)}" alt="">` : ico(isImg ? 'img' : (e.file_path ? 'file' : 'link'), 26)}</div>
   <div class="ev-b"><b>${esc(e.title)}</b><small>${esc(e.kind || '')}${e.file_name ? ' · ' + esc(e.file_name) + (e.size ? ' · ' + fsize(e.size) : '') : (e.link ? ' · رابط' : '')}</small>
   <small>${prog ? esc(prog.name) + ' · ' : ''}أضافه ${esc(e.added_by || '—')} · ${when}</small>${e.note ? `<p>${esc(e.note)}</p>` : ''}</div>
-  <div class="ev-a"><button class="btn sm" data-act="ev-view" data-id="${esc(e.id)}">عرض</button><button class="btn sm danger" data-act="ev-del" data-id="${esc(e.id)}" aria-label="حذف">${ico('trash', 15)} حذف</button></div></div>`;
+  <div class="ev-a no-print"><button class="btn sm" data-act="ev-view" data-id="${esc(e.id)}">عرض</button><button class="btn sm danger" data-act="ev-del" data-id="${esc(e.id)}" aria-label="حذف">${ico('trash', 15)} حذف</button></div></div>`;
 }
 
 /* ============ نافذة البرنامج ============ */
@@ -986,6 +985,7 @@ function startLive() {
 }
 
 /* ============ تصدير التقرير ============ */
+function printSized(sz) { let s = document.getElementById('pgsz'); if (!s) { s = document.createElement('style'); s.id = 'pgsz'; document.head.appendChild(s); } s.textContent = '@page{size:A4 ' + sz + ';margin:10mm}'; window.print(); }
 function dlBlob(name, blob) { try { const f = new File([blob], name, { type: blob.type }); if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: name }).catch(() => {}); return; } } catch (e) {} const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
 async function reportHTML(id) {
   const el = document.querySelector('.rp'); if (!el) return;
@@ -1166,7 +1166,7 @@ function printDomain(n) {
   const d = PLAN.domains[n - 1];
   const rows = stdGroups(n).map(g => `<tr class="gh"><td colspan="10">${esc(g.title)} — ${esc(g.code)}</td></tr>` + g.list.map((p, i) => { const s = st(p.id); return `<tr><td>${ar(i + 1)}</td><td>${esc(p.name)}</td><td>${rangeH(p)}</td><td>${esc(p.lead)}</td><td>${p1(curOf(p))}</td><td>${p1(p.tgt)}</td><td>${p0(ach(p))}</td><td>${hasM(p, 'pre') ? p1(s.pre.v) : '—'}</td><td>${hasM(p, 'post') ? p1(s.post.v) : '—'}</td><td>${ar(evOf(p.id).length)}</td></tr>`; }).join('')).join('');
   $('#printSheet').innerHTML = `<h2>شواهدي — ${d.title}</h2><p>${esc(CFG.SCHOOL)} · الخطة التشغيلية ${ar(CFG.YEAR)}هـ · ${fmtHW(hstr(TODAY))}</p><table><thead><tr><th>م</th><th>البرنامج</th><th>الفترة</th><th>الجهة الرئيسة</th><th>الحالية</th><th>المستهدف</th><th>الإنجاز</th><th>قبلي</th><th>بعدي</th><th>الشواهد</th></tr></thead><tbody>${rows}</tbody></table>`;
-  setTimeout(() => window.print(), 80);
+  setTimeout(() => printSized('landscape'), 80);
 }
 
 /* ============ الأحداث ============ */
@@ -1220,7 +1220,7 @@ document.addEventListener('click', async e => {
     case 'nav-fwd': history.forward(); break;
     case 'rp-rm': RPICK.splice(+el.dataset.i, 1); rpShowPicked(); break;
     case 'rp-upload': uploadReportFiles(id); break;
-    case 'print-report': window.print(); break;
+    case 'print-report': printSized('portrait'); break;
     case 'rp-word': exportReportWord(id); break;
     case 'rp-excel': exportReportExcel(id); break;
     case 'logout': try { localStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(AUTH_KEY); } catch (x) {} location.reload(); break;
