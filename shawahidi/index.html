@@ -817,12 +817,12 @@ function autoDesc(p) {
 }
 const autoPre = p => 'يُجرى قبل بدء البرنامج لقياس: ' + cut(p.ind, 200) + '، وخط الأساس في الخطة ' + p1(p.base) + '.';
 const autoPost = p => 'يُجرى بعد تنفيذ البرنامج ويُقارن بالمستهدف ' + p1(p.tgt) + (p.low ? '، وكلما انخفضت النتيجة كان ذلك أفضل' : '') + '.';
-const RP_MAX = Infinity;
+const RP_MAX = 4; /* أقصى عدد شواهد لكل تقرير */
 function rpAttachHTML(id) {
   const have = evOf(id).filter(e => e.kind === 'شاهد تقرير');
   return `<div class="box" style="margin:0"><p class="hint">المرفوع: ${ar(have.length)} شاهد. كل شاهد يُرفع يُضاف إلى الشواهد السابقة ولا يستبدلها.</p>
   ${have.map(e => evItem(e, S.programs.find(x => x.id === e.program_id))).join('')}
-  <div class="no-print"><label style="margin:0 0 8px">أضف ملفات من جهازك (يمكن اختيار أكثر من ملف دفعة واحدة)<input type="file" id="rp-file" multiple accept="${ACCEPT}"></label>
+  <div class="no-print"><label style="margin:0 0 8px">أضف ملفات من جهازك (يمكن اختيار أكثر من ملف دفعة واحدة)<input type="file" id="rp-file" multiple></label>
   <div class="acts"><button class="btn sm" data-act="rp-camera">${ico('cam', 15)} تصوير بالكاميرا</button></div>
   <input type="file" id="rp-cam" accept="image/*" capture="environment" hidden><div id="rp-picked"></div></div></div>`;
 }
@@ -1251,7 +1251,9 @@ document.addEventListener('change', e => {
     const all = [...t.files];
     const okSize = all.filter(f => f.size <= CFG.MAX_FILE_MB * 1048576);
     if (okSize.length < all.length) toast('تم تجاهل ' + ar(all.length - okSize.length) + ' ملف لأن حجمه يتجاوز ' + ar(CFG.MAX_FILE_MB) + ' ميجابايت', true);
-    RPICK = RPICK.concat(okSize);
+    const room = Math.max(0, RP_MAX - evOf(S.rid).filter(e => e.kind === 'شاهد تقرير').length - RPICK.length);
+    if (okSize.length > room) toast('يمكن إضافة ' + ar(room) + ' شواهد فقط لهذا التقرير، والحد الأقصى ' + ar(RP_MAX), true);
+    RPICK = RPICK.concat(okSize.slice(0, room));
     t.value = '';
     rpShowPicked();
   }
