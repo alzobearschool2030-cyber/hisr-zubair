@@ -598,6 +598,7 @@ function viewDash() {
 }
 
 /* ============ صفحة المجال ============ */
+function mDesc(p, k) { const m = st(p.id)[k]; return (m && m.desc != null) ? m.desc : (k === 'pre' ? autoPre(p) : autoPost(p)); }
 function pcard(p) {
   const s = st(p.id), a = ach(p), tl = timeline(p), n = evOf(p.id).length, cur = curOf(p);
   const pre = hasM(p, 'pre'), post = hasM(p, 'post');
@@ -605,6 +606,9 @@ function pcard(p) {
   <div class="pc-top"><span class="pid">${pid(p)}</span><span class="chip sem">${p.sem === 1 ? 'الفصل الأول' : 'الفصل الثاني'}</span><span class="chip ${tl[1]}">${tl[0]}</span>${s.status ? `<span class="chip ${STC[s.status]}">${s.status}</span>` : ''}</div>
   <h4>${esc(p.name)}</h4>
   <div class="meta">${ico('cal', 14)} ${rangeH(p)}</div>
+  <div class="meta" style="white-space:normal"><b>القياس القبلي:</b> ${esc(mDesc(p, 'pre'))}</div>
+  <div class="meta" style="white-space:normal"><b>القياس البعدي:</b> ${esc(mDesc(p, 'post'))}</div>
+  <div class="acts" style="margin:6px 0 0"><button class="btn sm" data-act="md-edit" data-id="${esc(p.id)}">تعديل القياس</button></div>
   <div class="meta">${esc(p.lead)}</div>
   <div class="bar"><i style="width:${a}%"></i></div>
   <div class="nums"><span>الحالية ${p1(cur)}</span><span>المستهدف ${p1(p.tgt)}</span><b>الإنجاز ${p0(a)}</b></div>
@@ -718,9 +722,9 @@ function paneInfo(p) {
   <button class="btn pri" data-act="save-info" data-id="${esc(p.id)}">حفظ الإنجاز</button>${s.at ? `<p class="hint">آخر تحديث بواسطة ${esc(s.by || '—')} · ${fmtHW(hstr(uq(Date.parse(s.at) - Date.parse(s.at) % 864e5) || TODAY))}</p>` : ''}</div>
   <div class="acts"><button class="btn" data-act="edit-prog" data-id="${esc(p.id)}">${S.admin ? ico('pen', 16) : ico('lock', 16)} تعديل بيانات البرنامج</button><button class="btn danger" data-act="del-prog" data-id="${esc(p.id)}">${ico('trash', 16)} حذف البرنامج</button></div>`;
 }
-function msrBox(kind, title, m) {
+function msrBox(kind, title, m, def) {
   m = m || {};
-  return `<div class="box"><h4>${title}</h4><label>أداة القياس<input id="m-${kind}-tool" value="${esc(m.tool || '')}" placeholder="اختبار / استبانة / بطاقة ملاحظة"></label>
+  return `<div class="box"><h4>${title}</h4><label>وصف القياس (من الخطة، ويمكن تعديله)<textarea id="m-${kind}-desc">${esc(m.desc != null ? m.desc : (def || ''))}</textarea></label><label>أداة القياس<input id="m-${kind}-tool" value="${esc(m.tool || '')}" placeholder="اختبار / استبانة / بطاقة ملاحظة"></label>
   <label>تاريخ القياس${hpick('m-' + kind + '-date', m.date)}</label>
   <label>النتيجة ٪<input id="m-${kind}-v" type="number" step="0.01" min="0" max="100" inputmode="decimal" value="${m.v == null ? '' : m.v}"></label>
   <label>ملاحظات<textarea id="m-${kind}-note">${esc(m.note || '')}</textarea></label></div>`;
@@ -735,7 +739,7 @@ function paneMsr(p) {
   const fmtV = m => m && m.v != null && m.v !== '' ? p1(m.v) : '—';
   return `<p class="hint">قياس أثر البرنامج بنتيجتين: قبل التنفيذ وبعده، ويُحسب الأثر تلقائياً.${p.low ? ' (كلما انخفضت النتيجة كان ذلك أفضل في هذا البرنامج)' : ''}</p>
   <div class="cmp"><div><small>القياس القبلي</small><b>${fmtV(pre)}</b></div><div><small>القياس البعدي</small><b>${fmtV(post)}</b></div></div>${gain}
-  ${msrBox('pre', 'القياس القبلي', pre)}${msrBox('post', 'القياس البعدي', post)}
+  ${msrBox('pre', 'القياس القبلي', pre, autoPre(p))}${msrBox('post', 'القياس البعدي', post, autoPost(p))}
   <div class="acts"><button class="btn pri" data-act="save-msr" data-id="${esc(p.id)}">حفظ القياس</button><button class="btn" data-act="adopt-post" data-id="${esc(p.id)}">اعتماد البعدي كنسبة حالية</button></div>`;
 }
 function paneEv(p) {
@@ -1043,15 +1047,17 @@ function saveInfo(id) {
     saveState(id, { cur: c, status: $('#i-st').value, note: $('#i-note').value.trim() }, 'تم حفظ نسبة الإنجاز');
   });
 }
-function readM(k) {
+function readM(k, def) {
   const v = $('#m-' + k + '-v').value.trim(), tool = $('#m-' + k + '-tool').value.trim(), note = $('#m-' + k + '-note').value.trim();
-  if (v === '' && !tool && !note) return null;
+  const dEl = $('#m-' + k + '-desc'), dv = dEl ? dEl.value.trim() : ''; const desc = (dv === '' || dv === String(def || '').trim()) ? undefined : dv;
+  if (v === '' && !tool && !note && desc === undefined) return null;
   if (v !== '' && (isNaN(+v) || +v < 0 || +v > 100)) throw new Error('نتيجة القياس يجب أن تكون بين ٠ و ١٠٠');
   const date = readH('m-' + k + '-date'); if (!validH(date)) throw new Error('تاريخ القياس غير موجود في تقويم أم القرى');
-  return { v: v === '' ? null : +v, tool, note, date };
+  return { v: v === '' ? null : +v, tool, note, date, desc };
 }
 function saveMsr(id) {
-  needName(() => { let pre, post; try { pre = readM('pre'); post = readM('post'); } catch (e) { return toast(e.message, true); } saveState(id, { pre, post }, 'تم حفظ قياس الأثر'); });
+  const pp = S.programs.find(x => x.id === id);
+  needName(() => { let pre, post; try { pre = readM('pre', pp && autoPre(pp)); post = readM('post', pp && autoPost(pp)); } catch (e) { return toast(e.message, true); } saveState(id, { pre, post }, 'تم حفظ قياس الأثر'); });
 }
 function adoptPost(id) {
   const m = st(id).post; if (!m || m.v == null) return toast('أدخل نتيجة القياس البعدي أولاً وسجّلها', true);
@@ -1199,6 +1205,7 @@ document.addEventListener('click', async e => {
     case 'rp-ai-desc': { const el = $('#rp-desc'), p = S.programs.find(x => x.id === S.rid); if (el && p) { el.value = autoDesc(p); toast('تم توليد التوصيف، راجعه ثم احفظ التقرير'); } break; }
     case 'rp-camera': $('#rp-cam').click(); break;
     case 'rp-clear': RPICK = []; rpShowPicked(); break;
+    case 'md-edit': openProg(id, 'msr'); break;
     case 'nav-back': history.back(); break;
     case 'nav-fwd': history.forward(); break;
     case 'rp-rm': RPICK.splice(+el.dataset.i, 1); rpShowPicked(); break;
