@@ -1006,7 +1006,12 @@ async function exportReportPdf(id) {
   wrap.remove(); busy(false);
 }
 function printSized(sz) { let s = document.getElementById('pgsz'); if (!s) { s = document.createElement('style'); s.id = 'pgsz'; document.head.appendChild(s); } s.textContent = '@page{size:A4 ' + sz + ';margin:10mm}'; window.print(); }
-function dlBlob(name, blob) { try { const f = new File([blob], name, { type: blob.type }); if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: name }).catch(() => {}); return; } } catch (e) {} const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+function dlBlob(name, blob) {
+  const fallback = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+  let f = null; try { f = new File([blob], name, { type: blob.type }); } catch (e) { f = null; }
+  if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: name }).catch(e => { if (!e || e.name !== 'AbortError') fallback(); }); return; }
+  fallback();
+}
 async function reportHTML(id) {
   const el = document.querySelector('.rp'); if (!el) return;
   const p = S.programs.find(x => x.id === id);
