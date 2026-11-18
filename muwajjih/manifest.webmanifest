@@ -1,0 +1,14 @@
+{
+  "name": "الموجه الطلابي",
+  "short_name": "الموجه",
+  "description": "متابعة حالات الطلاب والجلسات الإرشادية والتواصل مع الأسر - مدرسة الزبير بن العوام الابتدائية",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#F2F5F9",
+  "theme_color": "#1F4E79",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
